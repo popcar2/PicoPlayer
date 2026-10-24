@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browse · TinyFun</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="fixi.js"></script>
+</head>
+<body class="browse">
+  <nav><a href="./">TinyFun</a><span id="meta"></span><a href="browse.html">Browse</a></nav>
+
+  <main id="player"><iframe id="screen" title="PICO-8" allow="autoplay; fullscreen; gamepad"></iframe></main>
+
+  <footer class="shelf"><div class="carousel">
+    <button class="cart" fx-action="games/celeste/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/celeste/label.png" alt=""><span>Celeste</span></button>
+    <button class="cart" fx-action="games/dust-bunny/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/dust-bunny/label.png" alt=""><span>Dust Bunny</span></button>
+    <button class="cart" fx-action="games/chopper/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/chopper/label.png" alt=""><span>Combat Chopper</span></button>
+    <button class="cart" fx-action="games/snekburd/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/snekburd/label.png" alt=""><span>Snekburd</span></button>
+    <button class="cart" fx-action="games/cryomancer/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/cryomancer/label.png" alt=""><span>Cryomancer</span></button>
+    <button class="cart" fx-action="games/super-hat-girl/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/super-hat-girl/label.png" alt=""><span>Super Hat Girl</span></button>
+    <button class="cart" fx-action="games/birds-with-guns/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/birds-with-guns/label.png" alt=""><span>Birds With Guns</span></button>
+    <button class="cart" fx-action="games/terra/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/terra/label.png" alt=""><span>Terra</span></button>
+    <button class="cart" fx-action="games/high-stakes/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/high-stakes/label.png" alt=""><span>High Stakes</span></button>
+    <button class="cart" fx-action="games/ascent/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/ascent/label.png" alt=""><span>Ascent</span></button>
+    <button class="cart" fx-action="games/marble-merger/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/marble-merger/label.png" alt=""><span>Marble Merger</span></button>
+    <button class="cart" fx-action="games/bunny-survivor/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/bunny-survivor/label.png" alt=""><span>Buns: Bunny Survivor</span></button>
+    <button class="cart" fx-action="games/islander/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/islander/label.png" alt=""><span>Islander</span></button>
+    <button class="cart" fx-action="games/pico-zombie-garden/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/pico-zombie-garden/label.png" alt=""><span>Pico Zombie Garden</span></button>
+    <button class="cart" fx-action="games/pico-world-race/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/pico-world-race/label.png" alt=""><span>Pico World Race</span></button>
+    <button class="cart" fx-action="games/bas/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/bas/label.png" alt=""><span>BAS</span></button>
+    <button class="cart" fx-action="games/low-knight/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/low-knight/label.png" alt=""><span>Low Knight</span></button>
+    <button class="cart" fx-action="games/woodworm/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/woodworm/label.png" alt=""><span>Woodworm</span></button>
+    <button class="cart" fx-action="games/beckon-the-hellspawn/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/beckon-the-hellspawn/label.png" alt=""><span>Beckon the Hellspawn</span></button>
+    <button class="cart" fx-action="games/pico-dino/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/pico-dino/label.png" alt=""><span>Pico Dino</span></button>
+    <button class="cart" fx-action="games/praxis-fighter-x/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/praxis-fighter-x/label.png" alt=""><span>Praxis Fighter X</span></button>
+    <button class="cart" fx-action="games/golf-sunday/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/golf-sunday/label.png" alt=""><span>Golf Sunday</span></button>
+    <button class="cart" fx-action="games/to-a-starling/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/to-a-starling/label.png" alt=""><span>To a Starling</span></button>
+    <button class="cart" fx-action="games/moss-moss/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/moss-moss/label.png" alt=""><span>Moss Moss</span></button>
+    <button class="cart" fx-action="games/build-a-jetpack/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/build-a-jetpack/label.png" alt=""><span>Build a Jetpack</span></button>
+    <button class="cart" fx-action="games/air-delivery/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/air-delivery/label.png" alt=""><span>Air Delivery</span></button>
+    <button class="cart" fx-action="games/shape-of-mind/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/shape-of-mind/label.png" alt=""><span>Shape of Mind</span></button>
+    <button class="cart" fx-action="games/suika/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/suika/label.png" alt=""><span>Suika Game Demake</span></button>
+    <button class="cart" fx-action="games/cattle-crisis/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/cattle-crisis/label.png" alt=""><span>Cattle Crisis</span></button>
+    <button class="cart" fx-action="games/the-lost-night/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/the-lost-night/label.png" alt=""><span>The Lost Night</span></button>
+    <button class="cart" fx-action="games/motion-rec/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/motion-rec/label.png" alt=""><span>MOTION●REC</span></button>
+    <button class="cart" fx-action="games/sonic-2-5/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/sonic-2-5/label.png" alt=""><span>Sonic 2.5</span></button>
+    <button class="cart" fx-action="games/guncho/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/guncho/label.png" alt=""><span>Guncho</span></button>
+    <button class="cart" fx-action="games/pigments/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/pigments/label.png" alt=""><span>Pigments</span></button>
+    <button class="cart" fx-action="games/driftmania/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/driftmania/label.png" alt=""><span>Driftmania</span></button>
+    <button class="cart" fx-action="games/linecraft/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/linecraft/label.png" alt=""><span>Linecraft</span></button>
+    <button class="cart" fx-action="games/cherry-bomb/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/cherry-bomb/label.png" alt=""><span>Cherry Bomb</span></button>
+    <button class="cart" fx-action="games/dinky-kong/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/dinky-kong/label.png" alt=""><span>Dinky Kong</span></button>
+    <button class="cart" fx-action="games/whiplash-taxi/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/whiplash-taxi/label.png" alt=""><span>Whiplash Taxi Co</span></button>
+    <button class="cart" fx-action="games/puzzles-of-the-paladin/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/puzzles-of-the-paladin/label.png" alt=""><span>Puzzles of the Paladin</span></button>
+    <button class="cart" fx-action="games/tetyis/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/tetyis/label.png" alt=""><span>Tetyis</span></button>
+    <button class="cart" fx-action="games/cab-ride/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/cab-ride/label.png" alt=""><span>Cab Ride</span></button>
+    <button class="cart" fx-action="games/harolds-bad-day/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/harolds-bad-day/label.png" alt=""><span>Harold's Bad Day</span></button>
+    <button class="cart" fx-action="games/picokaiju/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/picokaiju/label.png" alt=""><span>Picokaiju</span></button>
+    <button class="cart" fx-action="games/subsurface/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/subsurface/label.png" alt=""><span>Subsurface</span></button>
+    <button class="cart" fx-action="games/dungeon/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/dungeon/label.png" alt=""><span>DUNGEON!</span></button>
+  </div></footer>
+
+  <script>
+    let carousel = document.querySelector(".carousel")
+    let target = 0, frame = 0
+    let clamp = (x) => Math.max(0, Math.min(x, carousel.scrollWidth - carousel.clientWidth))
+
+    // ease-in-out tween to a scroll position (ms = 0 jumps straight there)
+    function slideTo(left, ms) {
+      cancelAnimationFrame(frame)
+      target = clamp(left)
+      if (!ms) { carousel.scrollLeft = target; return }
+      let from = carousel.scrollLeft, start = performance.now()
+      let step = (now) => {
+        let t = Math.min(1, (now - start) / ms)
+        let ease = t < .5 ? 4 * t * t * t : 1 - (2 - 2 * t) ** 3 / 2
+        carousel.scrollLeft = from + (target - from) * ease
+        if (t < 1) frame = requestAnimationFrame(step)
+      }
+      frame = requestAnimationFrame(step)
+    }
+
+    // glide after the wheel: keep moving a fraction of the remaining distance each frame
+    function glideTo(left) {
+      cancelAnimationFrame(frame)
+      target = clamp(left)
+      let step = () => {
+        let gap = target - carousel.scrollLeft
+        if (Math.abs(gap) < 1) { carousel.scrollLeft = target; return }
+        carousel.scrollLeft += Math.sign(gap) * Math.max(1, Math.abs(gap) * .15)  // at least 1px or rounding stalls it
+        frame = requestAnimationFrame(step)
+      }
+      frame = requestAnimationFrame(step)
+    }
+
+    // clicking a cartridge would focus it and make the browser jump it into view; we do the scrolling
+    carousel.addEventListener("mousedown", (e) => { if (e.target.closest(".cart")) e.preventDefault() })
+
+    // mark the inserted cartridge and slide it to the middle of the shelf (instantly for the random first pick)
+    document.addEventListener("click", (e) => {
+      let cart = e.target.closest(".cart")
+      if (!cart) return
+      document.querySelector(".cart[aria-current]")?.removeAttribute("aria-current")
+      cart.setAttribute("aria-current", "true")
+      slideTo(cart.offsetLeft - (carousel.clientWidth - cart.offsetWidth) / 2, e.isTrusted ? 450 : 0)
+    })
+
+    // a plain mouse wheel scrolls the shelf sideways, continuing from wherever a slide was heading
+    carousel.addEventListener("wheel", (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return
+      e.preventDefault()
+      let busy = Math.abs(target - carousel.scrollLeft) >= 1
+      glideTo((busy ? target : carousel.scrollLeft) + e.deltaY)
+    }, { passive: false })
+
+    // no view transitions: they cover the page with a snapshot, freezing the slide and dropping the shelf's hover
+    document.addEventListener("fx:config", (e) => e.detail.cfg.transition = false)
+
+    // once fixi swaps in the game's metadata, boot its .p8.png in the shared player (pico8.js stays cached)
+    document.addEventListener("fx:swapped", () => {
+      let meta = document.querySelector("#meta [data-cart]")
+      let screen = document.querySelector("#screen")
+      document.title = meta.dataset.title + " · TinyFun"
+      screen.contentWindow.location.replace("pico8/player.html?cart=../" + meta.dataset.cart)
+      screen.focus()
+    })
+
+    // fixi wires up the buttons on DOMContentLoaded first, then we insert a random cartridge
+    document.addEventListener("DOMContentLoaded", () => {
+      let carts = document.querySelectorAll(".cart")
+      carts[Math.floor(Math.random() * carts.length)].click()
+    })
+  </script>
+</body>
+</html>
