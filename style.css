@@ -22,13 +22,19 @@ nav a:last-child { margin-left: auto; }
 /* home */
 
 .home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   max-width: 34rem;
-  margin: 12vh auto;
-  padding: 0 1rem;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
 }
 .home h1 { color: #fff1e8; font-size: 2rem; margin: 0 0 1rem; }
 .home .play {
-  display: inline-block;
   margin-top: 1rem;
   padding: .5rem 1.25rem;
   background: #ff004d;

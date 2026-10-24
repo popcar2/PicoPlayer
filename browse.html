@@ -8,7 +8,7 @@
   <script src="fixi.js"></script>
 </head>
 <body class="browse">
-  <nav><a href="./">TinyFun</a><span id="meta"></span><a href="browse.html">Browse</a></nav>
+  <nav><a href="./">TinyFun</a><span id="meta"></span><a href="browse.html">Random Game</a></nav>
 
   <main id="player"><iframe id="screen" title="PICO-8" allow="autoplay; fullscreen; gamepad"></iframe></main>
 
@@ -103,6 +103,7 @@
       if (!cart) return
       document.querySelector(".cart[aria-current]")?.removeAttribute("aria-current")
       cart.setAttribute("aria-current", "true")
+      history.replaceState(null, "", "?game=" + cart.getAttribute("fx-action").split("/")[1])  // shareable link to this game
       slideTo(cart.offsetLeft - (carousel.clientWidth - cart.offsetWidth) / 2, e.isTrusted ? 450 : 0)
     })
 
@@ -126,10 +127,13 @@
       screen.focus()
     })
 
-    // fixi wires up the buttons on DOMContentLoaded first, then we insert a random cartridge
+    // fixi wires up the buttons on DOMContentLoaded first, then we insert the linked cartridge (?game=<slug>) or a random one
     document.addEventListener("DOMContentLoaded", () => {
-      let carts = document.querySelectorAll(".cart")
-      carts[Math.floor(Math.random() * carts.length)].click()
+      let game = new URLSearchParams(location.search).get("game")
+      let carts = [...document.querySelectorAll(".cart")]
+      let linked = carts.find((cart) => cart.getAttribute("fx-action") == `games/${game}/meta.html`)
+      let cart = linked || carts[Math.floor(Math.random() * carts.length)]
+      cart.click()
     })
   </script>
 </body>

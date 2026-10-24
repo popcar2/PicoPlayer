@@ -1130,17 +1130,15 @@ canvas{
 	// from @ultrabrite's shell: test if an AudioContext can be created outside of an event callback.
 	// If it can't be created, then require pressing the start button to run the cartridge
 
+	// boot straight away even without a user gesture (e.g. arriving from the home page link);
+	// the audio context starts suspended then, so wake it on the first interaction
 	if (p8_autoplay)
 	{
-		var temp_context = new AudioContext();
-		temp_context.onstatechange = function ()
+		p8_run_cart();
+		["pointerdown", "keydown", "touchstart"].forEach(function(type)
 		{
-			if (temp_context.state=='running')
-			{
-				p8_run_cart();
-				temp_context.close();
-			}
-		};
+			addEventListener(type, function(){ p8_create_audio_context(); }, {once: true, capture: true});
+		});
 	}
 
 	// pointer lock request needs to be inside a canvas interaction event
