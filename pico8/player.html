@@ -9,6 +9,22 @@
 	var _cdpos = 0, iii = 0, ciii = 0;
 	var p8_cart_ready = p8_decode_cart(p8_cart_url).then(function(dat){ _cartdat = dat; });
 
+	// multi-cart games load("#id") other carts from lexaloffle.com's bbs: first an info record from
+	// /bbs/cpost_lister3.php?nfo=1&...&lid=<id>, then the cart from /bbs/get_cart.php?...&lid=<id>.
+	// answer the info request ourselves and serve the cart from <id>.p8.png next to the current cart instead
+	var p8_xhr_open = XMLHttpRequest.prototype.open;
+	XMLHttpRequest.prototype.open = function(method, url)
+	{
+		var bbs = /\/bbs\/(get_cart|cpost_lister3)\.php\?.*\blid=([^&]+)/.exec(url);
+		if (bbs)
+		{
+			var lid = decodeURIComponent(bbs[2]);
+			arguments[1] = bbs[1] == "get_cart" ? p8_cart_url.replace(/[^\/]*$/, "") + lid + ".p8.png" :
+				"data:text/plain," + encodeURIComponent("lid:"+lid+"\nmid:"+lid+"\ntitle:"+lid+"\nauthor:\nts:2000-01-01 00:00:00\ncatsub:1792\n");
+		}
+		return p8_xhr_open.apply(this, arguments);
+	};
+
 	// a .p8.png hides one byte per pixel in the low 2 bits of A,R,G,B.
 	// decoded by hand because canvas getImageData premultiplies alpha and mangles those bits
 	async function p8_decode_cart(url)
