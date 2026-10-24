@@ -66,7 +66,7 @@
 	// options
 
 	// fullscreen, sound, close button at top when playing on touchscreen
-	var p8_allow_mobile_menu = true;
+	var p8_allow_mobile_menu = false;
 
 	// p8_autoplay true to boot the cartridge automatically after page load when possible
 	// if the browser can not create an audio context outside of a user gesture (e.g. on iOS), p8_autoplay has no effect
@@ -1062,7 +1062,7 @@ canvas{
 
 </head>
 
-<body style="padding:0px; margin:0px; background-color:#000; color:#ccc">
+<body style="padding:0px; margin:0px; overflow:hidden; background-color:#000; color:#ccc">
 <div id="body_0"> <!-- hide this when playing in mobile (p8_touch_detected) so that elements don't affect layout -->
 
 
@@ -1151,6 +1151,9 @@ canvas{
 	if (p8_autoplay)
 	{
 		p8_run_cart();
+		// touch screens: show the on-screen controls straight away instead of after the first tap on the game.
+		// set after p8_run_cart so it doesn't also push a #playing history entry on every game switch
+		if (matchMedia("(hover: none)").matches) p8_touch_detected = true;
 		["pointerdown", "keydown", "touchstart"].forEach(function(type)
 		{
 			addEventListener(type, function(){ p8_create_audio_context(); }, {once: true, capture: true});

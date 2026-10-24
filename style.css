@@ -14,8 +14,21 @@ nav {
   gap: 1.5rem;
   padding: .75rem 1rem;
 }
-nav a { text-decoration: none; }
+nav a { text-decoration: none; white-space: nowrap; }
 nav a:first-child { color: #fff1e8; font-weight: bold; }
+/* game title: centred over the game on the nav's row, so it takes no height from the game.
+   kept clear of the nav links on either side, and cut off rather than wrapping */
+#meta {
+  position: absolute;
+  top: 0;
+  left: calc(50% + 1rem);  /* the player starts 2rem in, after the info tab */
+  transform: translateX(-50%);
+  max-width: calc(100% - 20rem);
+  padding: .75rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 nav a:last-child { margin-left: auto; }
 #meta b { color: #fff1e8; }
 
@@ -198,3 +211,70 @@ nav a:last-child { margin-left: auto; }
 .info dl { display: grid; grid-template-columns: auto 1fr; gap: .25rem .75rem; margin: 0; }
 .info dt { color: #fff; white-space: nowrap; }
 .info dd { margin: 0; }
+
+#shelf-toggle, .hint-touch { display: none; }
+
+/* touch screens can't hover, so the shelf becomes a sheet that pops up from a Games bar at the bottom,
+   with the cartridges in a grid that scrolls vertically */
+@media (hover: none) {
+  .hint-hover, #meta { display: none; }
+  .hint-touch { display: block; }
+  .stage { margin-bottom: 2.75rem; }  /* keep the game and its touch controls clear of the bar */
+  .shelf, .shelf:hover, .shelf:focus-within {
+    display: flex;
+    flex-direction: column;
+    height: 80dvh;
+    padding-top: 0;
+    transform: translateY(calc(100% - 2.75rem));
+  }
+  .shelf.open { transform: none; }
+  /* dims the page behind the open sheet, and taps on it close the sheet */
+  .shelf.open::before { content: ""; position: fixed; inset: -100dvh 0 0; z-index: -1; background: rgb(0 0 0 / .6); }
+  #shelf-toggle {
+    display: block;
+    flex: none;
+    height: 2.75rem;
+    border: 0;
+    background: #5f574f;
+    color: #fff1e8;
+    font: inherit;
+    font-weight: bold;
+  }
+  #shelf-toggle::before { content: "\25B2  "; }
+  .shelf.open #shelf-toggle { background: #ff004d; }
+  .shelf.open #shelf-toggle::before { content: "\25BC  "; }
+  .carousel {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    align-content: start;
+    padding: 1rem;
+    overflow: hidden auto;
+  }
+  .cart { width: auto; }
+  .cart:hover { transform: none; }  /* a tap leaves :hover stuck on */
+  .cart[aria-current] { transform: none; }
+}
+
+/* touch screens: Game Info moves to the top right of the bar in place of Random Game,
+   and the game gets the full width now that the side tab is gone */
+@media (hover: none) {
+  #random { display: none; }
+  #player { margin-left: 0; }
+  #info { width: 0; }
+  #info-toggle, #info-toggle:hover, #info-toggle:focus-visible, #info.open #info-toggle {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: auto;
+    padding: .75rem 1rem;
+    border-radius: 0;
+    background: none;
+    color: #ff77a8;
+    font-size: 1rem;
+    font-weight: normal;
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+  #info.open #info-toggle { color: #fff1e8; }
+}

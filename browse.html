@@ -8,7 +8,8 @@
   <script src="fixi.js"></script>
 </head>
 <body class="browse">
-  <nav><a href="./">TinyFun</a><span id="meta"></span><a id="random" href="browse.html">Random Game</a></nav>
+  <nav><a href="./">TinyFun</a><a id="random" href="browse.html">Random Game</a></nav>
+  <div id="meta"></div>
 
   <div class="stage">
     <aside id="info">
@@ -18,7 +19,7 @@
     <main id="player"><iframe id="screen" title="PICO-8" allow="autoplay; fullscreen; gamepad"></iframe></main>
   </div>
 
-  <footer class="shelf"><div class="carousel">
+  <footer class="shelf"><button id="shelf-toggle" aria-expanded="false">Games</button><div class="carousel">
     <button class="cart" fx-action="games/dust-bunny/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/dust-bunny/label.png" alt=""><span>Dust Bunny</span></button>
     <button class="cart" fx-action="games/chopper/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/chopper/label.png" alt=""><span>Combat Chopper</span></button>
     <button class="cart" fx-action="games/snekburd/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/snekburd/label.png" alt=""><span>Snekburd</span></button>
@@ -129,6 +130,9 @@
 
   <script>
     let carousel = document.querySelector(".carousel")
+    let shelf = document.querySelector(".shelf")
+    let shelfToggle = document.querySelector("#shelf-toggle")
+    let touch = matchMedia("(hover: none)")  // phones and tablets: the shelf is a pop-up sheet instead of a hover strip
     let target = 0, frame = 0
     let clamp = (x) => Math.max(0, Math.min(x, carousel.scrollWidth - carousel.clientWidth))
 
@@ -171,8 +175,21 @@
       previous?.removeAttribute("aria-current")
       cart.setAttribute("aria-current", "true")
       history.replaceState(null, "", "?game=" + cart.getAttribute("fx-action").split("/")[1])  // shareable link to this game
-      slideTo(cart.offsetLeft - (carousel.clientWidth - cart.offsetWidth) / 2, previous ? 450 : 0)
+      if (touch.matches) setShelfOpen(false)
+      else slideTo(cart.offsetLeft - (carousel.clientWidth - cart.offsetWidth) / 2, previous ? 450 : 0)
     })
+
+    // on touch screens the Games bar opens the shelf as a sheet that scrolls vertically, starting at the current cartridge.
+    // tapping the dimmed backdrop (the shelf's ::before) or picking a cartridge closes it
+    function setShelfOpen(open) {
+      shelf.classList.toggle("open", open)
+      shelfToggle.setAttribute("aria-expanded", open)
+      shelfToggle.textContent = open ? "Close" : "Games"
+      let cart = document.querySelector(".cart[aria-current]")
+      if (open && cart) carousel.scrollTop = cart.offsetTop - (carousel.clientHeight - cart.offsetHeight) / 2
+    }
+    shelfToggle.addEventListener("click", () => setShelfOpen(!shelf.classList.contains("open")))
+    shelf.addEventListener("click", (e) => { if (e.target == shelf) setShelfOpen(false) })
 
     // Random Game inserts a different random cartridge instead of reloading the page
     document.querySelector("#random").addEventListener("click", (e) => {
