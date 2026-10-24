@@ -672,7 +672,7 @@
 
 		}
 		e.type = "application/javascript";
-		e.src = "pico8.js";
+		e.src = "pico8.js?v=2"; // bump when pico8.js is patched so browsers drop the cached copy
 		e.id = "e_script";
 		
 		p8_cart_ready.then(function(){ document.body.appendChild(e); }); // load and run once the cart is decoded
