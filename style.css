@@ -1,5 +1,8 @@
 * { box-sizing: border-box; }
 
+/* the pages hide <html> inline until this sheet arrives, so they never flash unstyled */
+html { visibility: visible; }
+
 body {
   margin: 0;
   background: #000;
