@@ -110,7 +110,6 @@
     <button class="cart" fx-action="games/freezing-knights/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/freezing-knights/label.png" alt=""><span>Freezing Knights</span></button>
     <button class="cart" fx-action="games/qbert/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/qbert/label.png" alt=""><span>Q*Bert</span></button>
     <button class="cart" fx-action="games/holiday-jumper/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/holiday-jumper/label.png" alt=""><span>Holiday Jumper</span></button>
-    <button class="cart" fx-action="games/snakator/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/snakator/label.png" alt=""><span>snäkätor</span></button>
     <button class="cart" fx-action="games/heliopause/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/heliopause/label.png" alt=""><span>Heliopause</span></button>
     <button class="cart" fx-action="games/into-ruins/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/into-ruins/label.png" alt=""><span>Into Ruins</span></button>
     <button class="cart" fx-action="games/tutankham/meta.html" fx-target="#meta" fx-swap="innerHTML"><img src="games/tutankham/label.png" alt=""><span>Tutankham</span></button>
@@ -230,7 +229,10 @@
       let meta = document.querySelector("#meta [data-cart]")
       let screen = document.querySelector("#screen")
       let details = document.querySelector("#meta .info")
-      document.querySelector("#info-body").replaceChildren(...(details ? [details] : []))
+      let byline = document.createElement("p")  // the title and creator, shown at the top of the panel on touch screens where #meta is hidden
+      byline.className = "byline"
+      byline.innerHTML = meta.innerHTML
+      document.querySelector("#info-body").replaceChildren(byline, ...(details ? [details] : []))
       document.title = meta.dataset.title + " · TinyFun"
       let carts = meta.dataset.cart.split(" ").map((cart) => "cart=../" + cart).join("&")  // main cart first, then any extra carts it loads
       screen.contentWindow.location.replace("pico8/player.html?" + carts)

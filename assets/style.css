@@ -211,6 +211,8 @@ nav a:last-child { margin-left: auto; }
 }
 #info.open #info-body { visibility: visible; }
 #info-body > * { width: calc(min(20rem, 80vw) - 2rem); }  /* full width from the start, so text doesn't reflow mid-slide */
+.byline { display: none; margin: 0 0 1rem; font-size: 1rem; }
+.byline b { color: #fff1e8; }
 .info p { margin: 0 0 1rem; }
 .info h2 { margin: 0 0 .5rem; color: #fff; font-size: .875rem; text-transform: uppercase; }
 /* descriptions copied from Lexaloffle posts bring their own headings, images, tables and code */
@@ -290,4 +292,5 @@ nav a:last-child { margin-left: auto; }
     transform: none;
   }
   #info.open #info-toggle { color: #fff1e8; }
+  .byline { display: block; }  /* the title bar is hidden, so name the game and its creator in the panel */
 }
