@@ -18,7 +18,10 @@
       <button id="info-toggle" aria-expanded="false" aria-controls="info-body">Game Info</button>
       <div id="info-body"></div>
     </aside>
-    <main id="player"><iframe id="screen" title="PICO-8" allow="autoplay; fullscreen; gamepad"></iframe></main>
+    <main id="player">
+      <iframe id="screen" title="PICO-8" allow="autoplay; fullscreen; gamepad"></iframe>
+      <div id="loading" role="status" aria-label="Loading game" hidden></div>
+    </main>
   </div>
 
   <footer class="shelf"><button id="shelf-toggle" aria-expanded="false">Games</button><div class="carousel">
@@ -235,9 +238,23 @@
       document.querySelector("#info-body").replaceChildren(byline, ...(details ? [details] : []))
       document.title = meta.dataset.title + " · TinyFun"
       let carts = meta.dataset.cart.split(" ").map((cart) => "cart=../" + cart).join("&")  // main cart first, then any extra carts it loads
+      showLoading(screen)
       screen.contentWindow.location.replace("pico8/player.html?" + carts)
       screen.focus()
     })
+
+    // the spinner covers the player from picking a game until the new player draws its first frame.
+    // it waits for the iframe's load first, since until then contentWindow is still the old game's
+    let loading = document.querySelector("#loading"), loads = 0
+    function showLoading(screen) {
+      let load = ++loads  // a newer pick takes over, and its own wait hides the spinner
+      loading.hidden = false
+      screen.addEventListener("load", function check() {
+        if (load != loads) return
+        if (screen.contentWindow.pico8_state?.frame_number > 0) loading.hidden = true
+        else requestAnimationFrame(check)
+      }, { once: true })
+    }
 
     // fixi wires up the buttons on DOMContentLoaded first, then we insert the linked cartridge (?game=<slug>) or a random one
     document.addEventListener("DOMContentLoaded", () => {

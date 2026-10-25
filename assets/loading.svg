@@ -1,0 +1,11 @@
+<!-- loading spinner: eight squares in the PICO-8 logo's colours, lit one after another around a ring -->
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+  <rect x="30" y="0" width="12" height="12" fill="#ff004d"><animate attributeName="opacity" values="1;0" dur=".8s" calcMode="linear" begin="-0.8s" repeatCount="indefinite"/></rect>
+  <rect x="45" y="15" width="12" height="12" fill="#ffa300"><animate attributeName="opacity" values="1;0" dur=".8s" calcMode="linear" begin="-0.7s" repeatCount="indefinite"/></rect>
+  <rect x="60" y="30" width="12" height="12" fill="#ffec27"><animate attributeName="opacity" values="1;0" dur=".8s" calcMode="linear" begin="-0.6s" repeatCount="indefinite"/></rect>
+  <rect x="45" y="45" width="12" height="12" fill="#00e436"><animate attributeName="opacity" values="1;0" dur=".8s" calcMode="linear" begin="-0.5s" repeatCount="indefinite"/></rect>
+  <rect x="30" y="60" width="12" height="12" fill="#29adff"><animate attributeName="opacity" values="1;0" dur=".8s" calcMode="linear" begin="-0.4s" repeatCount="indefinite"/></rect>
+  <rect x="15" y="45" width="12" height="12" fill="#83769c"><animate attributeName="opacity" values="1;0" dur=".8s" calcMode="linear" begin="-0.3s" repeatCount="indefinite"/></rect>
+  <rect x="0" y="30" width="12" height="12" fill="#ff77a8"><animate attributeName="opacity" values="1;0" dur=".8s" calcMode="linear" begin="-0.2s" repeatCount="indefinite"/></rect>
+  <rect x="15" y="15" width="12" height="12" fill="#ffccaa"><animate attributeName="opacity" values="1;0" dur=".8s" calcMode="linear" begin="-0.1s" repeatCount="indefinite"/></rect>
+</svg>
