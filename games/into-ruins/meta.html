@@ -1,0 +1,55 @@
+<span data-cart="games/into-ruins/into-ruins.p8.png" data-title="Into Ruins"><b>Into Ruins</b> by ericb</span>
+<div class="info">
+<p>
+<em>Reach depth 16 and retrieve the Wings of Yendor</em></p>
+<br>
+<h1>Controls</h1>
+<p><strong>(◀)(▶)(▼)</strong> : Turn</p>
+<p><strong>(▲)</strong> : Step forward / Attack / Interact</p>
+<p><strong>(X)</strong> : Open inventory</p>
+<p><strong>(O)/Z/C</strong> : Wait 1 turn</p>
+<p>Into Ruins is a roguelike for the PICO-8 Fantasy Console.</p>
+<p><strong>There are no stairs</strong>. Jump down <strong>holes</strong> in the ground to make your way to the bottom. You will encounter <strong>natural cave formations</strong>, <strong>crumbling dungeon rooms</strong>, and <strong>terrifying creatures</strong> on your way.</p>
+<p><strong>There are no doors</strong>. Tread carefully or the creature in the next room might spot you. <strong>Light</strong> helps you explore more easily, but also reveals you to your foes. <strong>Fires</strong> can spread wildly through the environment, while <strong>glowing mushroom spores</strong> can mend your wounds.</p>
+<p><strong>There are no classes or character levels</strong>. Expand your abilities by finding <strong>magical items</strong> on your descent, and bring them to their full potential with <strong>Orbs of Power</strong>.</p>
+<p><strong>Each attempt is a new beginning</strong> &mdash; the different types of <strong>orbs, staves, cloaks</strong> and <strong>amulets</strong> will not be immediately recognizable to you. Some experimentation is required to identify them. </p>
+<br>
+<h1>Credits</h1>
+<p>Into Ruins was created by <strong>Eric Billingsley</strong>. It was greatly inspired by <strong><a href="https://sites.google.com/site/broguegame/" target="_blank" rel="noopener">Brogue</a></strong> by <strong>Brian Walker</strong>.</p>
+<p>Thanks to <strong>FReDs72, Heracleum, James Edward Smith, morgan, Oli414, Sim, SlainteES, SmellyFishstiks</strong> and <strong>Waporwave</strong> for beta testing and feedback.</p>
+<br>
+<h1>Technical Info</h1>
+<p>I figured some of you might be interested in some of the technical aspects of the game. This was my first foray into PICO-8 and Lua, and I learned a lot along the way -- from discovering with shock that variables are global by default after a week and a half of strange bugs, to trying to cram as much as possible into strings, and _ENV abuse to reduce token count.</p>
+<br>
+<h2>How does it all fit?</h2>
+<p>Initially I thought I could fit everything into 1 cart, but partway through I realized that even if I could fit all the features I had planned in while respecting the token limit, the compressed character limit would be a problem.</p>
+<p>The final version of the game is in 2 carts -- one for the title screen and text intro, and another for the main game. The title screen cart also puts a huge string containing most of the game's data (creature stat blocks, animation data, item stats, text descriptions) into the upper memory region, which is then read and parsed by the main cart. Because the title screen still displays the environment and character, there's a lot of similar code between the two carts, though a lot of things that were refactored to save tokens in the main cart are still in the title cart in their original form.</p>
+<p>Even with these measures, the main cart still needed to be stripped of comments, newlines, and whitespace using <a href="https://github.com/thisismypassport/shrinko8" target="_blank" rel="noopener">shrinko8</a> to fit within the compressed character limit.</p>
+<p>As far as tokens go, making almost everything in the game be the same type of object went a long way. Each object has a type (which is just its sprite number), and from that we can initialize its properties with a combination of default values and ones read from the huge string mentioned earlier. Having everything be intialized and accessed the same way means that each object has a lot of data it doesn't actually need, but we aren't strapped for Lua memory so that's okay! The upside is we can reuse code where appropriate, and make things interact more easily. To save tokens on accessing properties, I also made heavy use of the <a href="https://www.lexaloffle.com/bbs/?tid=49047" target="_blank" rel="noopener">_ENV trick outlined by slainte here</a>, and <a href="https://github.com/seleb/PICO-8-Token-Optimizations" target="_blank" rel="noopener">seleb's list of token optimizations</a> was indispensible as well.</p>
+<br>
+<h2>Level generation</h2>
+<p>The levels are generated using a couple different algorithms. Levels can contain natural caves, manmade dungeon rooms, or both. In either case, there is a variable called <em>Entropy</em> which ticks down as more of the level is generated.</p>
+<br>
+<h3>Caves</h3>
+<p><strong>Caves</strong> are made recursively using a type of random walk. From our current position, we try to generate another tile in a random neighbouring space. We then decide whether to recurse again from this position or backtrack -- this probability is based on the current entropy, so at the start we always continue, and by the end backtracking is more likely. Playing with the starting entropy and the amount it goes down by with each recursion allows us to achieve the right density and balance between narrow tunnels and wide open areas.</p>
+<p>When choosing which tile to put in a new space, we consider the tile we are generating from. Each tile type has a corresponding section of the map data which defines 16 possibilities for the next tile, so we choose one at random from these. In a way this is like a <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank" rel="noopener">Markov Chain</a>, where the state is just based on the tile we are coming from. Holes, grass and other environmental features are all generated this way. The tile definition can also include an entity to generate, like a mushroom, brazier, chair or barrel. </p>
+<p>With each recursion, there's a very small chance we switch to generating <strong>rooms</strong>.</p>
+<br>
+<h3>Rooms</h3>
+<p>For <strong>rooms</strong>, we choose a random point on the map which will be contained in the room, and then random values for the room's width and height. The boundaries of the room are clamped to multiples of 2 or 4 to get them to lock together well and play nice with the rendering. We then create the floor and walls of the room, with one dimension being staggered to fit properly into the hex grid. Each room gets a random <em>crumble</em> value, which we use to decide if we should replace parts of the wall with different tiles (selected in the same way as in the cave generation). </p>
+<p>After generating each room, there's a chance we switch to cave generation. Otherwise, we keep generating rooms at random positions until the entropy reaches 0. The rooms can overlap each other, and each time we generate one, a random <em>openplan</em> variable sets whether it should have walls on all sides, or try to merge with any overlapping rooms. In this way, we can get all kinds of interesting dungeon shapes just by combining rectangles.</p>
+<br>
+<h3>Post-processing</h3>
+<p>Once the initial generation is complete, we analyze the level to find parts that are inaccessible, and then find a nearby position the player can get to and connect them in a straight line, either by building bridges or tunneling through walls. Then we recurse randomly through the level and fill out the contents of the manmade rooms, in the same way we did with the caves earlier.</p>
+<p>There are a few more steps, like creating cave walls, ensuring there are exit holes, and running the code to connect areas again at various points. One interesting step is to replace cave walls which have walkable tiles both below and above them with a random tile, again sampled from the map data. This is actually the only way that stalagmites and mushrooms can be generated, and I think it makes their placement a bit more natural looking.</p>
+<br>
+<h3>Spawning</h3>
+<p>With the environment generated, all that's left is to spawn creatures and items. </p>
+<p>Creature spawn groups are again defined in the map, with each line corresponding to a different depth. We attempt 6 times to spawn a group of creatures, either choosing a group from the current depth or sometimes randomly from a greater one for a nasty surprise. We pick a random position, and try to spawn a creature there, and then move on to a to a neighbouring tile for the next one in the group. If it turns out the spawn point is invalid, we don't try again, just move on. This means some levels, especially smaller ones, will tend to have fewer creatures but that's okay -- it just adds variety!</p>
+<p>Items are spawned in a similar way, with the depth just affecting how many we try to spawn (we attempt to spawn slightly more items on earlier depths than on later ones). For certain important orbs, we make extra spawn attempts if there haven't been enough of them generated yet over the course of the game based on the current depth.</p>
+<br>
+<h3>Wrap-up</h3>
+<p>There's a lot of other things that I think could be interesting to write about, like the lighting, FOV algorithm, or various aspects of the AI, but for now I think this post is long enough. Let me know if there's anything you'd like to hear more about!</p>
+<p>Into Ruins is also <a href="https://sparsegamedev.itch.io/into-ruins" target="_blank" rel="noopener">available on itch.io</a>, and the unminified code is up <a href="https://github.com/Woflox/intoruins" target="_blank" rel="noopener">on Github</a>.</p>
+  <p class="source"><a href="https://www.lexaloffle.com/bbs/?tid=49928" target="_blank" rel="noopener">Original post on Lexaloffle</a> &middot; CC4-BY-NC-SA</p>
+</div>

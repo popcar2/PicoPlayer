@@ -1,0 +1,29 @@
+<span data-cart="games/sphero/sphero.p8.png" data-title="Sphero"><b>Sphero</b> by electricgryphon</span>
+<div class="info">
+<h1>Sphero</h1>
+<p>Version a1</p>
+<p><strong>Rescue Blocklandia from the evil clutches of Duke Cube. Find the nine golden keys to unlock the gate to the magic portal and recover the crown.</strong></p>
+<br>
+<h3>Instructions</h3>
+<p>--Move the Sphero with the arrow keys<br>
+--Interact with special blocks by rolling over them<br>
+--Collect keys to open locked doors<br>
+--Collect floating coins<br>
+--Grab the crown to win the game!</p>
+<p>If you beat the game, please post a picture!</p>
+<br>
+<h3>Implementation Notes</h3>
+<p>There are some tidbits in this cart that might be interesting/useful to other pico8 programmers. </p>
+<p><strong>Level Storage</strong></p>
+<p>8X8 rooms are stored in a compressed format within a long string contained at the end of the P8 file. Blocks are stored in a manner that is closer to a drawing format-- e.g. change current tile, place tile at location x or fill a given region with tile. These instructions are tightly bit packed and then saved a single line of hex for each room.<br>
+This allowed for 117 unique rooms in the game with a reasonable level of detail before hitting the code compression limit. (15438/15616 in the end!)</p>
+<p>I have tool to allow for rooms to also be stored in the cart data as well, but it didn't end up being necessary. (I got tired of designing rooms before I got ran out of space.)</p>
+<p>I have a level editor (also made in pico8), which outputs levels to a text file, that I can share.</p>
+<p><strong>Sprite Packing</strong></p>
+<p>This game uses two sprite sheets worth of a sprites by mashing them together-- e.g. the first 2 bits code for sprite sheet one and the second 2 bits code for sprite sheet 2. I posted a demo cart of this earlier, and there are a couple of other carts on the bbs that explain this in more detail.</p>
+<p><strong>Physics</strong></p>
+<p>Collisions are handled using signed distance fields for the blocks in the local area of the ball, which make it really easy to check for where and when the sphere of the ball hits something--or multiple somethings. As a bonus, they also make it easy to find the normal at the intersection point, so bouncing type collisions are pretty straight forward.</p>
+<p>I can do more of a write-up for these things if folks want.</p>
+<p>-ElectricGryphon</p>
+  <p class="source"><a href="https://www.lexaloffle.com/bbs/?tid=42987" target="_blank" rel="noopener">Original post on Lexaloffle</a> &middot; CC4-BY-NC-SA</p>
+</div>
