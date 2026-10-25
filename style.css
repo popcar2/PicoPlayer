@@ -53,6 +53,7 @@ nav a:last-child { margin-left: auto; }
   padding: 1rem;
   text-align: center;
 }
+.home.about { max-width: 44rem; }
 .home h1 { color: #fff1e8; font-size: 2rem; margin: 0 0 1rem; }
 .home .play {
   margin-top: 1rem;
