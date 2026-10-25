@@ -66,6 +66,15 @@ nav a:last-child { margin-left: auto; }
   text-decoration: none;
   border-radius: 4px;
 }
+/* github mark in the top right corner */
+.github {
+  position: absolute;
+  top: .75rem;
+  right: 1rem;
+  opacity: .75;  /* dimmed until hovered */
+}
+.github:hover, .github:focus-visible { opacity: 1; }
+.github img { display: block; width: 1.75rem; height: 1.75rem; }
 .site-footer {
   position: fixed;
   left: 0;
@@ -116,17 +125,14 @@ nav a:last-child { margin-left: auto; }
   background: #333;
 }
 
-/* a cartridge: grey shell, clipped corner, label art, name, grip ridges */
+/* a cartridge: grey shell, clipped corner, label art, name, grip ridges. the shell is one svg laid out in
+   percentages, with the corner and pins pinned to its edges, so it fits whatever height the label ends up */
 .cart {
   flex: none;
   width: 7.5rem;
   padding: .5rem .5rem 1.4rem;
   border: 0;
-  background:
-    repeating-linear-gradient(90deg, #3a3a40 0 4px, transparent 4px 8px) center bottom .4rem / 60% .5rem no-repeat,
-    #5f574f;
-  clip-path: polygon(0 0, calc(100% - 1rem) 0, 100% 1rem, 100% 100%, 0 100%);
-  border-radius: 3px 0 3px 3px;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><mask id='m'><rect width='100%' height='100%' fill='white'/><svg x='100%' overflow='visible'><path d='M-16 0h16v16z'/></svg></mask><rect width='100%' height='100%' rx='3' fill='%235f574f' mask='url(%23m)'/><svg x='50%' y='100%' overflow='visible'><path stroke='%233a3a40' stroke-width='8' stroke-dasharray='4' d='M-34-10.4h68'/></svg></svg>");
   font: inherit;
   cursor: pointer;
   transition: transform .15s;
@@ -153,7 +159,10 @@ nav a:last-child { margin-left: auto; }
   border-top: 0;
 }
 .cart:hover, .cart:focus-visible { transform: translateY(-4px); outline: none; }
-.cart[aria-current] { background-color: #ff004d; transform: translateY(-4px); }
+.cart[aria-current] {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><mask id='m'><rect width='100%' height='100%' fill='white'/><svg x='100%' overflow='visible'><path d='M-16 0h16v16z'/></svg></mask><rect width='100%' height='100%' rx='3' fill='%23ff004d' mask='url(%23m)'/><svg x='50%' y='100%' overflow='visible'><path stroke='%233a3a40' stroke-width='8' stroke-dasharray='4' d='M-34-10.4h68'/></svg></svg>");  /* same shell in red */
+  transform: translateY(-4px);
+}
 
 /* info panel: just a sideways "Game Info" tab on the left until opened, then it widens to show the game's
    description and controls, with the tab sticking out past its right edge. it slides out over the

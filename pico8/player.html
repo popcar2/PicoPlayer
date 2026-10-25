@@ -3,12 +3,18 @@
 <title>PICO-8 Cartridge</title>
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <script type="text/javascript">
-	// shared player: the cart comes from ?cart=<url of a .p8.png> instead of being baked into pico8.js
-	var p8_cart_url = new URLSearchParams(location.search).get("cart");
-	var _cartname = [p8_cart_url.split("/").pop().replace(/\.png$/, "")];
+	// shared player: the cart comes from ?cart=<url of a .p8.png> instead of being baked into pico8.js.
+	// multi-cart games pass more carts as extra ?cart= params: pico8.js takes every cart's name in _cartname and
+	// their data back to back in _cartdat, so load("name.p8") finds them without going to the bbs
+	var p8_cart_urls = new URLSearchParams(location.search).getAll("cart");
+	var p8_cart_url = p8_cart_urls[0];
+	var _cartname = p8_cart_urls.map(function(url){ return url.split("/").pop().replace(/\.png$/, ""); });
 	var _cartdat = null;
 	var _cdpos = 0, iii = 0, ciii = 0;
-	var p8_cart_ready = p8_decode_cart(p8_cart_url).then(function(dat){ _cartdat = dat; });
+	var p8_cart_ready = Promise.all(p8_cart_urls.map(p8_decode_cart)).then(function(dats){
+		_cartdat = new Uint8Array(dats.length * 32768);
+		dats.forEach(function(dat, i){ _cartdat.set(dat, i * 32768); });
+	});
 
 	// multi-cart games load("#id") other carts from lexaloffle.com's bbs: first an info record from
 	// /bbs/cpost_lister3.php?nfo=1&...&lid=<id>, then the cart from /bbs/get_cart.php?...&lid=<id>.
