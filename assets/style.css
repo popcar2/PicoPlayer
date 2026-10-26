@@ -315,3 +315,11 @@ nav a:last-child { margin-left: auto; }
   #info.open #info-toggle { color: #fff1e8; }
   .byline { display: block; }  /* the title bar is hidden, so name the game and its creator in the panel */
 }
+
+/* touch screens held sideways: the game is a square in the middle with empty space above the touch controls,
+   so the nav floats over the top corners and the game takes its row too. only the links catch taps */
+@media (hover: none) and (orientation: landscape) {
+  nav { position: absolute; top: 0; left: 0; right: 0; z-index: 2; pointer-events: none; }  /* above the info panel */
+  nav a { pointer-events: auto; }
+  #info-body { padding-top: 3rem; }  /* clear the nav's row */
+}
