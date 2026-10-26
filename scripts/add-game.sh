@@ -11,6 +11,8 @@ dir=$(dirname "$(realpath "$0")")/../games/$slug
 mkdir -p "$dir"
 cd "$dir"
 cp "$cart" "$slug.p8.png"
+# lossless, so the cart data hidden in the pixels' low bits survives (saves about a quarter of the file)
+command -v oxipng >/dev/null && oxipng -q -o max --strip safe "$slug.p8.png"
 "$PICO8" "$cart" -export "-l thumbnail.png"
 cat > meta.html <<EOF
 <span data-cart="games/$slug/$slug.p8.png" data-title="$title"><b>$title</b> by <a href="https://www.lexaloffle.com/bbs/?uid=$uid" target="_blank" rel="noopener">$author</a></span>
