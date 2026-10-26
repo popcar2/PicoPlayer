@@ -255,13 +255,13 @@ nav a:last-child { margin-left: auto; }
 @media (hover: none) {
   .hint-hover, #meta { display: none; }
   .hint-touch { display: block; }
-  .stage { margin-bottom: 2.75rem; }  /* keep the game and its touch controls clear of the bar */
+  .stage { margin-bottom: 2rem; }  /* keep the game and its touch controls clear of the bar */
   .shelf, .shelf:hover, .shelf:focus-within {
     display: flex;
     flex-direction: column;
     height: 80dvh;
     padding-top: 0;
-    transform: translateY(calc(100% - 2.75rem));
+    transform: translateY(calc(100% - 2rem));
   }
   .shelf.open { transform: none; }
   /* dims the page behind the open sheet, and taps on it close the sheet */
@@ -269,7 +269,7 @@ nav a:last-child { margin-left: auto; }
   #shelf-toggle {
     display: block;
     flex: none;
-    height: 2.75rem;
+    height: 2rem;
     border: 0;
     background: #5f574f;
     color: #fff1e8;
