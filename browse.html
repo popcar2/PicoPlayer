@@ -232,7 +232,9 @@
       let byline = document.createElement("p")  // the title and creator, shown at the top of the panel on touch screens where #meta is hidden
       byline.className = "byline"
       byline.innerHTML = meta.innerHTML
-      document.querySelector("#info-body").replaceChildren(byline, ...(details ? [details] : []))
+      let body = document.querySelector("#info-body")
+      body.replaceChildren(byline, ...(details ? [details] : []))
+      body.scrollTop = 0  // start the new game's info from the top
       document.title = meta.dataset.title + " · TinyFun"
       let carts = meta.dataset.cart.split(" ").map((cart) => "cart=../" + cart).join("&")  // main cart first, then any extra carts it loads
       showLoading(screen)
