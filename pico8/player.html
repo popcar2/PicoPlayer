@@ -642,6 +642,7 @@ html { background: #000; }
 		if (webAudioAPI)
 		{
 			pico8_audio_context = new webAudioAPI;
+			p8_normalize_audio(pico8_audio_context);
 
 			// wake up iOS
 			if (pico8_audio_context)
@@ -658,6 +659,61 @@ html { background: #000; }
 				}
 			}
 		}
+	}
+
+	// carts are mixed at very different loudness, so even them out with a slowly moving volume knob between
+	// pico8.js and the speakers: no compression or limiting, just a gain that settles over a few seconds.
+	// pico8.js connects its output to <context>.destination, so that property is pointed at our input node.
+	// the analyser only gets sampled 10 times a second, so it costs next to nothing
+	var p8_target_rms = 0.12;              // about -18 dBFS
+	var p8_min_gain = 0.5, p8_max_gain = 4; // -6 dB .. +12 dB
+	function p8_normalize_audio(ctx)
+	{
+		try {
+			var input = ctx.createGain(); // unity, so the analyser hears the cart before our gain
+			var gain = ctx.createGain();
+			var analyser = ctx.createAnalyser();
+			analyser.fftSize = 4096; // ~90ms window, about one poll interval
+			input.connect(gain);
+			input.connect(analyser);
+			gain.connect(ctx.destination);
+			Object.defineProperty(ctx, "destination", {value: input});
+		}
+		catch(err) {
+			console.log("** p8_normalize_audio failed");
+			return;
+		}
+
+		var buf = new Float32Array(analyser.fftSize);
+		var mean_square = 0, peak = 0, frames = 0;
+		setInterval(function()
+		{
+			if (ctx.state != "running") return;
+			analyser.getFloatTimeDomainData(buf);
+
+			var sum = 0, max = 0;
+			for (var i = 0; i < buf.length; i++)
+			{
+				var s = buf[i];
+				sum += s * s;
+				if (s > max) max = s; else if (-s > max) max = -s;
+			}
+			var ms = sum / buf.length;
+
+			// silence and near silence (pause menu, sound off, gaps between sfx) don't count, or quiet moments would pump the volume up
+			if (ms < 1e-5) return; // -50 dBFS
+
+			// plain average for the first seconds so it settles fast, then a ~5 second moving average
+			frames++;
+			var k = Math.max(1 / frames, 0.02);
+			mean_square += (ms - mean_square) * k;
+			peak = Math.max(max, peak * 0.995); // peak hold that decays over ~20 seconds
+
+			// never boost a cart past full scale, so normalising can't introduce clipping
+			var target = Math.min(p8_target_rms / Math.sqrt(mean_square), 0.98 / peak);
+			target = Math.min(p8_max_gain, Math.max(p8_min_gain, target));
+			gain.gain.setTargetAtTime(target, ctx.currentTime, 1);
+		}, 100);
 	}
 
 	function p8_close_cart()
