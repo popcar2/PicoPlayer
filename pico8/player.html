@@ -310,8 +310,7 @@ html { background: #000; }
 			var w = window.innerWidth;
 			var h = window.innerHeight;
 
-			var r = Math.min(w,h) / 12;
-			if (r > 40) r = 40;
+			var r = p8_control_size(w,h);
 
 			// mouse (0.1.12d)
 
@@ -397,6 +396,17 @@ html { background: #000; }
 		}
 
 		p8_update_lit_buttons();
+	}
+
+	// size unit for the touch controls (panels are 6r wide), shared by touch handling and layout.
+	// in landscape the screen is a square of about the window's height, so the controls can grow
+	// into the space beside it instead of being sized off the short side
+	function p8_control_size(w, h)
+	{
+		var r = Math.min(Math.min(w,h) / 12, 40);
+		if (w > h)
+			r = Math.max(r, Math.min(h / 8, (w - h) / 12, 64));
+		return r;
 	}
 
 	function p8_update_lit_buttons()
@@ -565,9 +575,7 @@ html { background: #000; }
 			// same as touch event handling
 			var w = window.innerWidth;
 			var h = window.innerHeight;
-			var r = Math.min(w,h) / 12;
-
-			if (r > 40) r = 40;
+			var r = p8_control_size(w,h);
 
 			el = document.getElementById("controls_right_panel");
 			el.style.left = w-r*6;
