@@ -1,9 +1,10 @@
 #!/bin/sh
 # Add a PICO-8 cart to the site as games/<slug>/ (the cart, its thumbnail art and its metadata).
-# usage: scripts/add-game.sh path/to/cart.p8.png slug "Game Title" "Author" author-uid
+# usage: "bash scripts/add-game.sh" path/to/cart.p8.png slug "Game Title" "Author" author-uid
 # (author-uid is the number in the author's Lexaloffle profile link, lexaloffle.com/bbs/?uid=<number>)
 # Then add a cartridge button for it in browse.html, fill in the description in its meta.html,
-# and run scripts/build-thumbnails.sh to add its thumbnail to the shelf's sprite sheet.
+# and run "bash scripts/build-thumbnails.sh" to add its thumbnail to the shelf's sprite sheet.
+# Finally run "bash scripts/build-offline.sh" so the service worker downloads it for offline play.
 set -e
 PICO8=${PICO8:-pico8}
 cart=$(realpath "$1"); slug=$2; title=$3; author=$4; uid=$5
