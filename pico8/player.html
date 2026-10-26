@@ -1,5 +1,10 @@
 <html><head>
-<style>html { background: #000; }</style>
+<style>
+html { background: #000; }
+.p8_lit_panel { position:absolute; }
+.p8_lit { position:absolute; background:#fff; opacity:0; }
+.p8_lit.on { opacity:0.4; }
+</style>
 <title>PICO-8 Cartridge</title>
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <script type="text/javascript">
@@ -390,6 +395,23 @@
 			pico8_buttons[0] |= b;
 		
 		}
+
+		p8_update_lit_buttons();
+	}
+
+	function p8_update_lit_buttons()
+	{
+		var els = document.getElementsByClassName("p8_lit");
+		for (var i = 0; i < els.length; i++)
+			els[i].classList.toggle("on", (pico8_buttons[0] & els[i].dataset.mask) != 0);
+	}
+
+	function p8_match_box(el, src)
+	{
+		el.style.left = src.style.left;
+		el.style.top = src.style.top;
+		el.style.width = src.style.width;
+		el.style.height = src.style.height;
 	}
 
 	// p8_update_layout_hash is used to decide when to update layout (expensive especially when part of a heavy page)
@@ -554,6 +576,7 @@
 			el.style.height = r*7;
 			if (el.getAttribute("src") != p8_gfx_dat["controls_right_panel"]) // optimisation: avoid reload? (browser should handle though)
 				el.setAttribute("src", p8_gfx_dat["controls_right_panel"]);
+			p8_match_box(document.getElementById("controls_right_lit"), el);
 
 			el = document.getElementById("controls_left_panel");
 			el.style.left = 0;
@@ -562,6 +585,7 @@
 			el.style.height = r*6;
 			if (el.getAttribute("src") != p8_gfx_dat["controls_left_panel"]) // optimisation: avoid reload? (browser should handle though)
 				el.setAttribute("src", p8_gfx_dat["controls_left_panel"]);
+			p8_match_box(document.getElementById("controls_left_lit"), el);
 			
 			// scroll to cart (commented; was a failed attempt to prevent scroll-on-drag on some browsers)
 			// p8_frame.scrollIntoView(true);
@@ -1124,6 +1148,19 @@ canvas{
 
 					<img src="" id="controls_right_panel" style="position:absolute; opacity:0.5;">
 					<img src="" id="controls_left_panel" style="position:absolute;  opacity:0.5;">
+
+					<!-- white fills over each button while it's held; laid out in % of the panel images above -->
+					<div id="controls_right_lit" class="p8_lit_panel">
+						<div class="p8_lit" data-mask="16" style="left:51%; top:27.4%; width:34.7%; height:29.7%; border-radius:50%"></div>
+						<div class="p8_lit" data-mask="32" style="left:14%; top:56.9%; width:34.7%; height:29.7%; border-radius:50%"></div>
+						<div class="p8_lit" data-mask="64" style="left:58.3%; top:2.6%; width:20%; height:6%; border-radius:4px"></div>
+					</div>
+					<div id="controls_left_lit" class="p8_lit_panel">
+						<div class="p8_lit" data-mask="4" style="left:38.7%; top:16%; width:22.7%; height:22.7%"></div>
+						<div class="p8_lit" data-mask="8" style="left:38.7%; top:61.3%; width:22.7%; height:22.7%"></div>
+						<div class="p8_lit" data-mask="1" style="left:16%; top:38.7%; width:22.7%; height:22.7%"></div>
+						<div class="p8_lit" data-mask="2" style="left:61.3%; top:38.7%; width:22.7%; height:22.7%"></div>
+					</div>
 						
 			
 			</div> <!-- touch_controls_gfx -->
