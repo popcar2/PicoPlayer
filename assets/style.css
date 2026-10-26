@@ -130,8 +130,8 @@ nav a:last-child { margin-left: auto; }
   background: #333;
 }
 
-/* a cartridge: grey shell, clipped corner, label art, name, grip ridges. the shell is one svg laid out in
-   percentages, with the corner and pins pinned to its edges, so it fits whatever height the label ends up */
+/* a cartridge: grey shell, clipped corner, thumbnail art, name, grip ridges. the shell is one svg laid out in
+   percentages, with the corner and pins pinned to its edges, so it fits whatever height the thumbnail ends up */
 .cart {
   flex: none;
   width: 7.5rem;
@@ -142,12 +142,11 @@ nav a:last-child { margin-left: auto; }
   cursor: pointer;
   transition: transform .15s;
 }
-.cart img {
+.cart .thumbnail {  /* its tile of the thumbnail sprite sheet, set in thumbnails.css */
   display: block;
   width: 100%;
   aspect-ratio: 1;
   image-rendering: pixelated;
-  background: #000;
   border: 3px solid #000;
   border-bottom: 0;
 }
