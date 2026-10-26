@@ -662,7 +662,7 @@ html { background: #000; }
 	}
 
 	// carts are mixed at very different loudness, so even them out with a slowly moving volume knob between
-	// pico8.js and the speakers: no compression or limiting, just a gain that settles over a few seconds.
+	// pico8.js and the speakers: a gain that settles over a few seconds, followed by a limiter that only catches overs.
 	// pico8.js connects its output to <context>.destination, so that property is pointed at our input node.
 	// the analyser only gets sampled 10 times a second, so it costs next to nothing
 	var p8_target_rms = 0.12;              // about -18 dBFS
@@ -674,9 +674,17 @@ html { background: #000; }
 			var gain = ctx.createGain();
 			var analyser = ctx.createAnalyser();
 			analyser.fftSize = 4096; // ~90ms window, about one poll interval
+			// safety net for overs the slow gain can't react to in time (sudden loud sfx); sits above normal levels so it rarely engages
+			var limiter = ctx.createDynamicsCompressor();
+			limiter.threshold.value = -1; // dBFS
+			limiter.knee.value = 0;
+			limiter.ratio.value = 20;
+			limiter.attack.value = 0.003;
+			limiter.release.value = 0.15;
 			input.connect(gain);
 			input.connect(analyser);
-			gain.connect(ctx.destination);
+			gain.connect(limiter);
+			limiter.connect(ctx.destination);
 			Object.defineProperty(ctx, "destination", {value: input});
 		}
 		catch(err) {

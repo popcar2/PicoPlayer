@@ -7,5 +7,5 @@ I (well, Claude) made a few changes to make it more convenient for quickly brows
 * The startup animation has been removed to make switching games faster
 * The player is made separate from each game so it's cached and re-used by the browser when switching games
 * Multi-cart games are downloaded ahead of time and swapped without connecting to external servers
-* The audio is normalized (some games were way too quiet and some are way too loud)
+* The audio is normalized (some games were way too quiet and some are way too loud), with a limiter to stop sudden loud sounds from clipping
 * Mobile controls appear white when pressed
