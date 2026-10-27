@@ -3,6 +3,13 @@
 /* the pages hide <html> inline until this sheet arrives, so they never flash unstyled */
 html { visibility: visible; }
 
+/* browsers without cross-document view transitions (Firefox) fade out and back in instead, run by js/fade.js.
+   chromium crossfades both pages over .25s at once; these run one after the other, so they split that time */
+.fade-in body { animation: fade-in .15s ease; }
+.fade-out body { animation: fade-out .1s ease forwards; }  /* js/fade.js waits this long */
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+
 body {
   margin: 0;
   background: #000;

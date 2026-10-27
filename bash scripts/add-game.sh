@@ -2,7 +2,8 @@
 # Add a PICO-8 cart to the site as games/<slug>/ (the cart, its thumbnail art and its metadata).
 # usage: "bash scripts/add-game.sh" path/to/cart.p8.png slug "Game Title" "Author" author-uid
 # (author-uid is the number in the author's Lexaloffle profile link, lexaloffle.com/bbs/?uid=<number>)
-# Then add a cartridge button for it in browse.html, fill in the description in its meta.html,
+# It also adds the game's cartridge button to browse.html, keeping the shelf in alphabetical order (sort-shelf.sh).
+# Then fill in the description in its meta.html,
 # and run "bash scripts/build-thumbnails.sh" to add its thumbnail to the shelf's sprite sheet.
 # Finally run "bash scripts/build-offline.sh" so the service worker downloads it for offline play.
 set -e
@@ -21,3 +22,12 @@ cat > meta.html <<EOF
   <p>TODO: description</p>
 </div>
 EOF
+
+# add its cartridge to the shelf (unless it's already there), then put the shelf back in alphabetical order
+cd ../..
+if ! grep -q "fx-action=\"games/$slug/meta.html\"" browse.html; then
+  button="    <button class=\"cart\" fx-action=\"games/$slug/meta.html\" fx-target=\"#meta\" fx-swap=\"innerHTML\"><i class=\"thumbnail\"></i><span>$title</span></button>" \
+    awk '/^  <\/div><\/footer>/ { print ENVIRON["button"] } 1' browse.html > browse.html.tmp
+  mv browse.html.tmp browse.html
+fi
+sh "bash scripts/sort-shelf.sh"

@@ -4,18 +4,18 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-407f0c94"
+let version = "tinyfun-1c443af9"
 let files = {
-  "about.html": "3040704e",
+  "about.html": "91ccfb31",
   "assets/github.svg": "a5101cbd",
   "assets/icon-192.png": "84bd9c2b",
   "assets/icon-512.png": "c2d08021",
   "assets/icon.svg": "83240aa6",
   "assets/loading.svg": "7f0ff003",
-  "assets/style.css": "e152a832",
+  "assets/style.css": "34ead2de",
   "assets/thumbnails.css": "b41127d5",
   "assets/thumbnails.png": "ef6896b0",
-  "browse.html": "68b070da",
+  "browse.html": "6c6ed2df",
   "games/512px-under/512px-under.p8.png": "c1f2da24",
   "games/512px-under/meta.html": "95a8125d",
   "games/age-of-ants/age-of-ants.p8.png": "100905a7",
@@ -269,7 +269,8 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.png": "e00d57a6",
   "games/zoo-keeper/meta.html": "51d72bc1",
   "games/zoo-keeper/zoo-keeper.p8.png": "75b98698",
-  "index.html": "25c29265",
+  "index.html": "1047aead",
+  "js/fade.js": "a6ddc9a4",
   "js/fixi.js": "f513737c",
   "js/offline.js": "66666446",
   "manifest.webmanifest": "0e94d18d",
