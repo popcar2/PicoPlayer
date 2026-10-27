@@ -4,9 +4,9 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-1c443af9"
+let version = "tinyfun-a8a376dd"
 let files = {
-  "about.html": "91ccfb31",
+  "about.html": "95914e5a",
   "assets/github.svg": "a5101cbd",
   "assets/icon-192.png": "84bd9c2b",
   "assets/icon-512.png": "c2d08021",
@@ -15,7 +15,7 @@ let files = {
   "assets/style.css": "34ead2de",
   "assets/thumbnails.css": "b41127d5",
   "assets/thumbnails.png": "ef6896b0",
-  "browse.html": "6c6ed2df",
+  "browse.html": "def75963",
   "games/512px-under/512px-under.p8.png": "c1f2da24",
   "games/512px-under/meta.html": "95a8125d",
   "games/age-of-ants/age-of-ants.p8.png": "100905a7",
@@ -272,7 +272,7 @@ let files = {
   "index.html": "1047aead",
   "js/fade.js": "a6ddc9a4",
   "js/fixi.js": "f513737c",
-  "js/offline.js": "66666446",
+  "js/offline.js": "6a74254f",
   "manifest.webmanifest": "0e94d18d",
   "pico8/pico8.js": "c81bddbc",
   "pico8/player.html": "0747cc9e",
