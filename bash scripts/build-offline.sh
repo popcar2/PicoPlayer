@@ -7,7 +7,7 @@ cd "$(dirname "$(realpath "$0")")/.."
 list=$(
   {
     ls *.html js/*.js manifest.webmanifest assets/* pico8/*.html pico8/*.js
-    ls games/*/meta.html games/*/*.p8.png
+    ls games/*/meta.html games/*/*.p8.rom
   } | sort | xargs md5sum | awk '{ printf "  \"%s\": \"%s\",\n", $2, substr($1, 1, 8) }'
 )
 version=$(echo "$list" | md5sum | cut -c1-8)

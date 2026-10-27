@@ -231,7 +231,7 @@
     })
 
     // once fixi swaps in the game's metadata, move its description and controls into the info panel
-    // and boot its .p8.png (plus any extra carts, listed after it in data-cart) in the shared player (pico8.js stays cached)
+    // and boot its .p8.rom (plus any extra carts, listed after it in data-cart) in the shared player (pico8.js stays cached)
     document.addEventListener("fx:swapped", () => {
       let meta = document.querySelector("#meta [data-cart]")
       let screen = document.querySelector("#screen")

@@ -8,69 +8,89 @@ html { background: #000; }
 <title>PICO-8 Cartridge</title>
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <script type="text/javascript">
-	// shared player: the cart comes from ?cart=<url of a .p8.png> instead of being baked into pico8.js.
+	// shared player: the cart comes from ?cart=<url of a .p8.rom> instead of being baked into pico8.js.
 	// multi-cart games pass more carts as extra ?cart= params: pico8.js takes every cart's name in _cartname and
 	// their data back to back in _cartdat, so load("name.p8") finds them without going to the bbs
 	var p8_cart_urls = new URLSearchParams(location.search).getAll("cart");
 	var p8_cart_url = p8_cart_urls[0];
-	var _cartname = p8_cart_urls.map(function(url){ return url.split("/").pop().replace(/\.png$/, ""); });
+	var _cartname = p8_cart_urls.map(function(url){ return url.split("/").pop().replace(/\.rom$/, ""); });
 	var _cartdat = null;
 	var _cdpos = 0, iii = 0, ciii = 0;
-	var p8_cart_ready = Promise.all(p8_cart_urls.map(p8_decode_cart)).then(function(dats){
+	var p8_cart_ready = Promise.all(p8_cart_urls.map(p8_fetch_cart)).then(function(dats){
 		_cartdat = new Uint8Array(dats.length * 32768);
 		dats.forEach(function(dat, i){ _cartdat.set(dat, i * 32768); });
 	});
 
+	// a .p8.rom is the cart's 32k of memory as is
+	async function p8_fetch_cart(url)
+	{
+		return new Uint8Array(await (await fetch(url)).arrayBuffer());
+	}
+
 	// multi-cart games load("#id") other carts from lexaloffle.com's bbs: first an info record from
 	// /bbs/cpost_lister3.php?nfo=1&...&lid=<id>, then the cart from /bbs/get_cart.php?...&lid=<id>.
-	// answer the info request ourselves and serve the cart from <id>.p8.png next to the current cart instead
-	var p8_xhr_open = XMLHttpRequest.prototype.open;
+	// answer the info request ourselves and serve the cart from <id>.p8.rom next to the current cart instead.
+	// pico8.js only takes a .p8.png from the bbs, so send waits while the rom is wrapped in one
+	var p8_xhr_open = XMLHttpRequest.prototype.open, p8_xhr_send = XMLHttpRequest.prototype.send;
 	XMLHttpRequest.prototype.open = function(method, url)
 	{
+		this.p8_rom = null;
 		var bbs = /\/bbs\/(get_cart|cpost_lister3)\.php\?.*\blid=([^&]+)/.exec(url);
 		if (bbs)
 		{
 			var lid = decodeURIComponent(bbs[2]);
-			arguments[1] = bbs[1] == "get_cart" ? p8_cart_url.replace(/[^\/]*$/, "") + lid + ".p8.png" :
-				"data:text/plain," + encodeURIComponent("lid:"+lid+"\nmid:"+lid+"\ntitle:"+lid+"\nauthor:\nts:2000-01-01 00:00:00\ncatsub:1792\n");
+			if (bbs[1] == "get_cart") this.p8_rom = p8_cart_url.replace(/[^\/]*$/, "") + lid + ".p8.rom";
+			else arguments[1] = "data:text/plain," + encodeURIComponent("lid:"+lid+"\nmid:"+lid+"\ntitle:"+lid+"\nauthor:\nts:2000-01-01 00:00:00\ncatsub:1792\n");
 		}
+		this.p8_open_args = arguments;
 		return p8_xhr_open.apply(this, arguments);
 	};
-
-	// a .p8.png hides one byte per pixel in the low 2 bits of A,R,G,B.
-	// decoded by hand because canvas getImageData premultiplies alpha and mangles those bits
-	async function p8_decode_cart(url)
+	XMLHttpRequest.prototype.send = function()
 	{
-		var buf = new Uint8Array(await (await fetch(url)).arrayBuffer());
-		var view = new DataView(buf.buffer), pos = 8, w = 0, h = 0, idat = [];
-		while (pos < buf.length)
-		{
-			var len = view.getUint32(pos), type = String.fromCharCode.apply(null, buf.subarray(pos+4, pos+8));
-			if (type == "IHDR") { w = view.getUint32(pos+8); h = view.getUint32(pos+12); }
-			if (type == "IDAT") idat.push(buf.subarray(pos+8, pos+8+len));
-			pos += 12 + len;
-		}
-		var raw = new Uint8Array(await new Response(new Blob(idat).stream().pipeThrough(new DecompressionStream("deflate"))).arrayBuffer());
+		if (!this.p8_rom) return p8_xhr_send.apply(this, arguments);
+		var xhr = this, args = this.p8_open_args;
+		p8_fetch_cart(this.p8_rom).then(p8_rom_to_png).then(function(png){
+			args[1] = URL.createObjectURL(new Blob([png], {type: "image/png"}));
+			p8_xhr_open.apply(xhr, args);
+			p8_xhr_send.call(xhr);
+		});
+	};
 
-		// undo png row filters (8-bit rgba, so 4 bytes per pixel)
-		var stride = w*4, px = new Uint8Array(stride*h), i = 0;
-		for (var y = 0; y < h; y++)
-		{
-			var filter = raw[i++], row = y*stride;
-			for (var x = 0; x < stride; x++)
-			{
-				var a = x >= 4 ? px[row+x-4] : 0, b = y ? px[row+x-stride] : 0, c = (x >= 4 && y) ? px[row+x-stride-4] : 0;
-				var p = a+b-c, pa = Math.abs(p-a), pb = Math.abs(p-b), pc = Math.abs(p-c);
-				var pred = filter == 1 ? a : filter == 2 ? b : filter == 3 ? (a+b)>>1 :
-					filter == 4 ? (pa <= pb && pa <= pc ? a : pb <= pc ? b : c) : 0;
-				px[row+x] = raw[i++] + pred;
-			}
-		}
-
-		var dat = new Uint8Array(32768);
+	// a .p8.png hides one byte per pixel in the low 2 bits of A,R,G,B, then a version byte and the 4 byte build
+	// that saved it (which a .p8.rom doesn't keep, so these say the player's own 0.2.6)
+	async function p8_rom_to_png(rom)
+	{
+		var dat = new Uint8Array(32773);
+		dat.set(rom);
+		dat.set([0x2a, 0, 2, 6, 0x77], 32768);
+		var w = 160, h = 205, raw = new Uint8Array((w*4+1)*h);
 		for (var k = 0; k < dat.length; k++)
-			dat[k] = (px[k*4+3]&3)<<6 | (px[k*4]&3)<<4 | (px[k*4+1]&3)<<2 | (px[k*4+2]&3);
-		return dat;
+		{
+			var i = Math.floor(k/w)*(w*4+1) + 1 + k%w*4, b = dat[k];
+			raw[i] = b>>4&3; raw[i+1] = b>>2&3; raw[i+2] = b&3; raw[i+3] = 0xfc | b>>6;
+		}
+		var idat = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream("deflate"))).arrayBuffer());
+		var ihdr = new Uint8Array(13);
+		new DataView(ihdr.buffer).setUint32(0, w);
+		new DataView(ihdr.buffer).setUint32(4, h);
+		ihdr.set([8, 6, 0, 0, 0], 8);  // 8-bit rgba
+		return new Blob([new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), p8_png_chunk("IHDR", ihdr), p8_png_chunk("IDAT", idat), p8_png_chunk("IEND", new Uint8Array(0))]);
+	}
+
+	function p8_png_chunk(type, data)
+	{
+		var chunk = new Uint8Array(12 + data.length), view = new DataView(chunk.buffer);
+		view.setUint32(0, data.length);
+		for (var i = 0; i < 4; i++) chunk[4+i] = type.charCodeAt(i);
+		chunk.set(data, 8);
+		var crc = -1;
+		for (var i = 4; i < 8 + data.length; i++)
+		{
+			crc ^= chunk[i];
+			for (var j = 0; j < 8; j++) crc = crc>>>1 ^ (crc&1 ? 0xedb88320 : 0);
+		}
+		view.setUint32(8 + data.length, ~crc);
+		return chunk;
 	}
 
 	// Default shell for PICO-8 0.2.6 (includes @weeble's gamepad mod 1.0)
