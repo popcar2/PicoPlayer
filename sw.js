@@ -1,10 +1,10 @@
 // service worker: keeps every file the site loads so it works offline, and once the site is installed as an app
-// (js/offline.js asks for it) downloads the rest: every page, the player and every cart.
+// (js/offline_pwa.js asks for it) downloads the rest: every page, the player and every cart.
 // each file is cached under "<path>?v=<hash>", so an update only refetches the files whose hash changed
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-a8a376dd"
+let version = "tinyfun-8e67873b"
 let files = {
   "about.html": "95914e5a",
   "assets/github.svg": "a5101cbd",
@@ -15,7 +15,7 @@ let files = {
   "assets/style.css": "34ead2de",
   "assets/thumbnails.css": "b41127d5",
   "assets/thumbnails.png": "ef6896b0",
-  "browse.html": "def75963",
+  "browse.html": "f5abd525",
   "games/512px-under/512px-under.p8.png": "c1f2da24",
   "games/512px-under/meta.html": "95a8125d",
   "games/age-of-ants/age-of-ants.p8.png": "100905a7",
@@ -269,10 +269,10 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.png": "e00d57a6",
   "games/zoo-keeper/meta.html": "51d72bc1",
   "games/zoo-keeper/zoo-keeper.p8.png": "75b98698",
-  "index.html": "1047aead",
+  "index.html": "2483463e",
   "js/fade.js": "a6ddc9a4",
   "js/fixi.js": "f513737c",
-  "js/offline.js": "6a74254f",
+  "js/offline_pwa.js": "6a74254f",
   "manifest.webmanifest": "0e94d18d",
   "pico8/pico8.js": "c81bddbc",
   "pico8/player.html": "0747cc9e",
@@ -285,12 +285,14 @@ let scope = new URL(registration.scope)
 let keyFor = (path) => new URL(path + "?v=" + files[path], scope).href
 
 // the site path a request is for, or nothing if it isn't one of the listed files. queries are dropped
-// (browse.html?game=, player.html?cart=, the thumbnails' cache-buster) and the root means index.html
+// (browse?game=, player.html?cart=, the thumbnails' cache-buster), the root means index.html, and a page
+// linked without its extension (/browse, as GitHub Pages serves it) means its .html file
 function pathFor(url) {
   url = new URL(url)
   if (url.origin != scope.origin || !url.pathname.startsWith(scope.pathname)) return
   let path = decodeURIComponent(url.pathname.slice(scope.pathname.length)) || "index.html"
   if (files[path]) return path
+  if (files[path + ".html"]) return path + ".html"
 }
 
 // fetch a listed file into this version's cache, unless it's already there
