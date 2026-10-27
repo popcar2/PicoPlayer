@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Browse · TinyFun</title>
+  <title>Play · TinyFun</title>
   <meta name="color-scheme" content="dark">
   <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
   <script src="js/fade.js"></script>
@@ -16,7 +16,7 @@
   <script src="js/fixi.js"></script>
 </head>
 <body class="browse">
-  <nav><a href="./">TinyFun</a><a id="random" href="browse">Random Game</a></nav>
+  <nav><a href="./">TinyFun</a><a id="random" href="play">Random Game</a></nav>
   <div id="meta"></div>
 
   <div class="stage">
@@ -181,7 +181,7 @@
       let previous = document.querySelector(".cart[aria-current]")
       previous?.removeAttribute("aria-current")
       cart.setAttribute("aria-current", "true")
-      history.replaceState(null, "", "?game=" + cart.getAttribute("fx-action").split("/")[1])  // shareable link to this game
+      history.replaceState(null, "", "#" + cart.getAttribute("fx-action").split("/")[1])  // shareable link to this game
       if (touch.matches) setShelfOpen(false)
       else slideTo(cart.offsetLeft - (carousel.clientWidth - cart.offsetWidth) / 2, previous ? 450 : 0)
     })
@@ -262,13 +262,18 @@
       }, { once: true })
     }
 
-    // fixi wires up the buttons on DOMContentLoaded first, then we insert the linked cartridge (?game=<slug>) or a random one
+    // fixi wires up the buttons on DOMContentLoaded first, then we insert the linked cartridge (#<slug>) or a random one
     document.addEventListener("DOMContentLoaded", () => {
-      let game = new URLSearchParams(location.search).get("game")
+      let game = location.hash.slice(1)
       let carts = [...document.querySelectorAll(".cart")]
       let linked = carts.find((cart) => cart.getAttribute("fx-action") == `games/${game}/meta.html`)
       let cart = linked || carts[Math.floor(Math.random() * carts.length)]
       cart.click()
+    })
+
+    // a game's link opened while already on this page only changes the hash, so insert that cartridge ourselves
+    addEventListener("hashchange", () => {
+      document.querySelector(`.cart[fx-action="games/${location.hash.slice(1)}/meta.html"]`)?.click()
     })
   </script>
 </body>

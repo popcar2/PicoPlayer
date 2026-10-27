@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-8e67873b"
+let version = "tinyfun-eec95204"
 let files = {
   "about.html": "95914e5a",
   "assets/github.svg": "a5101cbd",
@@ -15,7 +15,6 @@ let files = {
   "assets/style.css": "34ead2de",
   "assets/thumbnails.css": "b41127d5",
   "assets/thumbnails.png": "ef6896b0",
-  "browse.html": "f5abd525",
   "games/512px-under/512px-under.p8.png": "c1f2da24",
   "games/512px-under/meta.html": "95a8125d",
   "games/age-of-ants/age-of-ants.p8.png": "100905a7",
@@ -269,13 +268,14 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.png": "e00d57a6",
   "games/zoo-keeper/meta.html": "51d72bc1",
   "games/zoo-keeper/zoo-keeper.p8.png": "75b98698",
-  "index.html": "2483463e",
+  "index.html": "8f80b5d0",
   "js/fade.js": "a6ddc9a4",
   "js/fixi.js": "f513737c",
   "js/offline_pwa.js": "6a74254f",
   "manifest.webmanifest": "0e94d18d",
   "pico8/pico8.js": "c81bddbc",
   "pico8/player.html": "0747cc9e",
+  "play.html": "91b52dc5",
 }
 // precache:end
 
@@ -285,8 +285,8 @@ let scope = new URL(registration.scope)
 let keyFor = (path) => new URL(path + "?v=" + files[path], scope).href
 
 // the site path a request is for, or nothing if it isn't one of the listed files. queries are dropped
-// (browse?game=, player.html?cart=, the thumbnails' cache-buster), the root means index.html, and a page
-// linked without its extension (/browse, as GitHub Pages serves it) means its .html file
+// (player.html?cart=, the thumbnails' cache-buster), the root means index.html, and a page
+// linked without its extension (/play, as GitHub Pages serves it) means its .html file
 function pathFor(url) {
   url = new URL(url)
   if (url.origin != scope.origin || !url.pathname.startsWith(scope.pathname)) return
@@ -343,7 +343,7 @@ self.addEventListener("fetch", (e) => {
     if (path) {
       let cached = await cache.match(keyFor(path))
       if (cached) return cached
-      let response = await fetch(e.request)
+      let response = await fetch(new URL(path, scope))  // the file itself, so /play works even where the server doesn't add .html
       if (response.ok) cache.put(keyFor(path), response.clone())
       return response
     }

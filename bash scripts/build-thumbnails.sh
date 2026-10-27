@@ -1,5 +1,5 @@
 #!/bin/sh
-# Pack every games/<slug>/thumbnail.png into one sprite sheet (assets/thumbnails.png), so the browse shelf loads one image
+# Pack every games/<slug>/thumbnail.png into one sprite sheet (assets/thumbnails.png), so the shelf loads one image
 # instead of one per game, and write assets/thumbnails.css, which points each cartridge at its tile by slug.
 # Run it again whenever a game is added or removed. Needs ImageMagick, and uses oxipng to shrink the sheet if present.
 set -e
