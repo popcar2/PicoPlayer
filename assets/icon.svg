@@ -1,12 +1,12 @@
 <!-- app icon: the loading spinner's ring of squares in the PICO-8 logo's colours, inside the maskable safe zone -->
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="-12 -12 96 96">
-  <rect x="-12" y="-12" width="96" height="96" fill="#000"/>
-  <rect x="30" y="0" width="12" height="12" fill="#ff004d"/>
-  <rect x="45" y="15" width="12" height="12" fill="#ffa300"/>
-  <rect x="60" y="30" width="12" height="12" fill="#ffec27"/>
-  <rect x="45" y="45" width="12" height="12" fill="#00e436"/>
-  <rect x="30" y="60" width="12" height="12" fill="#29adff"/>
-  <rect x="15" y="45" width="12" height="12" fill="#83769c"/>
-  <rect x="0" y="30" width="12" height="12" fill="#ff77a8"/>
-  <rect x="15" y="15" width="12" height="12" fill="#ffccaa"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="-10.5 -10.5 96 96">
+  <rect x="-10.5" y="-10.5" width="96" height="96" fill="#000"/>
+  <rect x="30" y="0" width="15" height="15" fill="#FF004D"/>
+  <rect x="45" y="15" width="15" height="15" fill="#FFCCAA"/>
+  <rect x="60" y="30" width="15" height="15" fill="#FF77A8"/>
+  <rect x="45" y="45" width="15" height="15" fill="#1D2B53"/>
+  <rect x="30" y="60" width="15" height="15" fill="#29ADFF"/>
+  <rect x="15" y="45" width="15" height="15" fill="#00E436"/>
+  <rect x="0" y="30" width="15" height="15" fill="#FFEC27"/>
+  <rect x="15" y="15" width="15" height="15" fill="#FFA300"/>
 </svg>
