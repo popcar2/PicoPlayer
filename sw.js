@@ -4,15 +4,15 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-1a327e09"
+let version = "tinyfun-0fbde662"
 let files = {
-  "about.html": "95914e5a",
+  "about.html": "9bfd2449",
   "assets/github.svg": "a5101cbd",
   "assets/icon-192.png": "84bd9c2b",
   "assets/icon-512.png": "c2d08021",
   "assets/icon.svg": "83240aa6",
   "assets/loading.svg": "7f0ff003",
-  "assets/style.css": "34ead2de",
+  "assets/style.css": "e152a832",
   "assets/thumbnails.css": "75d32dad",
   "assets/thumbnails.webp": "bc1e776e",
   "games/512px-under/512px-under.p8.rom": "e83ab144",
@@ -268,14 +268,14 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.rom": "77608b49",
   "games/zoo-keeper/meta.html": "786e0a4d",
   "games/zoo-keeper/zoo-keeper.p8.rom": "77d214da",
-  "index.html": "8f80b5d0",
-  "js/fade.js": "a6ddc9a4",
+  "index.html": "6e7f26f1",
   "js/fixi.js": "f513737c",
   "js/offline_pwa.js": "6a74254f",
+  "js/transitions.js": "f810f4a0",
   "manifest.webmanifest": "0e94d18d",
   "pico8/pico8.js": "c81bddbc",
   "pico8/player.html": "4a6d10a9",
-  "play.html": "1fa65f7d",
+  "play.html": "148a6238",
 }
 // precache:end
 

@@ -6,7 +6,7 @@
   <title>Play · TinyFun</title>
   <meta name="color-scheme" content="dark">
   <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
-  <script src="js/fade.js"></script>
+  <script src="js/transitions.js"></script>
   <link rel="stylesheet" href="assets/style.css">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg">
@@ -136,6 +136,12 @@
   </div></footer>
 
   <script>
+  // a block, and listeners on document and window that go away on page:leave, since in Firefox js/transitions.js
+  // swaps this page in and out without reloading, running this script again on each visit
+  {
+    let leaving = new AbortController(), signal = leaving.signal
+    document.addEventListener("page:leave", () => leaving.abort(), { signal })
+
     let carousel = document.querySelector(".carousel")
     let shelf = document.querySelector(".shelf")
     let shelfToggle = document.querySelector("#shelf-toggle")
@@ -184,7 +190,7 @@
       history.replaceState(null, "", "#" + cart.getAttribute("fx-action").split("/")[1])  // shareable link to this game
       if (touch.matches) setShelfOpen(false)
       else slideTo(cart.offsetLeft - (carousel.clientWidth - cart.offsetWidth) / 2, previous ? 450 : 0)
-    })
+    }, { signal })
 
     // on touch screens the Games bar opens the shelf as a sheet that scrolls vertically, starting at the current cartridge.
     // tapping the dimmed backdrop (the shelf's ::before) or picking a cartridge closes it
@@ -214,7 +220,7 @@
     }, { passive: false })
 
     // no view transitions: they cover the page with a snapshot, freezing the slide and dropping the shelf's hover
-    document.addEventListener("fx:config", (e) => e.detail.cfg.transition = false)
+    document.addEventListener("fx:config", (e) => e.detail.cfg.transition = false, { signal })
 
     // the info panel opens and closes from its tab, and remembers which way it was left
     let info = document.querySelector("#info")
@@ -247,7 +253,7 @@
       showLoading(screen)
       screen.contentWindow.location.replace("pico8/player.html?" + carts)
       screen.focus()
-    })
+    }, { signal })
 
     // the spinner covers the player from picking a game until the new player draws its first frame.
     // it waits for the iframe's load first, since until then contentWindow is still the old game's
@@ -269,12 +275,13 @@
       let linked = carts.find((cart) => cart.getAttribute("fx-action") == `games/${game}/meta.html`)
       let cart = linked || carts[Math.floor(Math.random() * carts.length)]
       cart.click()
-    })
+    }, { signal })
 
     // a game's link opened while already on this page only changes the hash, so insert that cartridge ourselves
     addEventListener("hashchange", () => {
       document.querySelector(`.cart[fx-action="games/${location.hash.slice(1)}/meta.html"]`)?.click()
-    })
+    }, { signal })
+  }
   </script>
 </body>
 </html>
