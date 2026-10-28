@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-bf02c9b1"
+let version = "tinyfun-a5c48e49"
 let files = {
   "about.html": "4828a836",
   "assets/github.svg": "a5101cbd",
@@ -13,8 +13,8 @@ let files = {
   "assets/icon.svg": "83240aa6",
   "assets/loading.svg": "7f0ff003",
   "assets/style.css": "8fb2179f",
-  "assets/thumbnails.css": "75d32dad",
-  "assets/thumbnails.webp": "bc1e776e",
+  "assets/thumbnails.css": "52f3fcaa",
+  "assets/thumbnails.webp": "7d134eb2",
   "games/512px-under/512px-under.p8.rom": "990df63b",
   "games/512px-under/meta.html": "96c56838",
   "games/age-of-ants/age-of-ants.p8.rom": "cd3d66b4",
@@ -153,21 +153,14 @@ let files = {
   "games/pico-dino/pico-dino.p8.rom": "b9532acf",
   "games/pico-froggo/meta.html": "e9bd7ba0",
   "games/pico-froggo/pico-froggo.p8.rom": "0c7eb96a",
-  "games/pico-valley/jotpkdemade-3.p8.rom": "b0863c36",
-  "games/pico-valley/meta.html": "c7c865de",
-  "games/pico-valley/pico-valley.p8.rom": "cff7c0be",
   "games/pico-world-race/meta.html": "1ef88d67",
   "games/pico-world-race/pico-world-race.p8.rom": "0ae14f96",
   "games/pico-zombie-garden/meta.html": "6f85c4b8",
   "games/pico-zombie-garden/pico-zombie-garden.p8.rom": "228844f0",
-  "games/picowings/meta.html": "3d09d0e0",
-  "games/picowings/picowings.p8.rom": "73375f50",
   "games/pigments/meta.html": "a6a80a72",
   "games/pigments/pigments.p8.rom": "0f05dabf",
   "games/pizza-panda/meta.html": "9fd6bf86",
   "games/pizza-panda/pizza-panda.p8.rom": "7e898fd2",
-  "games/polder/meta.html": "e0f65ea5",
-  "games/polder/polder.p8.rom": "2598b919",
   "games/pole-station/meta.html": "78489110",
   "games/pole-station/pole-station.p8.rom": "9856d055",
   "games/pony-9000/meta.html": "df621bee",
@@ -275,8 +268,8 @@ let files = {
   "manifest.webmanifest": "2ab6d2a3",
   "pico8/pico8.js": "c81bddbc",
   "pico8/player.html": "4a6d10a9",
-  "play.html": "148a6238",
-  "technical_deets.html": "8132de99",
+  "play.html": "e4d78941",
+  "technical_deets.html": "347df8c1",
 }
 // precache:end
 
