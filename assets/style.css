@@ -24,7 +24,7 @@ nav a:first-child { color: #fff1e8; font-weight: bold; }
 #meta {
   position: absolute;
   top: 0;
-  left: calc(50% + 1rem);  /* the player starts 2rem in, after the info tab */
+  left: calc(50% + 1.25rem);  /* the player starts 2.5rem in, after the info tab */
   transform: translateX(-50%);
   max-width: calc(100% - 20rem);
   padding: .75rem 0;
@@ -98,7 +98,7 @@ nav a:last-child { margin-left: auto; }
 }
 
 .stage { position: relative; display: flex; flex: 1; min-height: 0; margin-bottom: .75rem; }
-#player { flex: 1; min-width: 0; margin-left: 2rem; }  /* room for the closed info tab, which overlays it */
+#player { flex: 1; min-width: 0; margin-left: 2.5rem; }  /* room for the closed info tab, which overlays it */
 #player iframe { display: block; width: 100%; height: 100%; border: 0; }
 
 /* loading spinner, covering the player while a game boots */
@@ -191,7 +191,7 @@ nav a:last-child { margin-left: auto; }
   bottom: 0;
   left: 0;
   z-index: 1;  /* over the player */
-  width: 2rem;
+  width: 2.5rem;
   border-right: 2px solid transparent;
   /* the grey snaps on when opening and only snaps off once it has slid shut, so it never fades */
   transition: width .2s ease-out, background-color 0s .2s, border-color 0s .2s;
@@ -206,14 +206,15 @@ nav a:last-child { margin-left: auto; }
   position: absolute;
   top: 50%;
   right: .25rem;
-  padding: .75rem 0;
-  width: 1.75rem;  /* reaches the left edge of the closed panel */
+  padding: 1rem 0;
+  width: 2.25rem;  /* reaches the left edge of the closed panel */
+  height: 8rem;  /* fixed, since the text's length would set it in vertical writing */
   border: 0;
   border-radius: 3px 0 0 3px;  /* flat on the left once rotated */
   background: #5f574f;
   color: #fff1e8;
   font: inherit;
-  font-size: .9rem;
+  font-size: 1rem;  /* same as the TinyFun logo */
   font-weight: bold;
   white-space: nowrap;
   writing-mode: vertical-rl;
@@ -221,7 +222,7 @@ nav a:last-child { margin-left: auto; }
   cursor: pointer;
   transition: right .2s ease-out;
 }
-#info.open #info-toggle { right: calc(-1.75rem - 2px); }  /* just outside the panel and its border */
+#info.open #info-toggle { right: calc(-2.25rem - 2px); }  /* just outside the panel and its border */
 #info-toggle:hover, #info-toggle:focus-visible, #info.open #info-toggle { background: #ff004d; outline: none; }
 #info-body {
   height: 100%;
@@ -305,6 +306,7 @@ nav a:last-child { margin-left: auto; }
     top: 0;
     right: 0;
     width: auto;
+    height: auto;
     padding: .75rem 1rem;
     border-radius: 0;
     background: none;

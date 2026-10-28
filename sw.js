@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-d3275309"
+let version = "tinyfun-92e5cdca"
 let files = {
   "about.html": "4828a836",
   "assets/github.svg": "a5101cbd",
@@ -12,9 +12,9 @@ let files = {
   "assets/icon-512.png": "c2d08021",
   "assets/icon.svg": "83240aa6",
   "assets/loading.svg": "7f0ff003",
-  "assets/style.css": "acac3498",
-  "assets/thumbnails.css": "52f3fcaa",
-  "assets/thumbnails.webp": "7d134eb2",
+  "assets/style.css": "aa671cfb",
+  "assets/thumbnails.css": "aaac92f9",
+  "assets/thumbnails.webp": "1d5d41c6",
   "games/512px-under/512px-under.p8.rom": "990df63b",
   "games/512px-under/meta.html": "96c56838",
   "games/age-of-ants/age-of-ants.p8.rom": "cd3d66b4",
@@ -200,8 +200,6 @@ let files = {
   "games/snekburd/snekburd_extra.p8.rom": "e6c543de",
   "games/sokoblox/meta.html": "05f05c62",
   "games/sokoblox/sokoblox.p8.rom": "3eb78614",
-  "games/sphero/meta.html": "e7fe580a",
-  "games/sphero/sphero.p8.rom": "037e2cd4",
   "games/sphongos/meta.html": "6276bcb9",
   "games/sphongos/sphongos.p8.rom": "ceb3de9d",
   "games/star-patrol/meta.html": "70d2720d",
@@ -218,10 +216,6 @@ let files = {
   "games/tad/tad.p8.rom": "55235203",
   "games/terra-nova-pinball/meta.html": "de065d91",
   "games/terra-nova-pinball/terra-nova-pinball.p8.rom": "e3c0ef21",
-  "games/terra/meta.html": "a93479fb",
-  "games/terra/terra.p8.rom": "4ccf10c5",
-  "games/terra/terra_1cart.p8.rom": "4ccf10c5",
-  "games/terra/terra_char_edit.p8.rom": "38113f19",
   "games/the-lost-night/meta.html": "af661c20",
   "games/the-lost-night/the-lost-night.p8.rom": "17c6c956",
   "games/time-for-lunch/meta.html": "160117a9",
@@ -271,7 +265,7 @@ let files = {
   "manifest.webmanifest": "2ab6d2a3",
   "pico8/pico8.js": "70cb21bf",
   "pico8/player.html": "3b37d72d",
-  "play.html": "dea461df",
+  "play.html": "67641f7c",
   "technical_deets.html": "6b4bab03",
 }
 // precache:end

@@ -2,7 +2,7 @@
 .cart { container-type: inline-size; }  /* so the thumbnail can measure the cartridge (cqw) */
 .cart .thumbnail {
   --s: calc((100cqw - 6px) / 128);  /* the thumbnail's width (the cartridge's content minus the thumbnail's border) per art pixel */
-  background: #000 url("thumbnails.webp?v=7d134eb2") no-repeat;
+  background: #000 url("thumbnails.webp?v=1d5d41c6") no-repeat;
   background-size: calc(1300 * var(--s)) auto;
   background-position: calc(var(--x) * var(--s) * -1) calc(var(--y) * var(--s) * -1);
 }
@@ -80,28 +80,26 @@
 .cart[fx-action="games/sneaky-stealy/meta.html"] .thumbnail { --x: 131; --y: 911; }
 .cart[fx-action="games/snekburd/meta.html"] .thumbnail { --x: 261; --y: 911; }
 .cart[fx-action="games/sokoblox/meta.html"] .thumbnail { --x: 391; --y: 911; }
-.cart[fx-action="games/sphero/meta.html"] .thumbnail { --x: 521; --y: 911; }
-.cart[fx-action="games/sphongos/meta.html"] .thumbnail { --x: 651; --y: 911; }
-.cart[fx-action="games/star-patrol/meta.html"] .thumbnail { --x: 781; --y: 911; }
-.cart[fx-action="games/subsurface/meta.html"] .thumbnail { --x: 911; --y: 911; }
-.cart[fx-action="games/suika/meta.html"] .thumbnail { --x: 1041; --y: 911; }
-.cart[fx-action="games/super-disc-box/meta.html"] .thumbnail { --x: 1171; --y: 911; }
-.cart[fx-action="games/super-world-of-goo/meta.html"] .thumbnail { --x: 1; --y: 1041; }
-.cart[fx-action="games/tad/meta.html"] .thumbnail { --x: 131; --y: 1041; }
-.cart[fx-action="games/terra-nova-pinball/meta.html"] .thumbnail { --x: 261; --y: 1041; }
-.cart[fx-action="games/terra/meta.html"] .thumbnail { --x: 391; --y: 1041; }
-.cart[fx-action="games/the-lost-night/meta.html"] .thumbnail { --x: 521; --y: 1041; }
-.cart[fx-action="games/time-for-lunch/meta.html"] .thumbnail { --x: 651; --y: 1041; }
-.cart[fx-action="games/tiny-hawk/meta.html"] .thumbnail { --x: 781; --y: 1041; }
-.cart[fx-action="games/to-a-starling/meta.html"] .thumbnail { --x: 911; --y: 1041; }
-.cart[fx-action="games/trichromat/meta.html"] .thumbnail { --x: 1041; --y: 1041; }
-.cart[fx-action="games/tutankham/meta.html"] .thumbnail { --x: 1171; --y: 1041; }
-.cart[fx-action="games/undune-2/meta.html"] .thumbnail { --x: 1; --y: 1171; }
-.cart[fx-action="games/up-and-away/meta.html"] .thumbnail { --x: 131; --y: 1171; }
-.cart[fx-action="games/vacay-volley/meta.html"] .thumbnail { --x: 261; --y: 1171; }
-.cart[fx-action="games/walker/meta.html"] .thumbnail { --x: 391; --y: 1171; }
-.cart[fx-action="games/whiplash-taxi/meta.html"] .thumbnail { --x: 521; --y: 1171; }
-.cart[fx-action="games/willo/meta.html"] .thumbnail { --x: 651; --y: 1171; }
-.cart[fx-action="games/willthemangetfrog/meta.html"] .thumbnail { --x: 781; --y: 1171; }
-.cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 911; --y: 1171; }
-.cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 1041; --y: 1171; }
+.cart[fx-action="games/sphongos/meta.html"] .thumbnail { --x: 521; --y: 911; }
+.cart[fx-action="games/star-patrol/meta.html"] .thumbnail { --x: 651; --y: 911; }
+.cart[fx-action="games/subsurface/meta.html"] .thumbnail { --x: 781; --y: 911; }
+.cart[fx-action="games/suika/meta.html"] .thumbnail { --x: 911; --y: 911; }
+.cart[fx-action="games/super-disc-box/meta.html"] .thumbnail { --x: 1041; --y: 911; }
+.cart[fx-action="games/super-world-of-goo/meta.html"] .thumbnail { --x: 1171; --y: 911; }
+.cart[fx-action="games/tad/meta.html"] .thumbnail { --x: 1; --y: 1041; }
+.cart[fx-action="games/terra-nova-pinball/meta.html"] .thumbnail { --x: 131; --y: 1041; }
+.cart[fx-action="games/the-lost-night/meta.html"] .thumbnail { --x: 261; --y: 1041; }
+.cart[fx-action="games/time-for-lunch/meta.html"] .thumbnail { --x: 391; --y: 1041; }
+.cart[fx-action="games/tiny-hawk/meta.html"] .thumbnail { --x: 521; --y: 1041; }
+.cart[fx-action="games/to-a-starling/meta.html"] .thumbnail { --x: 651; --y: 1041; }
+.cart[fx-action="games/trichromat/meta.html"] .thumbnail { --x: 781; --y: 1041; }
+.cart[fx-action="games/tutankham/meta.html"] .thumbnail { --x: 911; --y: 1041; }
+.cart[fx-action="games/undune-2/meta.html"] .thumbnail { --x: 1041; --y: 1041; }
+.cart[fx-action="games/up-and-away/meta.html"] .thumbnail { --x: 1171; --y: 1041; }
+.cart[fx-action="games/vacay-volley/meta.html"] .thumbnail { --x: 1; --y: 1171; }
+.cart[fx-action="games/walker/meta.html"] .thumbnail { --x: 131; --y: 1171; }
+.cart[fx-action="games/whiplash-taxi/meta.html"] .thumbnail { --x: 261; --y: 1171; }
+.cart[fx-action="games/willo/meta.html"] .thumbnail { --x: 391; --y: 1171; }
+.cart[fx-action="games/willthemangetfrog/meta.html"] .thumbnail { --x: 521; --y: 1171; }
+.cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 651; --y: 1171; }
+.cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 781; --y: 1171; }
