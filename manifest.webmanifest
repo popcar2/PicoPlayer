@@ -1,7 +1,7 @@
 {
   "name": "TinyFun",
   "short_name": "TinyFun",
-  "description": "A tiny, minimalist website to quickly play curated PICO-8 games.",
+  "description": "A tiny, minimalist website for playing curated PICO-8 games.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

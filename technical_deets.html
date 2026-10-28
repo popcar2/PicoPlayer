@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Technical Details - TinyFun</title>
+  <meta name="color-scheme" content="dark">
+  <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
+  <script src="js/transitions.js"></script>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <meta name="theme-color" content="#000">
+</head>
+<body class="page">
+  <a class="github" href="https://github.com/popcar2/TinyFun"><img src="assets/github.svg" alt="Source code on GitHub"></a>
+  <main class="home about">
+    <h1>Technical Details</h1>
+    <p>TinyFun uses <a href="https://fixiproject.org/fixi.html">Fixi</a>, which is kinda like a tiny ~3KB version of HTMX. This keeps the website super simple, fast, and <b>tiny</b>.</p>
+    <p>The PICO-8 player is separated from each game and cached, so it only downloads the ~20KB Pico 8 rom per game (with the exception of the rare multi-cart games). The games also get hotswapped into the same iframe, so you don't have to reload the page like other webgame sites. I've made a couple quality-of-life changes to the player, such as adding an audio normalizer and allowing mobile controls to work properly when playing on a horizontal phone, <a href="https://github.com/popcar2/TinyFun/tree/main/pico8">among other things</a>.</p>
+    <p>Some games also used multiple cartridges that get downloaded from BBS as they're needed; these are all downloaded ahead of time and served from TinyFun, so the games don't make any external connections.</p>
+    <p>Making the website tiny was a big goal. All the game thumbnails are combined into one optimized WEBP sprite sheet. The rest of the website gets GZIP'd by GitHub pages. The PICO 8 games are minified (safely) using <a href="https://github.com/thisismypassport/shrinko8">Shrinko8</a>, which brings down the total rom size by ~20%. You can download the whole website with ALL included games in only around 3MB of mobile data!</p>
+    <p>TinyFun is also a PWA that can be installed. Running it the first time downloads everything it needs, allowing you to use the app and play around 100% offline!</p>
+    <sub>Full disclosure: This project is AI-assisted using Claude. The general architecture and website design were made by myself, with lots of extensive testing/reviewing. I also played and curated the list of games myself.</sub>
+    <a class="play" href="./">Back Home</a>
+  </main>
+</body>
+</html>

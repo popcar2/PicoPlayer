@@ -5,11 +5,12 @@
 # (author-uid is the number in the author's Lexaloffle profile link, lexaloffle.com/bbs/?uid=<number>)
 # Extra carts are for multi-cart games: each becomes <its name>.p8.rom next to the main cart, which is where the
 # player looks when the game load("#<name>")s it.
+# The carts are then minified (minify-roms.sh).
 # It also adds the game's cartridge button to play.html, keeping the shelf in alphabetical order (sort-shelf.sh).
 # Then fill in the description in its meta.html,
 # and run "bash scripts/build-thumbnails.sh" to add its thumbnail to the shelf's sprite sheet.
 # Finally run "bash scripts/build-offline.sh" so the service worker downloads it for offline play.
-# Needs ImageMagick and python3.
+# Needs ImageMagick, python3 and git (for shrinko8, see minify-roms.sh).
 set -e
 slug=$2; title=$3; author=$4; uid=$5
 dir=$(dirname "$(realpath "$0")")/../games/$slug
@@ -60,6 +61,7 @@ for extra in "$@"; do
   png=$(fetch "$extra")
   rom "$png" "$dir/$(basename "$png" .png).rom"
 done
+sh "$(dirname "$(realpath "$0")")/minify-roms.sh" "$dir"/*.p8.rom
 
 cd "$dir"
 cat > meta.html <<EOF

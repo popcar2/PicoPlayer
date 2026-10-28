@@ -75,11 +75,8 @@ nav a:last-child { margin-left: auto; }
 }
 .github:hover, .github:focus-visible { opacity: 1; }
 .github img { display: block; width: 1.75rem; height: 1.75rem; }
+/* in the page's flex column, so it sits at the bottom but scrolls below the content when space runs out */
 .site-footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
   padding: 1rem;
   font-size: .875rem;
   text-align: center;
