@@ -11,20 +11,45 @@ html { background: #000; }
 	// shared player: the cart comes from ?cart=<url of a .p8.rom> instead of being baked into pico8.js.
 	// multi-cart games pass more carts as extra ?cart= params: pico8.js takes every cart's name in _cartname and
 	// their data back to back in _cartdat, so load("name.p8") finds them without going to the bbs
-	var p8_cart_urls = new URLSearchParams(location.search).getAll("cart");
-	var p8_cart_url = p8_cart_urls[0];
-	var _cartname = p8_cart_urls.map(function(url){ return url.split("/").pop().replace(/\.rom$/, ""); });
-	var _cartdat = null;
+	var p8_cart_url = null, _cartname = null, _cartdat = null;
 	var _cdpos = 0, iii = 0, ciii = 0;
-	var p8_cart_ready = Promise.all(p8_cart_urls.map(p8_fetch_cart)).then(function(dats){
-		_cartdat = new Uint8Array(dats.length * 32768);
-		dats.forEach(function(dat, i){ _cartdat.set(dat, i * 32768); });
-	});
+	var p8_cart_ready = p8_fetch_carts(new URLSearchParams(location.search).getAll("cart"));
 
 	// a .p8.rom is the cart's 32k of memory as is
 	async function p8_fetch_cart(url)
 	{
 		return new Uint8Array(await (await fetch(url)).arrayBuffer());
+	}
+
+	// resolves to a function that puts the carts where pico8.js reads them when it (re)boots
+	async function p8_fetch_carts(urls)
+	{
+		var dats = await Promise.all(urls.map(p8_fetch_cart));
+		return function()
+		{
+			p8_cart_url = urls[0];
+			_cartname = urls.map(function(url){ return url.split("/").pop().replace(/\.rom$/, ""); });
+			_cartdat = new Uint8Array(dats.length * 32768);
+			dats.forEach(function(dat, i){ _cartdat.set(dat, i * 32768); });
+			_cdpos = 0;
+		};
+	}
+
+	// swap to other carts (urls as for ?cart=) without reloading the page, like lexaloffle.com's player does:
+	// codo_command 6 reboots the running machine, which reads the embedded carts again. resolves once the new
+	// carts are booted (pico8_state.frame_number counts their frames from then), or once a later call takes over
+	var p8_loads = 0;
+	async function p8_load_cart(urls)
+	{
+		var load = ++p8_loads;
+		var set_carts = await p8_fetch_carts(urls);
+		if (load != p8_loads) return;
+		set_carts();
+		history.replaceState(null, "", "?" + urls.map(function(url){ return "cart=" + url; }).join("&"));  // a reload keeps the new carts
+		codo_command = 6;
+		while (codo_command == 6) await new Promise(requestAnimationFrame);  // pico8.js takes the command on its next frame
+		await new Promise(requestAnimationFrame);
+		if (load == p8_loads) pico8_state.frame_number = 0;
 	}
 
 	// multi-cart games load("#id") other carts from lexaloffle.com's bbs: first an info record from
@@ -811,10 +836,11 @@ html { background: #000; }
 
 		}
 		e.type = "application/javascript";
-		e.src = "pico8.js?v=2"; // bump when pico8.js is patched so browsers drop the cached copy
+		e.src = "pico8.js?v=3"; // bump when pico8.js is patched so browsers drop the cached copy
 		e.id = "e_script";
 		
-		p8_cart_ready.then(function(){ document.body.appendChild(e); }); // load and run once the cart is decoded
+		// load and run once the cart is decoded (unless p8_load_cart already put other carts in)
+		p8_cart_ready.then(function(set_carts){ if (!p8_loads) set_carts(); document.body.appendChild(e); });
 
 		// hide start button and show canvas / menu buttons. hide start button
 		el = document.getElementById("p8_start_button");

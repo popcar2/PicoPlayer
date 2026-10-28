@@ -6,6 +6,7 @@ I (well, Claude) made a few changes to make it more convenient for quickly brows
 
 * The startup animation has been removed to make switching games faster
 * The player is made separate from each game so it's cached and re-used by the browser when switching games
+* Switching games swaps the new cart into the running player (rebooting the machine like lexaloffle.com's player does) instead of reloading it, and the rest of the boot wait is gone too
 * Multi-cart games are downloaded ahead of time and swapped without connecting to external servers
 * The audio is normalized (some games were way too quiet and some are way too loud), with a limiter to stop sudden loud sounds from clipping
 * Mobile controls appear white when pressed

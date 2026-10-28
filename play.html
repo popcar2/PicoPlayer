@@ -234,7 +234,8 @@
     })
 
     // once fixi swaps in the game's metadata, move its description and controls into the info panel
-    // and boot its .p8.rom (plus any extra carts, listed after it in data-cart) in the shared player (pico8.js stays cached)
+    // and boot its .p8.rom (plus any extra carts, listed after it in data-cart) in the shared player.
+    // once the player is up it swaps carts in place (p8_load_cart) instead of reloading
     document.addEventListener("fx:swapped", () => {
       let meta = document.querySelector("#meta [data-cart]")
       let screen = document.querySelector("#screen")
@@ -246,23 +247,31 @@
       body.replaceChildren(byline, ...(details ? [details] : []))
       body.scrollTop = 0  // start the new game's info from the top
       document.title = meta.dataset.title + " · TinyFun"
-      let carts = meta.dataset.cart.split(" ").map((cart) => "cart=../" + cart).join("&")  // main cart first, then any extra carts it loads
-      showLoading(screen)
-      screen.contentWindow.location.replace("pico8/player.html?" + carts)
+      let carts = meta.dataset.cart.split(" ").map((cart) => "../" + cart)  // main cart first, then any extra carts it loads
+      let player = screen.contentWindow
+      if (player.p8_load_cart && !screen.dataset.loading) showLoading(screen, player.p8_load_cart(carts))
+      else {
+        screen.dataset.loading = true  // until the player page loads, swapping would reach the old one
+        showLoading(screen, new Promise((resolve) => screen.addEventListener("load", () => {
+          delete screen.dataset.loading
+          resolve()
+        }, { once: true })))
+        player.location.replace("pico8/player.html?" + carts.map((cart) => "cart=" + cart).join("&"))
+      }
       screen.focus()
     }, { signal })
 
-    // the spinner covers the player from picking a game until the new player draws its first frame.
-    // it waits for the iframe's load first, since until then contentWindow is still the old game's
+    // the spinner covers the player from picking a game until the new game draws its first frame.
+    // it waits for the new game to be booted first (or the player page to load), since until then pico8_state is still the old game's
     let loading = document.querySelector("#loading"), loads = 0
-    function showLoading(screen) {
+    function showLoading(screen, booted) {
       let load = ++loads  // a newer pick takes over, and its own wait hides the spinner
       loading.hidden = false
-      screen.addEventListener("load", function check() {
+      booted.then(function check() {
         if (load != loads) return
         if (screen.contentWindow.pico8_state?.frame_number > 0) loading.hidden = true
         else requestAnimationFrame(check)
-      }, { once: true })
+      })
     }
 
     // fixi wires up the buttons on DOMContentLoaded first, then we insert the linked cartridge (#<slug>) or a random one

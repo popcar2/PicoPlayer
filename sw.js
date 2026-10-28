@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-a5c48e49"
+let version = "tinyfun-1b43057d"
 let files = {
   "about.html": "4828a836",
   "assets/github.svg": "a5101cbd",
@@ -81,7 +81,10 @@ let files = {
   "games/freezing-knights/freezing_knights_boss5.p8.rom": "ea39d1c5",
   "games/freezing-knights/freezing_knights_boss6.p8.rom": "a6303041",
   "games/freezing-knights/freezing_knights_boss7.p8.rom": "5524b009",
+  "games/freezing-knights/freezing_knights_ending.p8.rom": "3f875377",
+  "games/freezing-knights/freezing_knights_map.p8.rom": "05309aa0",
   "games/freezing-knights/freezing_knights_rest.p8.rom": "6df72a40",
+  "games/freezing-knights/freezing_knights_start.p8.rom": "064bea1f",
   "games/freezing-knights/meta.html": "86422720",
   "games/guncho/guncho.p8.rom": "9b560992",
   "games/guncho/meta.html": "49d3473f",
@@ -266,10 +269,10 @@ let files = {
   "js/offline_pwa.js": "6a74254f",
   "js/transitions.js": "ff113666",
   "manifest.webmanifest": "2ab6d2a3",
-  "pico8/pico8.js": "c81bddbc",
-  "pico8/player.html": "4a6d10a9",
-  "play.html": "e4d78941",
-  "technical_deets.html": "347df8c1",
+  "pico8/pico8.js": "70cb21bf",
+  "pico8/player.html": "3b37d72d",
+  "play.html": "dea461df",
+  "technical_deets.html": "6b4bab03",
 }
 // precache:end
 
