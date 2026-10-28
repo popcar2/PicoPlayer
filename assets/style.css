@@ -37,16 +37,19 @@ nav a:last-child { margin-left: auto; }
 
 /* home */
 
+/* content in the middle row, footer in the bottom one. the top row matches the bottom so the content sits in the middle
+   of the window, not of the space above the footer. when space runs short the top row shrinks first, down to the
+   footer's height once the page scrolls */
 .page {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto minmax(auto, 1fr);
   min-height: 100vh;
   min-height: 100dvh;
 }
 
 .home {
+  grid-row: 2;
   display: flex;
-  flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -75,8 +78,10 @@ nav a:last-child { margin-left: auto; }
 }
 .github:hover, .github:focus-visible { opacity: 1; }
 .github img { display: block; width: 1.75rem; height: 1.75rem; }
-/* in the page's flex column, so it sits at the bottom but scrolls below the content when space runs out */
+/* in the page's bottom row, so it sits at the bottom but scrolls below the content when space runs out */
 .site-footer {
+  grid-row: 3;
+  align-self: end;
   padding: 1rem;
   font-size: .875rem;
   text-align: center;

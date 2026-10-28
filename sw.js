@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-1b43057d"
+let version = "tinyfun-d3275309"
 let files = {
   "about.html": "4828a836",
   "assets/github.svg": "a5101cbd",
@@ -12,7 +12,7 @@ let files = {
   "assets/icon-512.png": "c2d08021",
   "assets/icon.svg": "83240aa6",
   "assets/loading.svg": "7f0ff003",
-  "assets/style.css": "8fb2179f",
+  "assets/style.css": "acac3498",
   "assets/thumbnails.css": "52f3fcaa",
   "assets/thumbnails.webp": "7d134eb2",
   "games/512px-under/512px-under.p8.rom": "990df63b",
