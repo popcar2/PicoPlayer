@@ -4,9 +4,9 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "tinyfun-a2e32f32"
+let version = "tinyfun-72edacfc"
 let files = {
-  "about.html": "4828a836",
+  "about.html": "b7d7639a",
   "assets/github.svg": "a5101cbd",
   "assets/icon-192.png": "145db495",
   "assets/icon-512.png": "993067c2",
@@ -260,13 +260,13 @@ let files = {
   "games/zoo-keeper/zoo-keeper.p8.rom": "ec0d7e6e",
   "index.html": "e9dcf9ed",
   "js/fixi.js": "f513737c",
-  "js/offline_pwa.js": "6a74254f",
+  "js/offline_pwa.js": "bcc77ede",
   "js/transitions.js": "ff113666",
   "manifest.webmanifest": "2ab6d2a3",
   "pico8/pico8.js": "70cb21bf",
   "pico8/player.html": "3b37d72d",
-  "play.html": "67641f7c",
-  "technical_deets.html": "6b4bab03",
+  "play.html": "b70e6313",
+  "technical_deets.html": "ab12a23f",
 }
 // precache:end
 
@@ -322,10 +322,9 @@ self.addEventListener("message", (e) => {
     Promise.all(Object.keys(files).map((path) => store(cache, path).catch(() => {})))))
 })
 
-// online, everything comes from the network, so a deploy shows on the next load instead of only once a new sw.js has
-// installed. listed files are revalidated with the server (a quick 304 when unchanged, past the HTTP cache's max-age)
-// and kept for offline use; the cache only answers when the network can't. anything else of ours (e.g. a game added
-// without rerunning the script) is kept the same way
+// listed files come from the cache, or the network (and are kept) the first time. anything else of ours
+// (e.g. a game added without rerunning the script) goes to the network first, and is kept for offline use.
+// after a deploy, js/offline_pwa.js reloads the page once this version takes over
 self.addEventListener("fetch", (e) => {
   if (e.request.method != "GET") return
   let url = new URL(e.request.url)
@@ -334,16 +333,13 @@ self.addEventListener("fetch", (e) => {
   e.respondWith((async () => {
     let cache = await caches.open(version)
     if (path) {
-      try {
-        let response = await fetch(new URL(path, scope), { cache: "no-cache" })  // the file itself, so /play works even where the server doesn't add .html
-        if (response.ok) {
-          cache.put(keyFor(path), response.clone())
-          return response
-        }
-        return await cache.match(keyFor(path)) || response
-      } catch (error) {
-        return await cache.match(keyFor(path)) || Promise.reject(error)
-      }
+      let cached = await cache.match(keyFor(path))
+      if (cached) return cached
+      // the file itself, so /play works even where the server doesn't add .html. revalidated, so a copy the HTTP cache
+      // kept from before a deploy isn't stored under the new hash
+      let response = await fetch(new URL(path, scope), { cache: "no-cache" })
+      if (response.ok) cache.put(keyFor(path), response.clone())
+      return response
     }
     try {
       let response = await fetch(e.request)
