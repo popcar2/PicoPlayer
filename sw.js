@@ -322,8 +322,10 @@ self.addEventListener("message", (e) => {
     Promise.all(Object.keys(files).map((path) => store(cache, path).catch(() => {})))))
 })
 
-// listed files come from the cache, or the network (and are kept) the first time. anything else of ours
-// (e.g. a game added without rerunning the script) goes to the network first, and is kept for offline use
+// online, everything comes from the network, so a deploy shows on the next load instead of only once a new sw.js has
+// installed. listed files are revalidated with the server (a quick 304 when unchanged, past the HTTP cache's max-age)
+// and kept for offline use; the cache only answers when the network can't. anything else of ours (e.g. a game added
+// without rerunning the script) is kept the same way
 self.addEventListener("fetch", (e) => {
   if (e.request.method != "GET") return
   let url = new URL(e.request.url)
@@ -332,11 +334,16 @@ self.addEventListener("fetch", (e) => {
   e.respondWith((async () => {
     let cache = await caches.open(version)
     if (path) {
-      let cached = await cache.match(keyFor(path))
-      if (cached) return cached
-      let response = await fetch(new URL(path, scope))  // the file itself, so /play works even where the server doesn't add .html
-      if (response.ok) cache.put(keyFor(path), response.clone())
-      return response
+      try {
+        let response = await fetch(new URL(path, scope), { cache: "no-cache" })  // the file itself, so /play works even where the server doesn't add .html
+        if (response.ok) {
+          cache.put(keyFor(path), response.clone())
+          return response
+        }
+        return await cache.match(keyFor(path)) || response
+      } catch (error) {
+        return await cache.match(keyFor(path)) || Promise.reject(error)
+      }
     }
     try {
       let response = await fetch(e.request)
