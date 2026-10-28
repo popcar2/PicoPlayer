@@ -120,6 +120,26 @@ nav a:last-child { margin-left: auto; }
 }
 .shelf:hover, .shelf:focus-within { transform: none; }
 
+/* a tab on the shelf's top right edge, only there while the shelf is up */
+#search {
+  position: absolute;
+  top: 3rem;  /* the top of the carousel, below the hover band */
+  right: 3rem;
+  width: min(12rem, 50vw);
+  padding: .4rem .75rem;
+  border: 0;
+  border-radius: 3px 3px 0 0;
+  background: #333;  /* same grey as the shelf */
+  color: #fff1e8;
+  font: inherit;
+  font-size: 1rem;  /* any smaller and iOS zooms in on focus */
+  outline: none;
+  translate: 0 -100%;
+  visibility: hidden;
+}
+#search::placeholder { color: #888; }
+.shelf:hover #search, .shelf:focus-within #search { visibility: visible; }
+
 /* half-width side padding so even the first and last cartridge can sit in the middle */
 .carousel {
   position: relative;
@@ -267,6 +287,8 @@ nav a:last-child { margin-left: auto; }
     transform: translateY(calc(100% - 2rem));
   }
   .shelf.open { transform: none; }
+  #search, .shelf:hover #search, .shelf:focus-within #search { top: 0; visibility: hidden; }
+  .shelf.open #search { visibility: visible; }
   /* dims the page behind the open sheet, and taps on it close the sheet */
   .shelf.open::before { content: ""; position: fixed; inset: -100dvh 0 0; z-index: -1; background: rgb(0 0 0 / .6); }
   #shelf-toggle {

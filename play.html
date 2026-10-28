@@ -31,7 +31,7 @@
     </main>
   </div>
 
-  <footer class="shelf"><button id="shelf-toggle" aria-expanded="false">Games</button><div class="carousel">
+  <footer class="shelf"><button id="shelf-toggle" aria-expanded="false">Games</button><input id="search" type="search" placeholder="Search..." aria-label="Search games" autocomplete="off" spellcheck="false"><div class="carousel">
     <button class="cart" fx-action="games/512px-under/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>512px under</span></button>
     <button class="cart" fx-action="games/mots-8-ball-pool/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>8-Ball Pool</span></button>
     <button class="cart" fx-action="games/age-of-ants/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Age of Ants</span></button>
@@ -180,6 +180,7 @@
     document.addEventListener("click", (e) => {
       let cart = e.target.closest(".cart")
       if (!cart) return
+      if (search.value) filter("")
       let previous = document.querySelector(".cart[aria-current]")
       previous?.removeAttribute("aria-current")
       cart.setAttribute("aria-current", "true")
@@ -199,6 +200,29 @@
     }
     shelfToggle.addEventListener("click", () => setShelfOpen(!shelf.classList.contains("open")))
     shelf.addEventListener("click", (e) => { if (e.target == shelf) setShelfOpen(false) })
+
+    // the search box hides every cartridge whose name doesn't match as you type, and brings the first match into view.
+    // Enter inserts the first match, Escape clears it, and picking a cartridge or closing the shelf clears it too. clearing it goes back to the loaded game
+    let search = document.querySelector("#search")
+    function filter(term) {
+      search.value = term
+      term = term.trim().toLowerCase()
+      let carts = [...carousel.querySelectorAll(".cart")]
+      for (let cart of carts) cart.hidden = !cart.textContent.toLowerCase().includes(term)
+      let first = term ? carts.find((cart) => !cart.hidden) : carousel.querySelector(".cart[aria-current]")  // cleared: back to the loaded game
+      if (!first) return
+      if (touch.matches) carousel.scrollTop = term ? 0 : first.offsetTop - (carousel.clientHeight - first.offsetHeight) / 2
+      else slideTo(first.offsetLeft - (carousel.clientWidth - first.offsetWidth) / 2, 0)
+    }
+    search.addEventListener("input", () => filter(search.value))
+    search.addEventListener("keydown", (e) => {
+      if (e.key == "Enter") carousel.querySelector(".cart:not([hidden])")?.click()
+      else if (e.key == "Escape") filter("")
+    })
+    shelf.addEventListener("transitionend", (e) => {
+      let closed = getComputedStyle(shelf).transform != "none"
+      if (e.target == shelf && closed && search.value) filter("")
+    })
 
     // Random Game inserts a different random cartridge instead of reloading the page
     document.querySelector("#random").addEventListener("click", (e) => {
