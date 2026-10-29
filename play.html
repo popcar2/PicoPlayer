@@ -8,12 +8,12 @@
   <meta name="color-scheme" content="dark">
   <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
   <script src="js/transitions.js?v=ff113666"></script>
-  <link rel="stylesheet" href="assets/style.css?v=b8e44298">
+  <link rel="stylesheet" href="assets/style.css?v=48cdeeb1">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="theme-color" content="#000">
-  <script src="js/offline_pwa.js?v=bcc77ede"></script>
+  <script src="js/offline_pwa.js?v=2dc79516"></script>
   <link rel="stylesheet" href="assets/thumbnails.css?v=ba696b0e">
   <script src="js/fixi.js?v=f513737c"></script>
 </head>
@@ -330,6 +330,7 @@
       body.replaceChildren(byline, ...(details ? [details] : []))
       body.scrollTop = 0  // start the new game's info from the top
       document.title = meta.dataset.title + " · PicoPlayer"
+      window.countGame?.(meta.dataset.cart.split("/")[1], meta.dataset.title)  // js/stats.js, unless a blocker stopped it
       let carts = meta.dataset.cart.split(" ").map((cart) => "../" + cart)  // main cart first, then any extra carts it loads
       let player = screen.contentWindow
       if (player.p8_load_cart && !screen.dataset.loading) showLoading(screen, player.p8_load_cart(carts))
@@ -372,5 +373,6 @@
     }, { signal })
   }
   </script>
+  <script src="js/stats.js?v=ff362159"></script>
 </body>
 </html>

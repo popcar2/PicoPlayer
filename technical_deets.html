@@ -8,12 +8,12 @@
   <meta name="color-scheme" content="dark">
   <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
   <script src="js/transitions.js?v=ff113666"></script>
-  <link rel="stylesheet" href="assets/style.css?v=b8e44298">
+  <link rel="stylesheet" href="assets/style.css?v=48cdeeb1">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="theme-color" content="#000">
-  <script src="js/offline_pwa.js?v=bcc77ede"></script>
+  <script src="js/offline_pwa.js?v=2dc79516"></script>
 </head>
 <body class="page">
   <a class="github" href="https://github.com/popcar2/PicoPlayer"><img src="assets/github.svg" alt="Source code on GitHub"></a>
@@ -25,8 +25,10 @@
     <p>Some games also used multiple cartridges that get downloaded from Lexaloffle as they're needed; these are all downloaded ahead of time and served from PicoPlayer, so the games don't make any external connections.</p>
     <p>Making the website tiny was a big goal. All the game thumbnails are combined into one optimized WEBP sprite sheet. The rest of the website gets GZIP'd by GitHub pages. The PICO 8 games are minified (safely) using <a href="https://github.com/thisismypassport/shrinko8">Shrinko8</a>, which brings down the total rom size by ~20%. You can download the whole website with ALL 150+ included games in only around 4MB of mobile data!</p>
     <p>PicoPlayer is also a Progressive Web App that can be installed. Running it the first time downloads everything it needs, allowing you to use the app and play everything 100% offline!</p>
+    <p>Finally, I use <a href="https://www.goatcounter.com">Goat Counter</a> for some privacy-friendly analytics.</p>
     <sub>Full disclosure: This project is AI-assisted using Claude. The general architecture and website design were made by myself, with lots of extensive testing/reviewing. I also played and curated the list of games myself.</sub>
     <a class="play" href="./">Back Home</a>
   </main>
+  <script src="js/stats.js?v=ff362159"></script>
 </body>
 </html>
