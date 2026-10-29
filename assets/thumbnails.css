@@ -2,7 +2,7 @@
 .cart { container-type: inline-size; }  /* so the thumbnail can measure the cartridge (cqw) */
 .cart .thumbnail {
   --s: calc((100cqw - 6px) / 128);  /* the thumbnail's width (the cartridge's content minus the thumbnail's border) per art pixel */
-  background: #000 url("thumbnails.webp?v=39594ac4") no-repeat;
+  background: #000 url("thumbnails.webp?v=89817ced") no-repeat;
   background-size: calc(1690 * var(--s)) auto;
   background-position: calc(var(--x) * var(--s) * -1) calc(var(--y) * var(--s) * -1);
 }
@@ -157,7 +157,8 @@
 .cart[fx-action="games/witch-loves-bullets/meta.html"] .thumbnail { --x: 651; --y: 1431; }
 .cart[fx-action="games/wizardish/meta.html"] .thumbnail { --x: 781; --y: 1431; }
 .cart[fx-action="games/wolfenstein-3d/meta.html"] .thumbnail { --x: 911; --y: 1431; }
-.cart[fx-action="games/x-wing-vs-tie-fighter/meta.html"] .thumbnail { --x: 1041; --y: 1431; }
-.cart[fx-action="games/x-zero/meta.html"] .thumbnail { --x: 1171; --y: 1431; }
-.cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 1301; --y: 1431; }
-.cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 1431; --y: 1431; }
+.cart[fx-action="games/woodworm/meta.html"] .thumbnail { --x: 1041; --y: 1431; }
+.cart[fx-action="games/x-wing-vs-tie-fighter/meta.html"] .thumbnail { --x: 1171; --y: 1431; }
+.cart[fx-action="games/x-zero/meta.html"] .thumbnail { --x: 1301; --y: 1431; }
+.cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 1431; --y: 1431; }
+.cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 1561; --y: 1431; }

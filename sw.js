@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-d0cd8d5f"
+let version = "picoplayer-ebcb7c4a"
 let files = {
   "about.html": "7f43f45f",
   "assets/github.svg": "a5101cbd",
@@ -16,8 +16,8 @@ let files = {
   "assets/icon.svg": "ddbab87b",
   "assets/loading.svg": "2c7642c3",
   "assets/style.css": "48cdeeb1",
-  "assets/thumbnails.css": "eab11dcb",
-  "assets/thumbnails.webp": "39594ac4",
+  "assets/thumbnails.css": "3edb04eb",
+  "assets/thumbnails.webp": "89817ced",
   "games/8-legs-to-love/8-legs-to-love.p8.rom": "d617c5f2",
   "games/8-legs-to-love/meta.html": "38aea05b",
   "games/air-delivery/air-delivery.p8.rom": "aed407ff",
@@ -247,11 +247,10 @@ let files = {
   "games/pole-station/pole-station.p8.rom": "9856d055",
   "games/pony-9000/meta.html": "72fef92c",
   "games/pony-9000/pony-9000.p8.rom": "20f20865",
-  "games/poom/meta.html": "cd6563e4",
-  "games/poom/poom.p8.rom": "9d9e4e11",
-  "games/poom/poom_0.p8.rom": "9d9e4e11",
-  "games/poom/poom_1.p8.rom": "ba99fdf9",
-  "games/poom/poom_e1.p8.rom": "b1f9b7bd",
+  "games/poom/meta.html": "a4d264c8",
+  "games/poom/poom_0.p8.rom": "b44cb541",
+  "games/poom/poom_e1.p8.rom": "fd9fad5a",
+  "games/poom/poom_e2.p8.rom": "0919fe47",
   "games/province/meta.html": "bcc4182c",
   "games/province/province.p8.rom": "ce35464f",
   "games/pullfrog/meta.html": "f74e15be",
@@ -372,6 +371,8 @@ let files = {
   "games/wizardish/wizardish.p8.rom": "53b7cef8",
   "games/wolfenstein-3d/meta.html": "bf22e81d",
   "games/wolfenstein-3d/wolfenstein-3d.p8.rom": "6a401516",
+  "games/woodworm/meta.html": "f270f84f",
+  "games/woodworm/woodworm.p8.rom": "8ef36012",
   "games/x-wing-vs-tie-fighter/meta.html": "3a09a12b",
   "games/x-wing-vs-tie-fighter/x-wing-vs-tie-fighter.p8.rom": "741215fe",
   "games/x-zero/meta.html": "89694263",
@@ -388,7 +389,7 @@ let files = {
   "manifest.webmanifest": "8aad173e",
   "pico8/pico8.js": "70cb21bf",
   "pico8/player.html": "8b36cd01",
-  "play.html": "d2e3beae",
+  "play.html": "ea05215a",
   "technical_deets.html": "201e43fa",
 }
 // precache:end
