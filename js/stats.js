@@ -1,5 +1,6 @@
 // visit counter (goatcounter), only in the browser: the installed app doesn't count. loaded at the end of each page's
 // body rather than its head, so it runs again (and counts the visit) when transitions.js swaps in another page.
+// deferred like offline_pwa.js, so it runs after it and can see installedApp.
 // it's optional, so anything going wrong here (a blocker, offline_pwa.js missing, goatcounter failing) is ignored.
 // no top-level let/const: running a second time would redeclare them
 function inApp() { return typeof installedApp != "undefined" && installedApp }

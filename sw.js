@@ -4,9 +4,9 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-68b95333"
+let version = "picoplayer-2f0d802e"
 let files = {
-  "about.html": "ff60efcd",
+  "about.html": "5ab409f8",
   "assets/github.svg": "a5101cbd",
   "assets/icon-192.png": "145db495",
   "assets/icon-512.png": "993067c2",
@@ -406,16 +406,16 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.rom": "dfb1e851",
   "games/zoo-keeper/meta.html": "f7b46c27",
   "games/zoo-keeper/zoo-keeper.p8.rom": "ec0d7e6e",
-  "index.html": "9ace6959",
+  "index.html": "0221332a",
   "js/fixi.js": "f513737c",
-  "js/offline_pwa.js": "2dc79516",
-  "js/stats.js": "ff362159",
+  "js/offline_pwa.js": "e66a0d34",
+  "js/stats.js": "f553d9a0",
   "js/transitions.js": "c0fe748c",
   "manifest.webmanifest": "8aad173e",
   "pico8/pico8.js": "70cb21bf",
   "pico8/player.html": "42bb427c",
-  "play.html": "a767209c",
-  "technical_deets.html": "67f974ed",
+  "play.html": "9f635292",
+  "technical_deets.html": "e88bd644",
 }
 // precache:end
 

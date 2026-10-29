@@ -7,7 +7,7 @@
   <meta name="description" content="A tiny, minimalist website for playing curated PICO-8 games in your browser. Works as an installable offline web app, too!">
   <meta name="color-scheme" content="dark">
   <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
-  <script src="js/transitions.js?v=c0fe748c"></script>
+  <script src="js/transitions.js?v=c0fe748c" defer></script>
   <style data-src="assets/base.css">
 * { box-sizing: border-box; }
 
@@ -105,7 +105,7 @@ a { color: #ff77a8; }
   <link rel="icon" href="assets/icon.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="theme-color" content="#000">
-  <script src="js/offline_pwa.js?v=2dc79516"></script>
+  <script src="js/offline_pwa.js?v=e66a0d34" defer></script>
 </head>
 <body class="page">
   <a class="github" href="https://github.com/popcar2/PicoPlayer"><img src="assets/github.svg" alt="Source code on GitHub"></a>
@@ -119,6 +119,6 @@ a { color: #ff77a8; }
     <a class="play" href="play" onclick="try { localStorage.removeItem('info-open') } catch {}">Start Playing!</a>
   </main>
   <footer class="site-footer">Want to know more? See the <a href="about">about page</a> or the <a href="technical_deets">technical details</a>.</footer>
-  <script src="js/stats.js?v=ff362159"></script>
+  <script src="js/stats.js?v=f553d9a0" defer></script>
 </body>
 </html>
