@@ -22,7 +22,7 @@ list=$(
 version=$(echo "$list" | md5sum | cut -c1-8)
 tmp=$(mktemp)
 awk -v list="$list" -v version="$version" '
-  /^\/\/ precache:start/ { print; print "let version = \"tinyfun-" version "\""; print "let files = {"; print list; print "}"; skip = 1; next }
+  /^\/\/ precache:start/ { print; print "let version = \"picoplayer-" version "\""; print "let files = {"; print list; print "}"; skip = 1; next }
   /^\/\/ precache:end/ { skip = 0 }
   !skip
 ' sw.js > "$tmp"

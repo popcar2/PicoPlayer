@@ -1,6 +1,6 @@
 {
-  "name": "TinyFun",
-  "short_name": "TinyFun",
+  "name": "PicoPlayer",
+  "short_name": "PicoPlayer",
   "description": "A tiny, minimalist website for playing curated PICO-8 games.",
   "start_url": "./",
   "scope": "./",

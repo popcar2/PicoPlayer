@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Play · TinyFun</title>
+  <title>Play · PicoPlayer</title>
   <meta name="color-scheme" content="dark">
   <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
   <script src="js/transitions.js?v=ff113666"></script>
-  <link rel="stylesheet" href="assets/style.css?v=dfce4c07">
+  <link rel="stylesheet" href="assets/style.css?v=c31a4496">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
@@ -17,7 +17,7 @@
   <script src="js/fixi.js?v=f513737c"></script>
 </head>
 <body class="browse">
-  <nav><a href="./">TinyFun</a><a id="random" href="play">Random Game</a></nav>
+  <nav><a href="./">PicoPlayer</a><a id="random" href="play">Random Game</a></nav>
   <div id="meta"></div>
 
   <div class="stage">
@@ -329,7 +329,7 @@
       let body = document.querySelector("#info-body")
       body.replaceChildren(byline, ...(details ? [details] : []))
       body.scrollTop = 0  // start the new game's info from the top
-      document.title = meta.dataset.title + " · TinyFun"
+      document.title = meta.dataset.title + " · PicoPlayer"
       let carts = meta.dataset.cart.split(" ").map((cart) => "../" + cart)  // main cart first, then any extra carts it loads
       let player = screen.contentWindow
       if (player.p8_load_cart && !screen.dataset.loading) showLoading(screen, player.p8_load_cart(carts))
