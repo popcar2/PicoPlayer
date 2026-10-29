@@ -34,6 +34,7 @@ html { background: #000; }
 			p8_bank_data = null;
 			p8_gpio_busy = false;
 			p8_space_button = 0;
+			p8_reset_loudness();
 			_cartname = urls.map(function(url){ return url.split("/").pop().replace(/\.rom$/, ""); });
 			_cartdat = new Uint8Array(dats.length * 32768);
 			dats.forEach(function(dat, i){ _cartdat.set(dat, i * 32768); });
@@ -777,8 +778,9 @@ html { background: #000; }
 	// pico8.js and the speakers: a gain that settles over a few seconds, followed by a limiter that only catches overs.
 	// pico8.js connects its output to <context>.destination, so that property is pointed at our input node.
 	// the analyser only gets sampled 10 times a second, so it costs next to nothing
-	var p8_target_rms = 0.12;              // about -18 dBFS
-	var p8_min_gain = 0.5, p8_max_gain = 4; // -6 dB .. +12 dB
+	var p8_target_rms = 0.08;               // about -22 dBFS
+	var p8_min_gain = 0.25, p8_max_gain = 4; // -12 dB .. +12 dB
+	var p8_reset_loudness = function(){};   // set below once the audio is up; called when carts are swapped
 	function p8_normalize_audio(ctx)
 	{
 		try {
@@ -806,6 +808,8 @@ html { background: #000; }
 
 		var buf = new Float32Array(analyser.fftSize);
 		var mean_square = 0, peak = 0, frames = 0;
+		// a new game starts measuring afresh, so it settles as fast as the first one instead of trailing the last game's level
+		p8_reset_loudness = function(){ mean_square = peak = frames = 0; };
 		setInterval(function()
 		{
 			if (ctx.state != "running") return;
