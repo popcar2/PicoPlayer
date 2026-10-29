@@ -78,6 +78,23 @@ nav a:last-child { margin-left: auto; }
 }
 .github:hover, .github:focus-visible { opacity: 1; }
 .github img { display: block; width: 1.75rem; height: 1.75rem; }
+/* donate button in the top left corner, across from the github mark: a smaller "Start Playing!" with a heart */
+.donate {
+  position: absolute;
+  top: .75rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  height: 1.75rem;
+  padding: 0 .75rem;
+  background: #ff004d;
+  color: #fff1e8;
+  font-size: .875rem;
+  text-decoration: none;
+  border-radius: 4px;
+}
+.donate svg { width: .875rem; height: .8rem; fill: currentColor; }
 /* in the page's bottom row, so it sits at the bottom but scrolls below the content when space runs out */
 .site-footer {
   grid-row: 3;
