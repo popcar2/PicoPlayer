@@ -356,6 +356,7 @@ html { background: #000; }
 			var h = window.innerHeight;
 
 			var r = p8_control_size(w,h);
+			var hb = p8_controls_bottom(w,h,r);
 
 			// mouse (0.1.12d)
 
@@ -386,15 +387,15 @@ html { background: #000; }
 			
 			b = 0;
 
-			if (y < h - r*8)
+			if (y < hb - r*8 || y > hb)
 			{
-				// no controller buttons up here; includes canvas and menu buttons at top in touch mode
+				// no controller buttons up here (includes canvas and menu buttons at top in touch mode), or below them
 			}
 			else
 			{
 				e.preventDefault();
 
-				if ((y < h - r*6) && y > (h - r*8))
+				if ((y < hb - r*6) && y > (hb - r*8))
 				{
 					// menu button: half as high as X O button
 					// stretch across right-hand half above X O buttons
@@ -407,7 +408,7 @@ html { background: #000; }
 
 					mask = 0xf; // dpad
 					var cx = 0 + r*3;
-					var cy = h - r*3;
+					var cy = hb - r*3;
 
 					deadzone = r/3;
 					var dx = x - cx;
@@ -431,8 +432,8 @@ html { background: #000; }
 					mask = 0x30;
 					
 					// one or both of [X], [O]
-					if ( (h-y) > (w-x) * 0.8) b |= 0x10;
-					if ( (w-x) > (h-y) * 0.8) b |= 0x20;
+					if ( (hb-y) > (w-x) * 0.8) b |= 0x10;
+					if ( (w-x) > (hb-y) * 0.8) b |= 0x20;
 				}
 			}
 
@@ -452,6 +453,16 @@ html { background: #000; }
 		if (w > h)
 			r = Math.max(r, Math.min(h / 8, (w - h) / 12, 64));
 		return r;
+	}
+
+	// bottom edge of the touch controls, shared by touch handling and layout. in portrait they'd otherwise sit at the
+	// very bottom of the window, far below the screen, so they're centered in the space between the screen and the bottom
+	function p8_controls_bottom(w, h, r)
+	{
+		var canvas = document.getElementById("canvas");
+		if (w >= h || !canvas) return h;
+		var space = h - canvas.getBoundingClientRect().bottom - r*8;  // 8r: the panels and the menu button's strip above them
+		return h - Math.max(0, space / 2);
 	}
 
 	function p8_update_lit_buttons()
@@ -621,10 +632,11 @@ html { background: #000; }
 			var w = window.innerWidth;
 			var h = window.innerHeight;
 			var r = p8_control_size(w,h);
+			var hb = p8_controls_bottom(w,h,r);
 
 			el = document.getElementById("controls_right_panel");
 			el.style.left = w-r*6;
-			el.style.top = h-r*7;
+			el.style.top = hb-r*7;
 			el.style.width = r*6;
 			el.style.height = r*7;
 			if (el.getAttribute("src") != p8_gfx_dat["controls_right_panel"]) // optimisation: avoid reload? (browser should handle though)
@@ -633,7 +645,7 @@ html { background: #000; }
 
 			el = document.getElementById("controls_left_panel");
 			el.style.left = 0;
-			el.style.top = h-r*6;
+			el.style.top = hb-r*6;
 			el.style.width = r*6;
 			el.style.height = r*6;
 			if (el.getAttribute("src") != p8_gfx_dat["controls_left_panel"]) // optimisation: avoid reload? (browser should handle though)
