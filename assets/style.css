@@ -38,11 +38,12 @@ nav a:last-child { margin-left: auto; }
 /* home */
 
 /* content in the middle row, footer in the bottom one. the top row matches the bottom so the content sits in the middle
-   of the window, not of the space above the footer. when space runs short the top row shrinks first, down to the
-   footer's height once the page scrolls */
+   of the window, not of the space above the footer. when space runs short the top row shrinks first, but never
+   past the donate button and github mark in the corners (2.5rem down), and the bottom row down to the footer's
+   height once the page scrolls */
 .page {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto minmax(auto, 1fr);
+  grid-template-rows: minmax(3.25rem, 1fr) auto minmax(auto, 1fr);
   min-height: 100vh;
   min-height: 100dvh;
 }
@@ -142,6 +143,7 @@ nav a:last-child { margin-left: auto; }
   position: absolute;
   top: 3rem;  /* the top of the carousel, below the hover band */
   right: 3rem;
+  z-index: -1;  /* behind the carousel and the Games bar, so its bottom edge never shows over them */
   width: min(12rem, 50vw);
   padding: .4rem .75rem;
   border: 0;
@@ -304,7 +306,7 @@ nav a:last-child { margin-left: auto; }
     transform: translateY(calc(100% - 2rem));
   }
   .shelf.open { transform: none; }
-  #search, .shelf:hover #search, .shelf:focus-within #search { top: 0; visibility: hidden; }
+  #search, .shelf:hover #search, .shelf:focus-within #search { top: 0; right: auto; left: 50%; translate: -50% -100%; visibility: hidden; }
   .shelf.open #search { visibility: visible; }
   /* dims the page behind the open sheet, and taps on it close the sheet */
   .shelf.open::before { content: ""; position: fixed; inset: -100dvh 0 0; z-index: -1; background: rgb(0 0 0 / .6); }
