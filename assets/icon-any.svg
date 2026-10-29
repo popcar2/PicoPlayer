@@ -1,0 +1,12 @@
+<!-- app icon cropped closer than icon.svg, for places that show it as is rather than masking it to a shape -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="-4 -4 83 83">
+  <rect x="-4" y="-4" width="83" height="83" fill="#000"/>
+  <rect x="30" y="0" width="15" height="15" fill="#FF004D"/>
+  <rect x="45" y="15" width="15" height="15" fill="#FFCCAA"/>
+  <rect x="60" y="30" width="15" height="15" fill="#FF77A8"/>
+  <rect x="45" y="45" width="15" height="15" fill="#1D2B53"/>
+  <rect x="30" y="60" width="15" height="15" fill="#29ADFF"/>
+  <rect x="15" y="45" width="15" height="15" fill="#00E436"/>
+  <rect x="0" y="30" width="15" height="15" fill="#FFEC27"/>
+  <rect x="15" y="15" width="15" height="15" fill="#FFA300"/>
+</svg>
