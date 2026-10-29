@@ -1,0 +1,13 @@
+* { box-sizing: border-box; }
+
+/* the pages hide <html> inline until this sheet arrives, so they never flash unstyled */
+html { visibility: visible; }
+
+body {
+  margin: 0;
+  background: #000;
+  color: #c2c3c7;
+  font: 16px/1.5 ui-monospace, "Cascadia Mono", Menlo, monospace;
+}
+
+a { color: #ff77a8; }

@@ -4,9 +4,9 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-28c06390"
+let version = "picoplayer-68b95333"
 let files = {
-  "about.html": "df6efdda",
+  "about.html": "ff60efcd",
   "assets/github.svg": "a5101cbd",
   "assets/icon-192.png": "145db495",
   "assets/icon-512.png": "993067c2",
@@ -15,8 +15,6 @@ let files = {
   "assets/icon-any.svg": "07bdfcfb",
   "assets/icon.svg": "ddbab87b",
   "assets/loading.svg": "2c7642c3",
-  "assets/style.css": "855a4c7d",
-  "assets/thumbnails.css": "3edb04eb",
   "assets/thumbnails.webp": "89817ced",
   "games/8-legs-to-love/8-legs-to-love.p8.rom": "d617c5f2",
   "games/8-legs-to-love/meta.html": "38aea05b",
@@ -408,16 +406,16 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.rom": "dfb1e851",
   "games/zoo-keeper/meta.html": "f7b46c27",
   "games/zoo-keeper/zoo-keeper.p8.rom": "ec0d7e6e",
-  "index.html": "8a41b871",
+  "index.html": "9ace6959",
   "js/fixi.js": "f513737c",
   "js/offline_pwa.js": "2dc79516",
   "js/stats.js": "ff362159",
-  "js/transitions.js": "ff113666",
+  "js/transitions.js": "c0fe748c",
   "manifest.webmanifest": "8aad173e",
   "pico8/pico8.js": "70cb21bf",
   "pico8/player.html": "42bb427c",
-  "play.html": "b58727cf",
-  "technical_deets.html": "f732d4a5",
+  "play.html": "a767209c",
+  "technical_deets.html": "67f974ed",
 }
 // precache:end
 

@@ -7,14 +7,483 @@
   <meta name="description" content="Browse and play curated PICO-8 games right in your browser!">
   <meta name="color-scheme" content="dark">
   <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
-  <script src="js/transitions.js?v=ff113666"></script>
-  <link rel="stylesheet" href="assets/style.css?v=855a4c7d">
+  <script src="js/transitions.js?v=c0fe748c"></script>
+  <style data-src="assets/base.css">
+* { box-sizing: border-box; }
+
+/* the pages hide <html> inline until this sheet arrives, so they never flash unstyled */
+html { visibility: visible; }
+
+body {
+  margin: 0;
+  background: #000;
+  color: #c2c3c7;
+  font: 16px/1.5 ui-monospace, "Cascadia Mono", Menlo, monospace;
+}
+
+a { color: #ff77a8; }
+  </style>
+  <style data-src="assets/play.css">
+/* the play page */
+
+nav {
+  display: flex;
+  gap: 1.5rem;
+  padding: .75rem 1rem;
+}
+nav a { text-decoration: none; white-space: nowrap; }
+nav a:first-child { color: #fff1e8; font-weight: bold; }
+/* game title: centred over the game on the nav's row, so it takes no height from the game.
+   kept clear of the nav links on either side, and cut off rather than wrapping */
+#meta {
+  position: absolute;
+  top: 0;
+  left: calc(50% + 1.25rem);  /* the player starts 2.5rem in, after the info tab */
+  transform: translateX(-50%);
+  max-width: calc(100% - 20rem);
+  padding: .75rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+nav a:last-child { margin-left: auto; }
+#meta b { color: #fff1e8; }
+
+.browse {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.stage { position: relative; display: flex; flex: 1; min-height: 0; margin-bottom: .75rem; }
+#player { flex: 1; min-width: 0; margin-left: 2.5rem; }  /* room for the closed info tab, which overlays it */
+#player iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* loading spinner, covering the player while a game boots */
+#player { position: relative; }
+#loading { position: absolute; inset: 0; background: #000 url(assets/loading.svg) center no-repeat; pointer-events: none; }
+#loading[hidden] { display: none; }
+
+/* tucked below the screen with a thin strip showing; slides up when the cursor nears the bottom.
+   the transparent top padding is the "near the bottom" band that triggers it */
+.shelf {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;  /* above the info panel */
+  padding-top: 3rem;
+  transform: translateY(calc(100% - 3.75rem));
+  transition: transform .2s ease-out;
+}
+.shelf:hover, .shelf:focus-within, .shelf.held { transform: none; }  /* held: the cursor left the window below it */
+
+/* a tab on the shelf's top right edge, only there while the shelf is up */
+#search {
+  position: absolute;
+  top: 3rem;  /* the top of the carousel, below the hover band */
+  right: 3rem;
+  z-index: -1;  /* behind the carousel and the Games bar, so its bottom edge never shows over them */
+  width: min(12rem, 50vw);
+  padding: .4rem .75rem;
+  border: 0;
+  border-radius: 3px 3px 0 0;
+  background: #333;  /* same grey as the shelf */
+  color: #fff1e8;
+  font: inherit;
+  font-size: 1rem;  /* any smaller and iOS zooms in on focus */
+  outline: none;
+  translate: 0 -100%;
+  visibility: hidden;
+}
+#search::placeholder { color: #888; }
+.shelf:hover #search, .shelf:focus-within #search, .shelf.held #search { visibility: visible; }
+
+/* half-width side padding so even the first and last cartridge can sit in the middle */
+.carousel {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding: 1rem calc(50% - 3.75rem);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #5f574f #333;
+  background: #333;
+}
+
+/* PC: a scrollbar 50% thicker than thin. firefox only has thin (8px) and auto (12px), so it gets auto; chromium
+   and safari ignore the ::-webkit-scrollbar rules while scrollbar-width/color are set, so those are reset there */
+@media (hover: hover) {
+  .carousel { scrollbar-width: auto; }
+  @supports selector(::-webkit-scrollbar) {
+    .carousel { scrollbar-width: auto; scrollbar-color: auto; }
+    .carousel::-webkit-scrollbar { height: 16px; background: #333; }
+    .carousel::-webkit-scrollbar-thumb { background: #5f574f; }
+  }
+}
+
+/* a cartridge: grey shell, clipped corner, thumbnail art, name, grip ridges. the shell is one svg laid out in
+   percentages, with the corner and pins pinned to its edges, so it fits whatever height the thumbnail ends up */
+.cart {
+  flex: none;
+  width: 7.5rem;
+  padding: .5rem .5rem 1.4rem;
+  border: 0;
+  background: url(assets/"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><mask id='m'><rect width='100%' height='100%' fill='white'/><svg x='100%' overflow='visible'><path d='M-12 0h12v12z'/></svg></mask><rect width='100%' height='100%' rx='3' fill='%235f574f' mask='url(%23m)'/><svg x='50%' y='100%' overflow='visible'><path stroke='%233a3a40' stroke-width='8' stroke-dasharray='4' d='M-34-10.4h68'/></svg></svg>");
+  font: inherit;
+  cursor: pointer;
+  transition: transform .15s;
+}
+.cart .thumbnail {  /* its tile of the thumbnail sprite sheet, set in thumbnails.css */
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  image-rendering: pixelated;
+  border: 3px solid #000;
+  border-bottom: 0;
+}
+.cart span {
+  display: block;
+  padding: .2rem .25rem;
+  background: #fff1e8;
+  color: #000;
+  font-size: .75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 3px solid #000;
+  border-top: 0;
+}
+.cart:hover, .cart:focus-visible { transform: translateY(-4px); outline: none; }
+.cart[aria-current] {
+  background-image: url(assets/"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><mask id='m'><rect width='100%' height='100%' fill='white'/><svg x='100%' overflow='visible'><path d='M-12 0h12v12z'/></svg></mask><rect width='100%' height='100%' rx='3' fill='%23ff004d' mask='url(%23m)'/><svg x='50%' y='100%' overflow='visible'><path stroke='%233a3a40' stroke-width='8' stroke-dasharray='4' d='M-34-10.4h68'/></svg></svg>");  /* same shell in red */
+  transform: translateY(-4px);
+}
+
+/* info panel: just a sideways "Game Info" tab on the left until opened, then it widens to show the game's
+   description and controls, with the tab sticking out past its right edge. it slides out over the
+   player rather than pushing it aside, so the game stays put */
+#meta .info { display: none; }
+#info {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;  /* over the player */
+  width: 2.5rem;
+  border-right: 2px solid transparent;
+  /* the grey snaps on when opening and only snaps off once it has slid shut, so it never fades */
+  transition: width .2s ease-out, background-color 0s .2s, border-color 0s .2s;
+}
+#info.open {
+  width: min(20rem, 80vw);
+  background: #333;  /* same grey as the shelf */
+  border-color: #333;
+  transition: width .2s ease-out;
+}
+#info-toggle {
+  position: absolute;
+  top: 50%;
+  right: .25rem;
+  padding: 1rem 0;
+  width: 2.25rem;  /* reaches the left edge of the closed panel */
+  height: 8rem;  /* fixed, since the text's length would set it in vertical writing */
+  border: 0;
+  border-radius: 3px 0 0 3px;  /* flat on the left once rotated */
+  background: #5f574f;
+  color: #fff1e8;
+  font: inherit;
+  font-size: 1rem;  /* same as the PicoPlayer logo */
+  font-weight: bold;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);  /* reads bottom to top */
+  cursor: pointer;
+  transition: right .2s ease-out;
+}
+#info.open #info-toggle { right: calc(-2.25rem - 2px); }  /* just outside the panel and its border */
+#info-toggle:hover, #info-toggle:focus-visible, #info.open #info-toggle { background: #ff004d; outline: none; }
+#info-body {
+  height: 100%;
+  padding: 1rem 1rem 4.5rem;  /* clear the shelf's strip below */
+  overflow: hidden auto;  /* clips the content while the panel widens */
+  color: #bbb;
+  font-size: .875rem;
+  visibility: hidden;
+  transition: visibility .2s;
+}
+#info.open #info-body { visibility: visible; }
+#info-body > * { width: calc(min(20rem, 80vw) - 2rem); }  /* full width from the start, so text doesn't reflow mid-slide */
+.byline { display: none; margin: 0 0 1rem; font-size: 1rem; }
+.byline b { color: #fff1e8; }
+.info p { margin: 0 0 1rem; }
+.info h2 { margin: 0 0 .5rem; color: #fff; font-size: .875rem; text-transform: uppercase; }
+/* descriptions copied from Lexaloffle posts bring their own headings, images, tables and code */
+.info :is(h1, h3, h4, h5, h6) { margin: 0 0 .5rem; color: #fff; font-size: .875rem; }
+.info :is(ul, ol) { margin: 0 0 1rem; padding-left: 1.25rem; }
+.info img { display: block; max-width: 100%; height: auto; margin: 0 0 1rem; image-rendering: pixelated; }
+.info :is(pre, table) { display: block; max-width: 100%; overflow-x: auto; margin: 0 0 1rem; }
+.info a { color: #29adff; overflow-wrap: anywhere; }
+.info hr { border: 0; border-top: 1px solid #555; margin: 0 0 1rem; }
+.info .source { color: #888; font-size: .75rem; }
+.info dl { display: grid; grid-template-columns: auto 1fr; gap: .25rem .75rem; margin: 0; }
+.info dt { color: #fff; white-space: nowrap; }
+.info dd { margin: 0; }
+
+#shelf-toggle { display: none; }
+
+/* touch screens can't hover, so the shelf becomes a sheet that pops up from a Games bar at the bottom,
+   with the cartridges in a grid that scrolls vertically */
+@media (hover: none) {
+  #meta { display: none; }
+  .stage { margin-bottom: 2rem; }  /* keep the game and its touch controls clear of the bar */
+  .shelf, .shelf:hover, .shelf:focus-within {
+    display: flex;
+    flex-direction: column;
+    height: 80dvh;
+    padding-top: 0;
+    transform: translateY(calc(100% - 2rem));
+  }
+  .shelf.open { transform: none; }
+  #search, .shelf:hover #search, .shelf:focus-within #search { top: 0; right: auto; left: 50%; translate: -50% -100%; visibility: hidden; }
+  .shelf.open #search { visibility: visible; }
+  /* dims the page behind the open sheet, and taps on it close the sheet */
+  .shelf.open::before { content: ""; position: fixed; inset: -100dvh 0 0; z-index: -1; background: rgb(0 0 0 / .6); }
+  #shelf-toggle {
+    display: block;
+    flex: none;
+    height: 2rem;
+    border: 0;
+    background: #5f574f;
+    color: #fff1e8;
+    font: inherit;
+    font-weight: bold;
+  }
+  #shelf-toggle::before { content: "\25B2  "; }
+  .shelf.open #shelf-toggle { background: #ff004d; }
+  .shelf.open #shelf-toggle::before { content: "\25BC  "; }
+  .carousel {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    align-content: start;
+    padding: 1rem;
+    overflow: hidden auto;
+  }
+  .cart { width: auto; }
+  .cart:hover { transform: none; }  /* a tap leaves :hover stuck on */
+  .cart[aria-current] { transform: none; }
+}
+
+/* touch screens: Game Info moves to the top right of the bar in place of Random Game,
+   and the game gets the full width now that the side tab is gone */
+@media (hover: none) {
+  #random { display: none; }
+  #player { margin-left: 0; }
+  #info { width: 0; }
+  #info-toggle, #info-toggle:hover, #info-toggle:focus-visible, #info.open #info-toggle {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+    padding: .75rem 1rem;
+    border-radius: 0;
+    background: none;
+    color: #ff77a8;
+    font-size: 1rem;
+    font-weight: normal;
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+  #info.open #info-toggle { color: #fff1e8; }
+  /* an invisible backdrop behind the open panel, over the game, so a tap anywhere else closes it.
+     the shelf and its Games bar stay above it */
+  #info.open::before { content: ""; position: fixed; inset: 0; z-index: -1; }
+  .byline { display: block; }  /* the title bar is hidden, so name the game and its creator in the panel */
+}
+
+/* touch screens held sideways: the game is a square in the middle with empty space above the touch controls,
+   so the nav floats over the top corners and the game takes its row too. only the links catch taps */
+@media (hover: none) and (orientation: landscape) {
+  nav { position: absolute; top: 0; left: 0; right: 0; z-index: 2; pointer-events: none; }  /* above the info panel */
+  nav a { pointer-events: auto; }
+  #info-body { padding-top: 3rem; }  /* clear the nav's row */
+}
+  </style>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="theme-color" content="#000">
   <script src="js/offline_pwa.js?v=2dc79516"></script>
-  <link rel="stylesheet" href="assets/thumbnails.css?v=3edb04eb">
+  <style data-src="assets/thumbnails.css">
+/* generated by build-thumbnails.sh: each cartridge's thumbnail art, as a tile of thumbnails.webp */
+.cart { container-type: inline-size; }  /* so the thumbnail can measure the cartridge (cqw) */
+.cart .thumbnail {
+  --s: calc((100cqw - 6px) / 128);  /* the thumbnail's width (the cartridge's content minus the thumbnail's border) per art pixel */
+  background: #000 url("assets/thumbnails.webp?v=89817ced") no-repeat;
+  background-size: calc(1690 * var(--s)) auto;
+  background-position: calc(var(--x) * var(--s) * -1) calc(var(--y) * var(--s) * -1);
+}
+.cart[fx-action="games/8-legs-to-love/meta.html"] .thumbnail { --x: 1; --y: 1; }
+.cart[fx-action="games/air-delivery/meta.html"] .thumbnail { --x: 131; --y: 1; }
+.cart[fx-action="games/alfonzos-bowling-challenge/meta.html"] .thumbnail { --x: 261; --y: 1; }
+.cart[fx-action="games/baba-is-you-demake/meta.html"] .thumbnail { --x: 391; --y: 1; }
+.cart[fx-action="games/balloon/meta.html"] .thumbnail { --x: 521; --y: 1; }
+.cart[fx-action="games/barp-the-balldragon/meta.html"] .thumbnail { --x: 651; --y: 1; }
+.cart[fx-action="games/bas/meta.html"] .thumbnail { --x: 781; --y: 1; }
+.cart[fx-action="games/beam/meta.html"] .thumbnail { --x: 911; --y: 1; }
+.cart[fx-action="games/birds-with-guns/meta.html"] .thumbnail { --x: 1041; --y: 1; }
+.cart[fx-action="games/blood-of-vladula-jr/meta.html"] .thumbnail { --x: 1171; --y: 1; }
+.cart[fx-action="games/breakout-hero/meta.html"] .thumbnail { --x: 1301; --y: 1; }
+.cart[fx-action="games/brutal-pico-race/meta.html"] .thumbnail { --x: 1431; --y: 1; }
+.cart[fx-action="games/bubble-bobble/meta.html"] .thumbnail { --x: 1561; --y: 1; }
+.cart[fx-action="games/build-a-jetpack/meta.html"] .thumbnail { --x: 1; --y: 131; }
+.cart[fx-action="games/bun-bun-samurai/meta.html"] .thumbnail { --x: 131; --y: 131; }
+.cart[fx-action="games/bunny-survivor/meta.html"] .thumbnail { --x: 261; --y: 131; }
+.cart[fx-action="games/bustin/meta.html"] .thumbnail { --x: 391; --y: 131; }
+.cart[fx-action="games/cab-ride/meta.html"] .thumbnail { --x: 521; --y: 131; }
+.cart[fx-action="games/caped-feline-arena/meta.html"] .thumbnail { --x: 651; --y: 131; }
+.cart[fx-action="games/cherry-bomb/meta.html"] .thumbnail { --x: 781; --y: 131; }
+.cart[fx-action="games/combo-pool/meta.html"] .thumbnail { --x: 911; --y: 131; }
+.cart[fx-action="games/crimson-night/meta.html"] .thumbnail { --x: 1041; --y: 131; }
+.cart[fx-action="games/demon-castle/meta.html"] .thumbnail { --x: 1171; --y: 131; }
+.cart[fx-action="games/digger/meta.html"] .thumbnail { --x: 1301; --y: 131; }
+.cart[fx-action="games/dodge/meta.html"] .thumbnail { --x: 1431; --y: 131; }
+.cart[fx-action="games/dominion-ex/meta.html"] .thumbnail { --x: 1561; --y: 131; }
+.cart[fx-action="games/donsol/meta.html"] .thumbnail { --x: 1; --y: 261; }
+.cart[fx-action="games/dont-dig-up-the-dead/meta.html"] .thumbnail { --x: 131; --y: 261; }
+.cart[fx-action="games/downward/meta.html"] .thumbnail { --x: 261; --y: 261; }
+.cart[fx-action="games/driftmania/meta.html"] .thumbnail { --x: 391; --y: 261; }
+.cart[fx-action="games/dungeon/meta.html"] .thumbnail { --x: 521; --y: 261; }
+.cart[fx-action="games/dust-bunny/meta.html"] .thumbnail { --x: 651; --y: 261; }
+.cart[fx-action="games/feathered-escape/meta.html"] .thumbnail { --x: 781; --y: 261; }
+.cart[fx-action="games/feed-the-ducks/meta.html"] .thumbnail { --x: 911; --y: 261; }
+.cart[fx-action="games/floodedcaves/meta.html"] .thumbnail { --x: 1041; --y: 261; }
+.cart[fx-action="games/freezing-knights/meta.html"] .thumbnail { --x: 1171; --y: 261; }
+.cart[fx-action="games/gars-den/meta.html"] .thumbnail { --x: 1301; --y: 261; }
+.cart[fx-action="games/ghost-house/meta.html"] .thumbnail { --x: 1431; --y: 261; }
+.cart[fx-action="games/guncho/meta.html"] .thumbnail { --x: 1561; --y: 261; }
+.cart[fx-action="games/hakai/meta.html"] .thumbnail { --x: 1; --y: 391; }
+.cart[fx-action="games/happy-larry/meta.html"] .thumbnail { --x: 131; --y: 391; }
+.cart[fx-action="games/harolds-bad-day/meta.html"] .thumbnail { --x: 261; --y: 391; }
+.cart[fx-action="games/high-stakes/meta.html"] .thumbnail { --x: 391; --y: 391; }
+.cart[fx-action="games/holiday-bowling/meta.html"] .thumbnail { --x: 521; --y: 391; }
+.cart[fx-action="games/holiday-jumper/meta.html"] .thumbnail { --x: 651; --y: 391; }
+.cart[fx-action="games/hot-wax/meta.html"] .thumbnail { --x: 781; --y: 391; }
+.cart[fx-action="games/hungry-harry-3d/meta.html"] .thumbnail { --x: 911; --y: 391; }
+.cart[fx-action="games/hydra/meta.html"] .thumbnail { --x: 1041; --y: 391; }
+.cart[fx-action="games/impossible-mission-rt/meta.html"] .thumbnail { --x: 1171; --y: 391; }
+.cart[fx-action="games/into-ruins/meta.html"] .thumbnail { --x: 1301; --y: 391; }
+.cart[fx-action="games/invader-overload/meta.html"] .thumbnail { --x: 1431; --y: 391; }
+.cart[fx-action="games/just-one-boss/meta.html"] .thumbnail { --x: 1561; --y: 391; }
+.cart[fx-action="games/katamari-christmassy/meta.html"] .thumbnail { --x: 1; --y: 521; }
+.cart[fx-action="games/lab-cat/meta.html"] .thumbnail { --x: 131; --y: 521; }
+.cart[fx-action="games/linecraft/meta.html"] .thumbnail { --x: 261; --y: 521; }
+.cart[fx-action="games/little-dragon-adventure/meta.html"] .thumbnail { --x: 391; --y: 521; }
+.cart[fx-action="games/little-eidolons/meta.html"] .thumbnail { --x: 521; --y: 521; }
+.cart[fx-action="games/little-necromancer/meta.html"] .thumbnail { --x: 651; --y: 521; }
+.cart[fx-action="games/loop/meta.html"] .thumbnail { --x: 781; --y: 521; }
+.cart[fx-action="games/mai-chans-sweet-buns/meta.html"] .thumbnail { --x: 911; --y: 521; }
+.cart[fx-action="games/mapuzzle/meta.html"] .thumbnail { --x: 1041; --y: 521; }
+.cart[fx-action="games/marballs-2/meta.html"] .thumbnail { --x: 1171; --y: 521; }
+.cart[fx-action="games/marble-merger/meta.html"] .thumbnail { --x: 1301; --y: 521; }
+.cart[fx-action="games/meas-castle/meta.html"] .thumbnail { --x: 1431; --y: 521; }
+.cart[fx-action="games/motion-rec/meta.html"] .thumbnail { --x: 1561; --y: 521; }
+.cart[fx-action="games/mots-8-ball-pool/meta.html"] .thumbnail { --x: 1; --y: 651; }
+.cart[fx-action="games/mots-grand-prix/meta.html"] .thumbnail { --x: 131; --y: 651; }
+.cart[fx-action="games/muse/meta.html"] .thumbnail { --x: 261; --y: 651; }
+.cart[fx-action="games/nanoman/meta.html"] .thumbnail { --x: 391; --y: 651; }
+.cart[fx-action="games/neath/meta.html"] .thumbnail { --x: 521; --y: 651; }
+.cart[fx-action="games/nemo-2/meta.html"] .thumbnail { --x: 651; --y: 651; }
+.cart[fx-action="games/nemo/meta.html"] .thumbnail { --x: 781; --y: 651; }
+.cart[fx-action="games/nemonic-crypt/meta.html"] .thumbnail { --x: 911; --y: 651; }
+.cart[fx-action="games/nest-2/meta.html"] .thumbnail { --x: 1041; --y: 651; }
+.cart[fx-action="games/night-ride/meta.html"] .thumbnail { --x: 1171; --y: 651; }
+.cart[fx-action="games/one-room-dungeon/meta.html"] .thumbnail { --x: 1301; --y: 651; }
+.cart[fx-action="games/orul/meta.html"] .thumbnail { --x: 1431; --y: 651; }
+.cart[fx-action="games/pakpok/meta.html"] .thumbnail { --x: 1561; --y: 651; }
+.cart[fx-action="games/pengo/meta.html"] .thumbnail { --x: 1; --y: 781; }
+.cart[fx-action="games/petal-quest/meta.html"] .thumbnail { --x: 131; --y: 781; }
+.cart[fx-action="games/petal-to-the-metal/meta.html"] .thumbnail { --x: 261; --y: 781; }
+.cart[fx-action="games/pico-ball/meta.html"] .thumbnail { --x: 391; --y: 781; }
+.cart[fx-action="games/pico-checkmate/meta.html"] .thumbnail { --x: 521; --y: 781; }
+.cart[fx-action="games/pico-de-pon/meta.html"] .thumbnail { --x: 651; --y: 781; }
+.cart[fx-action="games/pico-dino/meta.html"] .thumbnail { --x: 781; --y: 781; }
+.cart[fx-action="games/pico-froggo/meta.html"] .thumbnail { --x: 911; --y: 781; }
+.cart[fx-action="games/pico-off-road/meta.html"] .thumbnail { --x: 1041; --y: 781; }
+.cart[fx-action="games/pico-pirates/meta.html"] .thumbnail { --x: 1171; --y: 781; }
+.cart[fx-action="games/pico-snail-dream-castle/meta.html"] .thumbnail { --x: 1301; --y: 781; }
+.cart[fx-action="games/pico-tennis/meta.html"] .thumbnail { --x: 1431; --y: 781; }
+.cart[fx-action="games/pico-world-race/meta.html"] .thumbnail { --x: 1561; --y: 781; }
+.cart[fx-action="games/pico-zombie-garden/meta.html"] .thumbnail { --x: 1; --y: 911; }
+.cart[fx-action="games/picohot/meta.html"] .thumbnail { --x: 131; --y: 911; }
+.cart[fx-action="games/picolumia/meta.html"] .thumbnail { --x: 261; --y: 911; }
+.cart[fx-action="games/picowars/meta.html"] .thumbnail { --x: 391; --y: 911; }
+.cart[fx-action="games/pieces-of-cake/meta.html"] .thumbnail { --x: 521; --y: 911; }
+.cart[fx-action="games/pigments/meta.html"] .thumbnail { --x: 651; --y: 911; }
+.cart[fx-action="games/pirates-trial/meta.html"] .thumbnail { --x: 781; --y: 911; }
+.cart[fx-action="games/pizza-panda/meta.html"] .thumbnail { --x: 911; --y: 911; }
+.cart[fx-action="games/pole-station/meta.html"] .thumbnail { --x: 1041; --y: 911; }
+.cart[fx-action="games/pony-9000/meta.html"] .thumbnail { --x: 1171; --y: 911; }
+.cart[fx-action="games/poom/meta.html"] .thumbnail { --x: 1301; --y: 911; }
+.cart[fx-action="games/province/meta.html"] .thumbnail { --x: 1431; --y: 911; }
+.cart[fx-action="games/pullfrog/meta.html"] .thumbnail { --x: 1561; --y: 911; }
+.cart[fx-action="games/qbert/meta.html"] .thumbnail { --x: 1; --y: 1041; }
+.cart[fx-action="games/quest-for-the-book-of-truth/meta.html"] .thumbnail { --x: 131; --y: 1041; }
+.cart[fx-action="games/return-of-the-slimepires/meta.html"] .thumbnail { --x: 261; --y: 1041; }
+.cart[fx-action="games/rolly/meta.html"] .thumbnail { --x: 391; --y: 1041; }
+.cart[fx-action="games/ruby-eyes/meta.html"] .thumbnail { --x: 521; --y: 1041; }
+.cart[fx-action="games/samurise/meta.html"] .thumbnail { --x: 651; --y: 1041; }
+.cart[fx-action="games/scrap-boy/meta.html"] .thumbnail { --x: 781; --y: 1041; }
+.cart[fx-action="games/shadows-of-dunwich/meta.html"] .thumbnail { --x: 911; --y: 1041; }
+.cart[fx-action="games/shooting-star/meta.html"] .thumbnail { --x: 1041; --y: 1041; }
+.cart[fx-action="games/snekburd/meta.html"] .thumbnail { --x: 1171; --y: 1041; }
+.cart[fx-action="games/snow/meta.html"] .thumbnail { --x: 1301; --y: 1041; }
+.cart[fx-action="games/sokoblox/meta.html"] .thumbnail { --x: 1431; --y: 1041; }
+.cart[fx-action="games/solais/meta.html"] .thumbnail { --x: 1561; --y: 1041; }
+.cart[fx-action="games/sphongos/meta.html"] .thumbnail { --x: 1; --y: 1171; }
+.cart[fx-action="games/star-anise-chronicles/meta.html"] .thumbnail { --x: 131; --y: 1171; }
+.cart[fx-action="games/star-patrol/meta.html"] .thumbnail { --x: 261; --y: 1171; }
+.cart[fx-action="games/steps/meta.html"] .thumbnail { --x: 391; --y: 1171; }
+.cart[fx-action="games/subsurface/meta.html"] .thumbnail { --x: 521; --y: 1171; }
+.cart[fx-action="games/suika/meta.html"] .thumbnail { --x: 651; --y: 1171; }
+.cart[fx-action="games/super-disc-box/meta.html"] .thumbnail { --x: 781; --y: 1171; }
+.cart[fx-action="games/super-world-of-goo/meta.html"] .thumbnail { --x: 911; --y: 1171; }
+.cart[fx-action="games/swordfish/meta.html"] .thumbnail { --x: 1041; --y: 1171; }
+.cart[fx-action="games/tad/meta.html"] .thumbnail { --x: 1171; --y: 1171; }
+.cart[fx-action="games/tera-mind-over-matter/meta.html"] .thumbnail { --x: 1301; --y: 1171; }
+.cart[fx-action="games/terra-nova-pinball/meta.html"] .thumbnail { --x: 1431; --y: 1171; }
+.cart[fx-action="games/the-lost-night/meta.html"] .thumbnail { --x: 1561; --y: 1171; }
+.cart[fx-action="games/the-story-of-zeldo/meta.html"] .thumbnail { --x: 1; --y: 1301; }
+.cart[fx-action="games/thunder-bella/meta.html"] .thumbnail { --x: 131; --y: 1301; }
+.cart[fx-action="games/time-for-lunch/meta.html"] .thumbnail { --x: 261; --y: 1301; }
+.cart[fx-action="games/tiny-hawk/meta.html"] .thumbnail { --x: 391; --y: 1301; }
+.cart[fx-action="games/to-a-starling/meta.html"] .thumbnail { --x: 521; --y: 1301; }
+.cart[fx-action="games/trial-of-the-sorcerer/meta.html"] .thumbnail { --x: 651; --y: 1301; }
+.cart[fx-action="games/trichromat/meta.html"] .thumbnail { --x: 781; --y: 1301; }
+.cart[fx-action="games/tutankham/meta.html"] .thumbnail { --x: 911; --y: 1301; }
+.cart[fx-action="games/ufo-swamp-odyssey/meta.html"] .thumbnail { --x: 1041; --y: 1301; }
+.cart[fx-action="games/undune-2/meta.html"] .thumbnail { --x: 1171; --y: 1301; }
+.cart[fx-action="games/up-and-away/meta.html"] .thumbnail { --x: 1301; --y: 1301; }
+.cart[fx-action="games/vacay-volley/meta.html"] .thumbnail { --x: 1431; --y: 1301; }
+.cart[fx-action="games/valdi-shadows/meta.html"] .thumbnail { --x: 1561; --y: 1301; }
+.cart[fx-action="games/villager/meta.html"] .thumbnail { --x: 1; --y: 1431; }
+.cart[fx-action="games/walker/meta.html"] .thumbnail { --x: 131; --y: 1431; }
+.cart[fx-action="games/whiplash-taxi/meta.html"] .thumbnail { --x: 261; --y: 1431; }
+.cart[fx-action="games/willo/meta.html"] .thumbnail { --x: 391; --y: 1431; }
+.cart[fx-action="games/willthemangetfrog/meta.html"] .thumbnail { --x: 521; --y: 1431; }
+.cart[fx-action="games/witch-loves-bullets/meta.html"] .thumbnail { --x: 651; --y: 1431; }
+.cart[fx-action="games/wizardish/meta.html"] .thumbnail { --x: 781; --y: 1431; }
+.cart[fx-action="games/wolfenstein-3d/meta.html"] .thumbnail { --x: 911; --y: 1431; }
+.cart[fx-action="games/woodworm/meta.html"] .thumbnail { --x: 1041; --y: 1431; }
+.cart[fx-action="games/x-wing-vs-tie-fighter/meta.html"] .thumbnail { --x: 1171; --y: 1431; }
+.cart[fx-action="games/x-zero/meta.html"] .thumbnail { --x: 1301; --y: 1431; }
+.cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 1431; --y: 1431; }
+.cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 1561; --y: 1431; }
+  </style>
   <script src="js/fixi.js?v=f513737c"></script>
 </head>
 <body class="browse">

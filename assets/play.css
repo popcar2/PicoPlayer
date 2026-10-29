@@ -1,16 +1,4 @@
-* { box-sizing: border-box; }
-
-/* the pages hide <html> inline until this sheet arrives, so they never flash unstyled */
-html { visibility: visible; }
-
-body {
-  margin: 0;
-  background: #000;
-  color: #c2c3c7;
-  font: 16px/1.5 ui-monospace, "Cascadia Mono", Menlo, monospace;
-}
-
-a { color: #ff77a8; }
+/* the play page */
 
 nav {
   display: flex;
@@ -34,78 +22,6 @@ nav a:first-child { color: #fff1e8; font-weight: bold; }
 }
 nav a:last-child { margin-left: auto; }
 #meta b { color: #fff1e8; }
-
-/* home */
-
-/* content in the middle row, footer in the bottom one. the top row matches the bottom so the content sits in the middle
-   of the window, not of the space above the footer. when space runs short the top row shrinks first, but never
-   past the donate button and github mark in the corners (2.5rem down), and the bottom row down to the footer's
-   height once the page scrolls */
-.page {
-  display: grid;
-  grid-template-rows: minmax(3.25rem, 1fr) auto minmax(auto, 1fr);
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
-.home {
-  grid-row: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: 1rem;
-  text-align: center;
-}
-.home.about { max-width: 44rem; }
-.home h1 { color: #fff1e8; font-size: 2rem; margin: 0 0 1rem; }
-.home .play {
-  margin-top: 1rem;
-  padding: .5rem 1.25rem;
-  background: #ff004d;
-  color: #fff1e8;
-  text-decoration: none;
-  border-radius: 4px;
-}
-/* github mark in the top right corner */
-.github {
-  position: absolute;
-  top: .75rem;
-  right: 1rem;
-  opacity: .75;  /* dimmed until hovered */
-}
-.github:hover, .github:focus-visible { opacity: 1; }
-.github img { display: block; width: 1.75rem; height: 1.75rem; }
-/* donate button in the top left corner, across from the github mark: a smaller "Start Playing!" with a heart */
-.donate {
-  position: absolute;
-  top: .75rem;
-  left: 1rem;
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-  height: 1.75rem;
-  padding: 0 .75rem;
-  background: #ff004d;
-  color: #fff1e8;
-  font-size: .875rem;
-  text-decoration: none;
-  border-radius: 4px;
-}
-.donate svg { width: .875rem; height: .8rem; fill: currentColor; }
-/* in the page's bottom row, so it sits at the bottom but scrolls below the content when space runs out */
-.site-footer {
-  grid-row: 3;
-  align-self: end;
-  padding: 1rem;
-  font-size: .875rem;
-  text-align: center;
-}
-
-/* browse */
 
 .browse {
   display: flex;
@@ -290,13 +206,12 @@ nav a:last-child { margin-left: auto; }
 .info dt { color: #fff; white-space: nowrap; }
 .info dd { margin: 0; }
 
-#shelf-toggle, .hint-touch { display: none; }
+#shelf-toggle { display: none; }
 
 /* touch screens can't hover, so the shelf becomes a sheet that pops up from a Games bar at the bottom,
    with the cartridges in a grid that scrolls vertically */
 @media (hover: none) {
-  .hint-hover, #meta { display: none; }
-  .hint-touch { display: block; }
+  #meta { display: none; }
   .stage { margin-bottom: 2rem; }  /* keep the game and its touch controls clear of the bar */
   .shelf, .shelf:hover, .shelf:focus-within {
     display: flex;

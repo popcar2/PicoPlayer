@@ -13,7 +13,7 @@ if (!window.CSSViewTransitionRule && document.startViewTransition) {
       let response = await fetch(url)
       if (!response.ok || !response.headers.get("content-type")?.includes("text/html")) throw response
       let page = new DOMParser().parseFromString(await response.text(), "text/html")
-      await Promise.all([...page.head.querySelectorAll("link[rel=stylesheet], script[src]")].map(load))
+      await Promise.all([...page.head.querySelectorAll("link[rel=stylesheet], script[src], style[data-src]")].map(load))
       if (current != visits) return  // a newer click took over
       document.startViewTransition(() => {
         document.dispatchEvent(new Event("page:leave"))  // the old page drops its listeners on document and window
@@ -30,8 +30,13 @@ if (!window.CSSViewTransitionRule && document.startViewTransition) {
     }
   }
 
-  // adds a stylesheet or script the new page has and we don't, resolving once it has loaded
+  // adds a stylesheet or script the new page has and we don't, resolving once it has loaded. stylesheets inlined by
+  // build-offline.sh (<style data-src>) are added as they are
   function load(tag) {
+    if (tag.localName == "style") {
+      if (!document.head.querySelector(`style[data-src="${tag.dataset.src}"]`)) document.head.append(document.importNode(tag, true))
+      return
+    }
     let attr = tag.localName == "link" ? "href" : "src"
     let url = new URL(tag.getAttribute(attr), location).href
     if ([...document.head.querySelectorAll(tag.localName)].some((old) => old[attr] == url)) return
