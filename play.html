@@ -344,15 +344,16 @@
       document.title = meta.dataset.title + " · PicoPlayer"
       window.countGame?.(meta.dataset.cart.split("/")[1], meta.dataset.title)  // js/stats.js, unless a blocker stopped it
       let carts = meta.dataset.cart.split(" ").map((cart) => "../" + cart)  // main cart first, then any extra carts it loads
+      let banks = meta.dataset.banks && "../" + meta.dataset.banks  // data banks some games stream in (see pico8/player.html)
       let player = screen.contentWindow
-      if (player.p8_load_cart && !screen.dataset.loading) showLoading(screen, player.p8_load_cart(carts))
+      if (player.p8_load_cart && !screen.dataset.loading) showLoading(screen, player.p8_load_cart(carts, banks))
       else {
         screen.dataset.loading = true  // until the player page loads, swapping would reach the old one
         showLoading(screen, new Promise((resolve) => screen.addEventListener("load", () => {
           delete screen.dataset.loading
           resolve()
         }, { once: true })))
-        player.location.replace("pico8/player.html?" + carts.map((cart) => "cart=" + cart).join("&"))
+        player.location.replace("pico8/player.html?" + carts.map((cart) => "cart=" + cart).join("&") + (banks ? "&banks=" + banks : ""))
       }
       screen.focus()
     }, { signal })

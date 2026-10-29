@@ -11,9 +11,11 @@ html { background: #000; }
 	// shared player: the cart comes from ?cart=<url of a .p8.rom> instead of being baked into pico8.js.
 	// multi-cart games pass more carts as extra ?cart= params: pico8.js takes every cart's name in _cartname and
 	// their data back to back in _cartdat, so load("name.p8") finds them without going to the bbs
-	var p8_cart_url = null, _cartname = null, _cartdat = null;
+	// games with data banks also pass ?banks=<url prefix>, each bank being <prefix><number>.bin (see pico8_gpio below)
+	var p8_cart_url = null, _cartname = null, _cartdat = null, p8_banks = null;
 	var _cdpos = 0, iii = 0, ciii = 0;
-	var p8_cart_ready = p8_fetch_carts(new URLSearchParams(location.search).getAll("cart"));
+	var p8_params = new URLSearchParams(location.search);
+	var p8_cart_ready = p8_fetch_carts(p8_params.getAll("cart"), p8_params.get("banks"));
 
 	// a .p8.rom is the cart's 32k of memory as is
 	async function p8_fetch_cart(url)
@@ -22,12 +24,16 @@ html { background: #000; }
 	}
 
 	// resolves to a function that puts the carts where pico8.js reads them when it (re)boots
-	async function p8_fetch_carts(urls)
+	async function p8_fetch_carts(urls, banks)
 	{
 		var dats = await Promise.all(urls.map(p8_fetch_cart));
 		return function()
 		{
 			p8_cart_url = urls[0];
+			p8_banks = banks || null;
+			p8_bank_data = null;
+			p8_gpio_busy = false;
+			p8_space_button = 0;
 			_cartname = urls.map(function(url){ return url.split("/").pop().replace(/\.rom$/, ""); });
 			_cartdat = new Uint8Array(dats.length * 32768);
 			dats.forEach(function(dat, i){ _cartdat.set(dat, i * 32768); });
@@ -35,17 +41,22 @@ html { background: #000; }
 		};
 	}
 
+	function p8_player_query(urls, banks)
+	{
+		return urls.map(function(url){ return "cart=" + url; }).join("&") + (banks ? "&banks=" + banks : "");
+	}
+
 	// swap to other carts (urls as for ?cart=) without reloading the page, like lexaloffle.com's player does:
 	// codo_command 6 reboots the running machine, which reads the embedded carts again. resolves once the new
 	// carts are booted (pico8_state.frame_number counts their frames from then), or once a later call takes over
 	var p8_loads = 0;
-	async function p8_load_cart(urls)
+	async function p8_load_cart(urls, banks)
 	{
 		var load = ++p8_loads;
-		var set_carts = await p8_fetch_carts(urls);
+		var set_carts = await p8_fetch_carts(urls, banks);
 		if (load != p8_loads) return;
 		set_carts();
-		history.replaceState(null, "", "?" + urls.map(function(url){ return "cart=" + url; }).join("&"));  // a reload keeps the new carts
+		history.replaceState(null, "", "?" + p8_player_query(urls, banks));  // a reload keeps the new carts
 		codo_command = 6;
 		while (codo_command == 6) await new Promise(requestAnimationFrame);  // pico8.js takes the command on its next frame
 		await new Promise(requestAnimationFrame);
@@ -145,8 +156,44 @@ html { background: #000; }
 	var pico8_gamepads = {};
 	pico8_gamepads.count = 0;
 
-	// When pico8_gpio is defined, reading and writing to gpio pins will read and write to these values
-	var pico8_gpio = new Array(128);
+	// When pico8_gpio is defined, reading and writing to gpio pins will read and write to these values.
+	// games with data banks (POOM) also stream them in through the pins, the way their own web page does:
+	// the cart puts a bank number in pin 1 and 1 in pin 0, and once pin 0 is back to 0 the bank is fetched.
+	// then each 2 in pin 0 gets the next 126 bytes in pins 2+ with their count in pin 1 (0 once it's all sent).
+	// a 3 in pin 0 makes Space press the button in pin 1 (POOM's "use" key)
+	var p8_bank_data = null, p8_bank_pos = 0, p8_gpio_busy = false, p8_space_button = 0;
+	var pico8_gpio = new Proxy(new Array(128), {
+		set: function(pins, pin, value)
+		{
+			pins[pin] = value;
+			if (p8_gpio_busy || !p8_banks || pin != 0) return true;
+			if (value == 1)
+			{
+				p8_gpio_busy = true;
+				var load = p8_loads;
+				p8_fetch_cart(p8_banks + pins[1] + ".bin").then(function(dat){
+					if (load != p8_loads) return;  // carts were swapped (even for the same game) meanwhile
+					p8_bank_data = dat;
+					p8_bank_pos = 0;
+					pins[0] = pins[1] = 0;
+					p8_gpio_busy = false;
+				});
+			}
+			else if (value == 2 && p8_bank_data)
+			{
+				var n = Math.min(p8_bank_data.length - p8_bank_pos, 126);
+				for (var i = 0; i < n; i++) pins[2 + i] = p8_bank_data[p8_bank_pos++];
+				pins[1] = n;
+				pins[0] = 0;
+			}
+			else if (value == 3)
+			{
+				p8_space_button = pins[1];
+				pins[0] = 0;
+			}
+			return true;
+		}
+	});
 
 	// When pico8_audio_context context is defined, the html shell (this file) is responsible for creating and managing it.
 	// This makes satisfying browser requirements easier -- e.g. initialising audio from a short script in response to a user action.
@@ -1117,10 +1164,16 @@ html { background: #000; }
 		if (!p8_is_running) return;
 
 		if (pico8_state.has_focus == 1)
+		{
+			if (event.keyCode == 32) pico8_buttons[0] |= p8_space_button;  // a game's "use" key, if it set one (see pico8_gpio)
 			if ([32, 37, 38, 39, 40, 77, 82, 80, 9].indexOf(event.keyCode) > -1)       // block only cursors, M R P, tab
 				if (event.preventDefault) event.preventDefault();
+		}
 
 	},{passive: false});
+	document.addEventListener('keyup', function (event) {
+		if (p8_is_running && event.keyCode == 32) pico8_buttons[0] &= ~p8_space_button;
+	});
 
 	// when using codo_textarea to determine focus, need to explicitly hand focus back when clicking a p8_menu_button
 	function p8_give_focus()

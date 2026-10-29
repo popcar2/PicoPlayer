@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-1226db00"
+let version = "picoplayer-adc02f74"
 let files = {
   "about.html": "df6efdda",
   "assets/github.svg": "a5101cbd",
@@ -247,8 +247,34 @@ let files = {
   "games/pole-station/pole-station.p8.rom": "9856d055",
   "games/pony-9000/meta.html": "72fef92c",
   "games/pony-9000/pony-9000.p8.rom": "20f20865",
-  "games/poom/meta.html": "a4d264c8",
+  "games/poom/meta.html": "111c5460",
   "games/poom/poom_0.p8.rom": "b44cb541",
+  "games/poom/poom_bank_0.bin": "47f88a9c",
+  "games/poom/poom_bank_1.bin": "19c6aa57",
+  "games/poom/poom_bank_10.bin": "8b05f5fc",
+  "games/poom/poom_bank_11.bin": "9df131f3",
+  "games/poom/poom_bank_12.bin": "a4e17791",
+  "games/poom/poom_bank_13.bin": "4f4c0bcf",
+  "games/poom/poom_bank_14.bin": "98e81669",
+  "games/poom/poom_bank_15.bin": "9e1cfc9a",
+  "games/poom/poom_bank_16.bin": "7c2d9442",
+  "games/poom/poom_bank_17.bin": "24bdfbcc",
+  "games/poom/poom_bank_18.bin": "496621b8",
+  "games/poom/poom_bank_19.bin": "50ac05aa",
+  "games/poom/poom_bank_2.bin": "7f09196b",
+  "games/poom/poom_bank_20.bin": "c9670294",
+  "games/poom/poom_bank_21.bin": "1d2f2a39",
+  "games/poom/poom_bank_22.bin": "e3e11729",
+  "games/poom/poom_bank_23.bin": "467838e2",
+  "games/poom/poom_bank_24.bin": "54a18b1e",
+  "games/poom/poom_bank_25.bin": "6cdc580e",
+  "games/poom/poom_bank_3.bin": "61f79eec",
+  "games/poom/poom_bank_4.bin": "cd9ae564",
+  "games/poom/poom_bank_5.bin": "ede9ce9c",
+  "games/poom/poom_bank_6.bin": "54ec3fe5",
+  "games/poom/poom_bank_7.bin": "b8e12b35",
+  "games/poom/poom_bank_8.bin": "063096a0",
+  "games/poom/poom_bank_9.bin": "08f5f0fd",
   "games/poom/poom_e1.p8.rom": "fd9fad5a",
   "games/poom/poom_e2.p8.rom": "0919fe47",
   "games/province/meta.html": "bcc4182c",
@@ -389,8 +415,8 @@ let files = {
   "js/transitions.js": "ff113666",
   "manifest.webmanifest": "8aad173e",
   "pico8/pico8.js": "70cb21bf",
-  "pico8/player.html": "8b36cd01",
-  "play.html": "17719d08",
+  "pico8/player.html": "bf786443",
+  "play.html": "b58727cf",
   "technical_deets.html": "f732d4a5",
 }
 // precache:end

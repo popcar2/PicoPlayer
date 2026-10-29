@@ -1,5 +1,5 @@
 #!/bin/sh
-# List every file the site needs (pages, assets, the player and each game's meta.html and carts) with a hash of its
+# List every file the site needs (pages, assets, the player and each game's meta.html, carts and data banks) with a hash of its
 # contents in sw.js, which downloads them all once the site is installed as an app. Run it again whenever any of
 # those files change: the new hashes make browsers pick up the new service worker and refetch just what changed.
 set -e
@@ -16,7 +16,7 @@ done
 list=$(
   {
     ls *.html js/*.js manifest.webmanifest assets/* pico8/*.html pico8/*.js
-    ls games/*/meta.html games/*/*.p8.rom
+    ls games/*/meta.html games/*/*.p8.rom games/*/*.bin
   } | sort | xargs md5sum | awk '{ printf "  \"%s\": \"%s\",\n", $2, substr($1, 1, 8) }'
 )
 version=$(echo "$list" | md5sum | cut -c1-8)
