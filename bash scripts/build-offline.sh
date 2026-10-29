@@ -12,7 +12,7 @@ python3 -I - *.html <<'EOF'
 import os, re, sys
 def inline(m):
     css = open(m[1]).read()
-    css = re.sub(r"""url\((["']?)(?![a-z]+:|[/#%])""", lambda u: "url(" + u[1] + os.path.dirname(m[1]) + "/", css)
+    css = re.sub(r"""url\((?!["']?(?:[a-z]+:|[/#%]))(["']?)""", lambda u: "url(" + u[1] + os.path.dirname(m[1]) + "/", css)
     return f'<style data-src="{m[1]}">\n{css.rstrip()}\n{m[2]}</style>'
 for page in sys.argv[1:]:
     html = open(page).read()
