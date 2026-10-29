@@ -4,9 +4,9 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-aa9d46fb"
+let version = "picoplayer-b54479e3"
 let files = {
-  "about.html": "4378761f",
+  "about.html": "2be93db5",
   "assets/github.svg": "a5101cbd",
   "assets/icon-192.png": "145db495",
   "assets/icon-512.png": "993067c2",
@@ -16,8 +16,8 @@ let files = {
   "assets/icon.svg": "ddbab87b",
   "assets/loading.svg": "2c7642c3",
   "assets/style.css": "c31a4496",
-  "assets/thumbnails.css": "232885fa",
-  "assets/thumbnails.webp": "f6a8340a",
+  "assets/thumbnails.css": "ba696b0e",
+  "assets/thumbnails.webp": "24d116db",
   "games/8-legs-to-love/8-legs-to-love.p8.rom": "d617c5f2",
   "games/8-legs-to-love/meta.html": "f3ff0679",
   "games/air-delivery/air-delivery.p8.rom": "aed407ff",
@@ -307,8 +307,6 @@ let files = {
   "games/suika/suika.p8.rom": "77e6cfdc",
   "games/super-disc-box/meta.html": "a610e25d",
   "games/super-disc-box/super-disc-box.p8.rom": "dffbed1f",
-  "games/super-poulet-poulet/meta.html": "f7599f80",
-  "games/super-poulet-poulet/super-poulet-poulet.p8.rom": "72077ec0",
   "games/super-world-of-goo/meta.html": "4222cb90",
   "games/super-world-of-goo/super-world-of-goo.p8.rom": "5a64ba47",
   "games/swordfish/meta.html": "446a96e2",
@@ -384,15 +382,15 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.rom": "dfb1e851",
   "games/zoo-keeper/meta.html": "786e0a4d",
   "games/zoo-keeper/zoo-keeper.p8.rom": "ec0d7e6e",
-  "index.html": "49df3cf9",
+  "index.html": "7ee1fc1e",
   "js/fixi.js": "f513737c",
   "js/offline_pwa.js": "bcc77ede",
   "js/transitions.js": "ff113666",
   "manifest.webmanifest": "8aad173e",
   "pico8/pico8.js": "70cb21bf",
   "pico8/player.html": "3b37d72d",
-  "play.html": "5429b0f6",
-  "technical_deets.html": "0eb38335",
+  "play.html": "d7121c84",
+  "technical_deets.html": "3a96f4dd",
 }
 // precache:end
 
@@ -412,10 +410,23 @@ function pathFor(url) {
   if (files[path + ".html"]) return path + ".html"
 }
 
-// fetch a listed file into this version's cache, unless it's already there
+// fetch for a page that's open right now. while any are in flight the background download holds off on starting more
+// files, so what's on screen gets the connection to itself
+let busy = 0, waiting = []
+async function fetchNow(request, options) {
+  busy++
+  try {
+    return await fetch(request, options)
+  } finally {
+    if (!--busy) waiting.splice(0).forEach((resume) => resume())
+  }
+}
+let untilIdle = () => busy ? new Promise((resume) => waiting.push(resume)) : null
+
+// fetch a listed file into this version's cache, unless it's already there. at low priority, since nobody's waiting on it
 async function store(cache, path) {
   if (await cache.match(keyFor(path))) return
-  let response = await fetch(new URL(path, scope), { cache: "reload" })
+  let response = await fetch(new URL(path, scope), { cache: "reload", priority: "low" })
   if (!response.ok) throw new Error(`couldn't cache ${path}: ${response.status}`)
   await cache.put(keyFor(path), response)
 }
@@ -442,10 +453,17 @@ self.addEventListener("activate", (e) => e.waitUntil((async () => {
   await self.clients.claim()
 })()))
 
-// the installed app asks for everything
+// the installed app asks for everything. a few at a time, with the pages and the player before the carts, and pausing
+// whenever an open page is loading something, so it isn't stuck behind hundreds of downloads sharing the connection
 self.addEventListener("message", (e) => {
-  if (e.data == "download-all") e.waitUntil(caches.open(version).then((cache) =>
-    Promise.all(Object.keys(files).map((path) => store(cache, path).catch(() => {})))))
+  if (e.data != "download-all") return
+  let paths = Object.keys(files).sort((a, b) => a.startsWith("games/") - b.startsWith("games/"))
+  e.waitUntil(caches.open(version).then((cache) => Promise.all(Array.from({ length: 4 }, async () => {
+    while (paths.length) {
+      await untilIdle()
+      await store(cache, paths.shift()).catch(() => {})
+    }
+  }))))
 })
 
 // listed files come from the cache, or the network (and are kept) the first time. anything else of ours
@@ -463,12 +481,12 @@ self.addEventListener("fetch", (e) => {
       if (cached) return cached
       // the file itself, so /play works even where the server doesn't add .html. revalidated, so a copy the HTTP cache
       // kept from before a deploy isn't stored under the new hash
-      let response = await fetch(new URL(path, scope), { cache: "no-cache" })
+      let response = await fetchNow(new URL(path, scope), { cache: "no-cache" })
       if (response.ok) cache.put(keyFor(path), response.clone())
       return response
     }
     try {
-      let response = await fetch(e.request)
+      let response = await fetchNow(e.request)
       if (response.ok) cache.put(e.request, response.clone())
       return response
     } catch (error) {

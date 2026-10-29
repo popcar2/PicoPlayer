@@ -2,7 +2,7 @@
 .cart { container-type: inline-size; }  /* so the thumbnail can measure the cartridge (cqw) */
 .cart .thumbnail {
   --s: calc((100cqw - 6px) / 128);  /* the thumbnail's width (the cartridge's content minus the thumbnail's border) per art pixel */
-  background: #000 url("thumbnails.webp?v=f6a8340a") no-repeat;
+  background: #000 url("thumbnails.webp?v=24d116db") no-repeat;
   background-size: calc(1690 * var(--s)) auto;
   background-position: calc(var(--x) * var(--s) * -1) calc(var(--y) * var(--s) * -1);
 }
@@ -131,35 +131,34 @@
 .cart[fx-action="games/subsurface/meta.html"] .thumbnail { --x: 651; --y: 1171; }
 .cart[fx-action="games/suika/meta.html"] .thumbnail { --x: 781; --y: 1171; }
 .cart[fx-action="games/super-disc-box/meta.html"] .thumbnail { --x: 911; --y: 1171; }
-.cart[fx-action="games/super-poulet-poulet/meta.html"] .thumbnail { --x: 1041; --y: 1171; }
-.cart[fx-action="games/super-world-of-goo/meta.html"] .thumbnail { --x: 1171; --y: 1171; }
-.cart[fx-action="games/swordfish/meta.html"] .thumbnail { --x: 1301; --y: 1171; }
-.cart[fx-action="games/tad/meta.html"] .thumbnail { --x: 1431; --y: 1171; }
-.cart[fx-action="games/tera-mind-over-matter/meta.html"] .thumbnail { --x: 1561; --y: 1171; }
-.cart[fx-action="games/terra-nova-pinball/meta.html"] .thumbnail { --x: 1; --y: 1301; }
-.cart[fx-action="games/the-lost-night/meta.html"] .thumbnail { --x: 131; --y: 1301; }
-.cart[fx-action="games/the-story-of-zeldo/meta.html"] .thumbnail { --x: 261; --y: 1301; }
-.cart[fx-action="games/thunder-bella/meta.html"] .thumbnail { --x: 391; --y: 1301; }
-.cart[fx-action="games/time-for-lunch/meta.html"] .thumbnail { --x: 521; --y: 1301; }
-.cart[fx-action="games/tiny-hawk/meta.html"] .thumbnail { --x: 651; --y: 1301; }
-.cart[fx-action="games/to-a-starling/meta.html"] .thumbnail { --x: 781; --y: 1301; }
-.cart[fx-action="games/trial-of-the-sorcerer/meta.html"] .thumbnail { --x: 911; --y: 1301; }
-.cart[fx-action="games/trichromat/meta.html"] .thumbnail { --x: 1041; --y: 1301; }
-.cart[fx-action="games/tutankham/meta.html"] .thumbnail { --x: 1171; --y: 1301; }
-.cart[fx-action="games/ufo-swamp-odyssey/meta.html"] .thumbnail { --x: 1301; --y: 1301; }
-.cart[fx-action="games/undune-2/meta.html"] .thumbnail { --x: 1431; --y: 1301; }
-.cart[fx-action="games/up-and-away/meta.html"] .thumbnail { --x: 1561; --y: 1301; }
-.cart[fx-action="games/vacay-volley/meta.html"] .thumbnail { --x: 1; --y: 1431; }
-.cart[fx-action="games/valdi-shadows/meta.html"] .thumbnail { --x: 131; --y: 1431; }
-.cart[fx-action="games/villager/meta.html"] .thumbnail { --x: 261; --y: 1431; }
-.cart[fx-action="games/walker/meta.html"] .thumbnail { --x: 391; --y: 1431; }
-.cart[fx-action="games/whiplash-taxi/meta.html"] .thumbnail { --x: 521; --y: 1431; }
-.cart[fx-action="games/willo/meta.html"] .thumbnail { --x: 651; --y: 1431; }
-.cart[fx-action="games/willthemangetfrog/meta.html"] .thumbnail { --x: 781; --y: 1431; }
-.cart[fx-action="games/witch-loves-bullets/meta.html"] .thumbnail { --x: 911; --y: 1431; }
-.cart[fx-action="games/wizardish/meta.html"] .thumbnail { --x: 1041; --y: 1431; }
-.cart[fx-action="games/wolfenstein-3d/meta.html"] .thumbnail { --x: 1171; --y: 1431; }
-.cart[fx-action="games/x-wing-vs-tie-fighter/meta.html"] .thumbnail { --x: 1301; --y: 1431; }
-.cart[fx-action="games/x-zero/meta.html"] .thumbnail { --x: 1431; --y: 1431; }
-.cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 1561; --y: 1431; }
-.cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 1; --y: 1561; }
+.cart[fx-action="games/super-world-of-goo/meta.html"] .thumbnail { --x: 1041; --y: 1171; }
+.cart[fx-action="games/swordfish/meta.html"] .thumbnail { --x: 1171; --y: 1171; }
+.cart[fx-action="games/tad/meta.html"] .thumbnail { --x: 1301; --y: 1171; }
+.cart[fx-action="games/tera-mind-over-matter/meta.html"] .thumbnail { --x: 1431; --y: 1171; }
+.cart[fx-action="games/terra-nova-pinball/meta.html"] .thumbnail { --x: 1561; --y: 1171; }
+.cart[fx-action="games/the-lost-night/meta.html"] .thumbnail { --x: 1; --y: 1301; }
+.cart[fx-action="games/the-story-of-zeldo/meta.html"] .thumbnail { --x: 131; --y: 1301; }
+.cart[fx-action="games/thunder-bella/meta.html"] .thumbnail { --x: 261; --y: 1301; }
+.cart[fx-action="games/time-for-lunch/meta.html"] .thumbnail { --x: 391; --y: 1301; }
+.cart[fx-action="games/tiny-hawk/meta.html"] .thumbnail { --x: 521; --y: 1301; }
+.cart[fx-action="games/to-a-starling/meta.html"] .thumbnail { --x: 651; --y: 1301; }
+.cart[fx-action="games/trial-of-the-sorcerer/meta.html"] .thumbnail { --x: 781; --y: 1301; }
+.cart[fx-action="games/trichromat/meta.html"] .thumbnail { --x: 911; --y: 1301; }
+.cart[fx-action="games/tutankham/meta.html"] .thumbnail { --x: 1041; --y: 1301; }
+.cart[fx-action="games/ufo-swamp-odyssey/meta.html"] .thumbnail { --x: 1171; --y: 1301; }
+.cart[fx-action="games/undune-2/meta.html"] .thumbnail { --x: 1301; --y: 1301; }
+.cart[fx-action="games/up-and-away/meta.html"] .thumbnail { --x: 1431; --y: 1301; }
+.cart[fx-action="games/vacay-volley/meta.html"] .thumbnail { --x: 1561; --y: 1301; }
+.cart[fx-action="games/valdi-shadows/meta.html"] .thumbnail { --x: 1; --y: 1431; }
+.cart[fx-action="games/villager/meta.html"] .thumbnail { --x: 131; --y: 1431; }
+.cart[fx-action="games/walker/meta.html"] .thumbnail { --x: 261; --y: 1431; }
+.cart[fx-action="games/whiplash-taxi/meta.html"] .thumbnail { --x: 391; --y: 1431; }
+.cart[fx-action="games/willo/meta.html"] .thumbnail { --x: 521; --y: 1431; }
+.cart[fx-action="games/willthemangetfrog/meta.html"] .thumbnail { --x: 651; --y: 1431; }
+.cart[fx-action="games/witch-loves-bullets/meta.html"] .thumbnail { --x: 781; --y: 1431; }
+.cart[fx-action="games/wizardish/meta.html"] .thumbnail { --x: 911; --y: 1431; }
+.cart[fx-action="games/wolfenstein-3d/meta.html"] .thumbnail { --x: 1041; --y: 1431; }
+.cart[fx-action="games/x-wing-vs-tie-fighter/meta.html"] .thumbnail { --x: 1171; --y: 1431; }
+.cart[fx-action="games/x-zero/meta.html"] .thumbnail { --x: 1301; --y: 1431; }
+.cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 1431; --y: 1431; }
+.cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 1561; --y: 1431; }
