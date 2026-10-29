@@ -136,7 +136,7 @@ nav a:last-child { margin-left: auto; }
   transform: translateY(calc(100% - 3.75rem));
   transition: transform .2s ease-out;
 }
-.shelf:hover, .shelf:focus-within { transform: none; }
+.shelf:hover, .shelf:focus-within, .shelf.held { transform: none; }  /* held: the cursor left the window below it */
 
 /* a tab on the shelf's top right edge, only there while the shelf is up */
 #search {
@@ -157,7 +157,7 @@ nav a:last-child { margin-left: auto; }
   visibility: hidden;
 }
 #search::placeholder { color: #888; }
-.shelf:hover #search, .shelf:focus-within #search { visibility: visible; }
+.shelf:hover #search, .shelf:focus-within #search, .shelf.held #search { visibility: visible; }
 
 /* half-width side padding so even the first and last cartridge can sit in the middle */
 .carousel {
@@ -358,6 +358,9 @@ nav a:last-child { margin-left: auto; }
     transform: none;
   }
   #info.open #info-toggle { color: #fff1e8; }
+  /* an invisible backdrop behind the open panel, over the game, so a tap anywhere else closes it.
+     the shelf and its Games bar stay above it */
+  #info.open::before { content: ""; position: fixed; inset: 0; z-index: -1; }
   .byline { display: block; }  /* the title bar is hidden, so name the game and its creator in the panel */
 }
 

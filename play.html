@@ -8,7 +8,7 @@
   <meta name="color-scheme" content="dark">
   <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
   <script src="js/transitions.js?v=ff113666"></script>
-  <link rel="stylesheet" href="assets/style.css?v=48cdeeb1">
+  <link rel="stylesheet" href="assets/style.css?v=855a4c7d">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
@@ -209,13 +209,13 @@
     function slideTo(left, ms) {
       cancelAnimationFrame(frame)
       target = clamp(left)
-      if (!ms) { carousel.scrollLeft = target; return }
+      if (!ms) { carousel.scrollLeft = target; frame = 0; return }
       let from = carousel.scrollLeft, start = performance.now()
       let step = (now) => {
         let t = Math.min(1, (now - start) / ms)
         let ease = t < .5 ? 4 * t * t * t : 1 - (2 - 2 * t) ** 3 / 2
         carousel.scrollLeft = from + (target - from) * ease
-        if (t < 1) frame = requestAnimationFrame(step)
+        frame = t < 1 ? requestAnimationFrame(step) : 0
       }
       frame = requestAnimationFrame(step)
     }
@@ -226,7 +226,7 @@
       target = clamp(left)
       let step = () => {
         let gap = target - carousel.scrollLeft
-        if (Math.abs(gap) < 1) { carousel.scrollLeft = target; return }
+        if (Math.abs(gap) < 1) { carousel.scrollLeft = target; frame = 0; return }
         carousel.scrollLeft += Math.sign(gap) * Math.max(1, Math.abs(gap) * .15)  // at least 1px or rounding stalls it
         frame = requestAnimationFrame(step)
       }
@@ -235,6 +235,8 @@
 
     // clicking a cartridge would focus it and make the browser jump it into view; we do the scrolling
     carousel.addEventListener("mousedown", (e) => { if (e.target.closest(".cart")) e.preventDefault() })
+    // grabbing the scrollbar (a press on the carousel itself) takes over from any slide or glide still going
+    carousel.addEventListener("mousedown", (e) => { if (e.target == carousel) { cancelAnimationFrame(frame); frame = 0 } })
 
     // mark the inserted cartridge and slide it to the middle of the shelf (instantly for the first pick on load)
     document.addEventListener("click", (e) => {
@@ -291,13 +293,21 @@
       carts[Math.floor(Math.random() * carts.length)].click()
     })
 
-    // a plain mouse wheel scrolls the shelf sideways, continuing from wherever a slide was heading
+    // a plain mouse wheel scrolls the shelf sideways, continuing from wherever a slide still going was heading.
+    // otherwise it starts from where the shelf is, which may not be the last target if the scrollbar was dragged
     carousel.addEventListener("wheel", (e) => {
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return
       e.preventDefault()
-      let busy = Math.abs(target - carousel.scrollLeft) >= 1
-      glideTo((busy ? target : carousel.scrollLeft) + e.deltaY)
+      glideTo((frame ? target : carousel.scrollLeft) + e.deltaY)
     }, { passive: false })
+
+    // overshooting the scrollbar at the bottom of the screen takes the cursor out of the window, which would drop the
+    // shelf's hover. so leaving the window from anywhere over the shelf holds it up until the cursor comes back in.
+    // (not just from low on it: on a quick flick the last position the browser reports can still be up on the cartridges)
+    shelf.addEventListener("mouseout", (e) => {
+      if (!e.relatedTarget && !touch.matches) shelf.classList.add("held")
+    })
+    document.addEventListener("mouseover", () => shelf.classList.remove("held"), { signal })
 
     // no view transitions: they cover the page with a snapshot, freezing the slide and dropping the shelf's hover
     document.addEventListener("fx:config", (e) => e.detail.cfg.transition = false, { signal })
@@ -315,6 +325,8 @@
       setInfoOpen(!info.classList.contains("open"))
       document.querySelector("#screen").focus()  // keep the keys going to the game
     })
+    // on touch screens, tapping outside the open panel (its ::before backdrop) closes it
+    info.addEventListener("click", (e) => { if (e.target == info) setInfoOpen(false) })
 
     // once fixi swaps in the game's metadata, move its description and controls into the info panel
     // and boot its .p8.rom (plus any extra carts, listed after it in data-cart) in the shared player.

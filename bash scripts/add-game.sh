@@ -57,15 +57,17 @@ cart=$(fetch "$1")
 rom "$cart" "$dir/$slug.p8.rom"
 label "$cart" "$dir/thumbnail.png"
 shift 5
+carts="games/$slug/$slug.p8.rom"  # the main cart first, then the extras, for data-cart
 for extra in "$@"; do
   png=$(fetch "$extra")
   rom "$png" "$dir/$(basename "$png" .png).rom"
+  carts="$carts games/$slug/$(basename "$png" .png).rom"
 done
 sh "$(dirname "$(realpath "$0")")/minify-roms.sh" "$dir"/*.p8.rom
 
 cd "$dir"
 cat > meta.html <<EOF
-<span data-cart="games/$slug/$slug.p8.rom" data-title="$title"><b>$title</b> by <a href="https://www.lexaloffle.com/bbs/?uid=$uid" target="_blank" rel="noopener">$author</a></span>
+<span data-cart="$carts" data-title="$title"><b>$title</b> by <a href="https://www.lexaloffle.com/bbs/?uid=$uid" target="_blank" rel="noopener">$author</a></span>
 <div class="info">
   <p>TODO: description</p>
 </div>
