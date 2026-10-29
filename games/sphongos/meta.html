@@ -1,48 +1,46 @@
 <span data-cart="games/sphongos/sphongos.p8.rom" data-title="SPHONGOS"><b>SPHONGOS</b> by <a href="https://www.lexaloffle.com/bbs/?uid=14648" target="_blank" rel="noopener">mkoloch</a></span>
 <div class="info">
-<p>-</p>
-<br>
 <h1>Controls</h1>
 <ul>
 <li><strong>Navigate</strong> the world and UI: Arrow keys/d-pad</li>
 <li><strong>Interact</strong> the world and UI: X key/X button (Both Pico-8 buttons work)</li>
 </ul>
-<br>
+<hr>
 <h1>How To Play</h1>
 <ul>
 <li>Go out and gather samples from your surroundings</li>
 <li>Research samples in the lab to unlock and upgrade abilities</li>
 <li><strong>The game saves everything automatically!</strong></li>
 </ul>
-<br>
+<hr>
 <h1>Post Mortem</h1>
 <p>This post mortem is mostly me documenting the development of SPHONGOS and sharing some of my learnings. If there is anything specific you would like to know, just ask!<br>
 </p>
-<br>
+<hr>
 <h2>How it started</h2>
 <p>This game started as an entry for the A Game By Its Cover 2024 Jam on itch.io.<br>
 I had a rough last year and after failing to get anywhere with game development I turned to Pico-8 and tried to give myself a proper time frame and goals. The idea was to finish no matter what.</p>
-<br>
+<hr>
 <h2>Why Pico-8</h2>
 <p>I felt like having seemingly endless possibilities with bigger game engines made me unfocused and I thought a lot about unimportant things. I couldn't get to a point where I was making a game.</p>
 <p>The tools that Pico-8 provides are limited in a way that it feels like a creative challenge and a puzzle to get your vision on the screen. It feels like a game in itself. </p>
 <p>Coding in Lua is fairly easy and there is a ton of documentation and help online, I feel.</p>
 <p>I always liked Pico-8 and since I got a Powkiddy RGB30 I played a lot of cool games from splore.<br>
 Having my own game on this handheld device also seemed like a great motivation.</p>
-<br>
+<hr>
 <h2>The Idea</h2>
 <p>The entries for the AGBIC jam are based on the cover art of the Famicase exhibition. I went through the selection from 2024 and picked a few that I thought were inspiring. I landed on Mushroom farmer <a href="https://famicase.com/24/softs/188.html" target="_blank" rel="noopener">https://famicase.com/24/softs/188.html</a></p>
 <p>I didn't have time to properly start right away, so I had a while to think what I wanted to do. In between I played Loddlenauts and loved the cleaning laser mechanic, because it is very satisfying.<br>
 That's why I based the game around the idea of blasting fungi with a laser. Needless to say I strayed quite a bit from the famicase inspiration.</p>
 <p>Then I watched a few documentaries about fungi to have some knowledge to ground everything in. That turned out to be very helpful for coming up with ideas and narrative as well as names for things in the game. I had a few pages of notes about fungi and a bunch of words I could use to make things sound a bit more sciency :)</p>
-<br>
+<hr>
 <h2>Narrative</h2>
 <p>The basic narrative idea is based on the concept of global warming leading to fungi being more resistant to the body heat of mammals. that's what keeps them from killing us at the moment, but it is starting to change. It felt like a good hook to base a sci-fi game on. The game does not explicitly mention any of that, but it helps to know what's going on in the world you are building.</p>
-<br>
+<hr>
 <h2>Development</h2>
 <p>Disclaimer: This is the second Pico-8 project I ever started and the first I finished, so some of this might be old news, weird, or straight up wrong.</p>
 <p>I started with brainstorming a basic structure and content I wanted to have in the game like the upgrades, environments and life forms. It was faaar too much for the scope of the game of course and I ended up ditching a lot of things. I wish I would have kept the scope smaller from the beginning as I lost quite a bit of time working on systems that I ended up not needing at all.</p>
-<br>
+<hr>
 <h3>Playtesting</h3>
 <p>If you take anything away from this post mortem, it should be PLAYTEST as much and as soon as possible! It helped more than anything to put this game into people's hands to see how bad it is. The balancing was waaay off. No one understood the UI. People didn't even understand they were dying. I learned so much from just observing people playing the game.</p>
 <p>If you've never done playtesting:</p>
@@ -58,43 +56,43 @@ That's why I based the game around the idea of blasting fungi with a laser. Need
 	- Just observing is good, but If they do the streamer thing and comment everything they are doing and what they are thinking while doing it, you'll get the most valuably information<br>
 	- You will be surprised what people assume is going on or what they are supposed to do</li>
 </ul>
-<br>
+<hr>
 <h3>Scope</h3>
 <p>That was my biggest problem overall in the development of the game: scope!<br>
 In hindsight, I should have worked more on the core mechanic of gathering the fungi and make it as fun as possible. It became fun 2 days before release, when I sat down and implemented a particle system. I was so stressed in that moment, because there was so much left to do, that I timed the implementation and only gave myself 30 minutes to do it. Luckily it worked out and it gave the game a huge boost. I then continued to use it in a lot of places to make everything juicier.</p>
 <p>I regret not having the time to implement anything moving into the environment. I had some life form early on, but had to kick them, as I realized that I can't finish if I'm going to make them work well and maybe even have to put in more.</p>
-<br>
+<hr>
 <h3>Workflow</h3>
 <p>What I really liked about the development was my setup. I started out doing everything in Pico-8, but after a while, it was mentally too draining to keep coding with the pixel font and the tiny window. I switched to VSCode. </p>
 <p>I started a Git repository, where I now have all of my Pico-8 projects, because I feel they are too tiny to have a separate repository for every project.</p>
 <p>That way I was able to work at my Windows desktop PC and my trusty Linux Thinkpad in the kitchen or on the go whenever I felt like it.</p>
 <p>The one annoying thing about working with an external IDE is that I sometimes made changes in both VSCode and Pico-8 and lost some of them. If anyone knows a good solution for that other than being more disciplined about it, please tell me.</p>
-<br>
+<hr>
 <h3>Code</h3>
 <p>I'm not a programmer. I never properly learned how to code. I picked it up through making games and other things over the years, so I can do quite a lot, but it might look weird to someone who actually studied it. </p>
 <p>That said, I wrote pretty much everything from scratch. The only thing I took from the demos that ship with Pico-8 is the collision implementation, because I didn't want to waste the time figuring it out myself.</p>
 <p>I don't think there is anything terribly innovative about this game's code, but if you see something you want to know more about, hit me up.</p>
-<br>
+<hr>
 <h3>UI</h3>
 <p>I had a lot of fun working on the UI. As I have a background in graphics design, it comes quite easy to me and I enjoy tinkering with details, which can be a waste of time. But I think for this games it adds a lot to the sci-fi atmosphere.</p>
 <p>One of the first things I had implemented was VHS like tearing effect of the screen. It gave me a big boost in confidence and fun.</p>
 <p>Here's how I planned out some of the UI elements. In the bottom-right I even drew the case capacity display in pixels to make it all fit perfectly. </p>
 <p>As I printed most of the main panel I setup a function to add a line with some parameters to the UI. This function ended up being integral in getting a lot of information on the screen.</p>
-<br>
+<hr>
 <h3>Map</h3>
 <p>Initially I planned to have a much bigger map. Luckily I was at a point where I could see the scope being to big already, so I cut it in half. It is now 4x4 rooms that are split so they occupy 8x2 rooms on the tile map.</p>
 <p>Here is how I worked on the final map. This part felt like how you think game design would be, but almost never is :D</p>
 <p>I drew the basic layout and put down stuff to mark everything you can collect in the game and where the rooms would connect.</p>
 <p>When I was mostly satisfied I took the photo above and drew it on the map.</p>
-<br>
+<hr>
 <h3>Polish</h3>
 <p>I started polishing and adding effects quite late in the development. Anything that has particles was added 2 days before I uploaded the game for the first time to itch.io. A lot of sound effects were changed or added after that, because the visual effects added so much that I wanted to highlight them even more with sound.</p>
 <p>I'm very happy with how the whole game looks and feels. It's a great feeling when someone is playing it and you can hear where they are and what they are doing without looking.</p>
-<br>
+<hr>
 <h2>Release</h2>
 <p>I know from experience that releasing games can be a lot of work, so I new I had more work to do after uploading the game. I ended up re-designing the logo. Fiddled a lot with screenshots and gifs. Fixed bugs. Implemented a few quality of life things after more playtesting. Fixed more bugs.<br>
 Wrote this text!</p>
-<br>
+<hr>
 <h1>Contact</h1>
 <ul>
 <li>Check out my games: <a href="https://mkoloch.itch.io" target="_blank" rel="noopener">https://mkoloch.itch.io</a></li>
