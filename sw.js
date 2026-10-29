@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-a4d923d3"
+let version = "picoplayer-d0cd8d5f"
 let files = {
   "about.html": "7f43f45f",
   "assets/github.svg": "a5101cbd",
@@ -16,8 +16,8 @@ let files = {
   "assets/icon.svg": "ddbab87b",
   "assets/loading.svg": "2c7642c3",
   "assets/style.css": "48cdeeb1",
-  "assets/thumbnails.css": "ba696b0e",
-  "assets/thumbnails.webp": "24d116db",
+  "assets/thumbnails.css": "eab11dcb",
+  "assets/thumbnails.webp": "39594ac4",
   "games/8-legs-to-love/8-legs-to-love.p8.rom": "d617c5f2",
   "games/8-legs-to-love/meta.html": "38aea05b",
   "games/air-delivery/air-delivery.p8.rom": "aed407ff",
@@ -105,8 +105,6 @@ let files = {
   "games/freezing-knights/freezing_knights_rest.p8.rom": "6df72a40",
   "games/freezing-knights/freezing_knights_start.p8.rom": "064bea1f",
   "games/freezing-knights/meta.html": "b71d23c8",
-  "games/galactic-wars/galactic-wars.p8.rom": "1d365bab",
-  "games/galactic-wars/meta.html": "b4b0c5b0",
   "games/gars-den/gars-den.p8.rom": "6f4053ea",
   "games/gars-den/meta.html": "0ed29fb1",
   "games/ghost-house/ghost-house.p8.rom": "69f9024e",
@@ -382,7 +380,7 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.rom": "dfb1e851",
   "games/zoo-keeper/meta.html": "f7b46c27",
   "games/zoo-keeper/zoo-keeper.p8.rom": "ec0d7e6e",
-  "index.html": "f3637d67",
+  "index.html": "73bee386",
   "js/fixi.js": "f513737c",
   "js/offline_pwa.js": "2dc79516",
   "js/stats.js": "ff362159",
@@ -390,8 +388,8 @@ let files = {
   "manifest.webmanifest": "8aad173e",
   "pico8/pico8.js": "70cb21bf",
   "pico8/player.html": "8b36cd01",
-  "play.html": "0577a4b9",
-  "technical_deets.html": "7f85c105",
+  "play.html": "d2e3beae",
+  "technical_deets.html": "201e43fa",
 }
 // precache:end
 
