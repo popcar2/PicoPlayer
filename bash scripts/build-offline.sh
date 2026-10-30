@@ -5,14 +5,16 @@
 set -e
 cd "$(dirname "$(realpath "$0")")/.."
 
-# copy each stylesheet into the pages' <style data-src="assets/<name>.css"> blocks, so the first render doesn't wait on a
-# separate request for it. its url()s are relative to assets/, so they get that prefix. edit the .css files, not the
-# copies: this replaces them. done first, since it changes the pages' own hashes
+# copy each stylesheet into the pages' <style data-src="css/<name>.css"> blocks, so the first render doesn't wait on a
+# separate request for it. its url()s are relative to css/, so they're rewritten relative to the page (../assets/x.webp
+# becomes assets/x.webp). edit the .css files, not the copies: this replaces them. done first, since it changes the
+# pages' own hashes
 python3 -I - *.html <<'EOF'
-import os, re, sys
+import os, posixpath, re, sys
 def inline(m):
     css = open(m[1]).read()
-    css = re.sub(r"""url\((?!["']?(?:[a-z]+:|[/#%]))(["']?)""", lambda u: "url(" + u[1] + os.path.dirname(m[1]) + "/", css)
+    css = re.sub(r"""url\((["']?)(?!(?:[a-z]+:|[/#%]))([^"')]+)""",
+                 lambda u: "url(" + u[1] + posixpath.normpath(os.path.dirname(m[1]) + "/" + u[2]), css)
     return f'<style data-src="{m[1]}">\n{css.rstrip()}\n{m[2]}</style>'
 for page in sys.argv[1:]:
     html = open(page).read()
@@ -29,7 +31,7 @@ done
 
 list=$(
   {
-    ls *.html js/*.js manifest.webmanifest assets/* pico8/*.html pico8/*.js pico8/*.wasm | grep -v '\.css$'  # the stylesheets are inlined into the pages
+    ls *.html js/*.js manifest.webmanifest assets/* pico8/*.html pico8/*.js pico8/*.wasm | grep -v 'assets/social.png'  # the link preview image is only for other sites. css/ isn't listed: the stylesheets are inlined into the pages
     ls games/*/meta.html games/*/*.p8.rom games/*/*.bin
   } | sort | xargs md5sum | awk '{ printf "  \"%s\": \"%s\",\n", $2, substr($1, 1, 8) }'
 )

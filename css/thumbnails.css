@@ -2,7 +2,7 @@
 .cart { container-type: inline-size; }  /* so the thumbnail can measure the cartridge (cqw) */
 .cart .thumbnail {
   --s: calc((100cqw - 6px) / 128);  /* the thumbnail's width (the cartridge's content minus the thumbnail's border) per art pixel */
-  background: #000 url("thumbnails.webp?v=89817ced") no-repeat;
+  background: #000 url("../assets/thumbnails.webp?v=89817ced") no-repeat;
   background-size: calc(1690 * var(--s)) auto;
   background-position: calc(var(--x) * var(--s) * -1) calc(var(--y) * var(--s) * -1);
 }
