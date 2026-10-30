@@ -759,6 +759,7 @@ html { background: #000; }
 		{
 			pico8_audio_context = new webAudioAPI;
 			p8_normalize_audio(pico8_audio_context);
+			p8_queue_audio(pico8_audio_context);
 
 			// wake up iOS
 			if (pico8_audio_context)
@@ -777,11 +778,78 @@ html { background: #000; }
 		}
 	}
 
+	// pico8.js mixes its sound in a ScriptProcessorNode callback on the main thread. chrome and edge play 128 samples of
+	// silence whenever that callback is a little late, which crackles (lexaloffle.com too, but quiet carts the normaliser
+	// turns up, like DUNGEON!, made it obvious). so pico8.js gets a stand-in instead: the same callback is run a few buffers
+	// ahead and its output queued in an AudioWorklet, which then has ~60ms to spare instead of none.
+	// without AudioWorklet (old browsers, plain http) pico8.js gets the real ScriptProcessorNode as before
+	var p8_audio_queue_buffers = 3;
+	var p8_audio_queue_worklet = [
+		"registerProcessor('p8_audio_queue', class extends AudioWorkletProcessor {",
+		"	constructor() { super(); this.chunks = []; this.pos = 0; this.played = 0; this.quanta = 0; this.port.onmessage = (e) => this.chunks.push(e.data); }",
+		"	process(inputs, outputs) {",
+		"		const out = outputs[0][0];",
+		"		for (let i = 0; i < out.length; ) {",
+		"			const chunk = this.chunks[0];",
+		"			if (!chunk) break; // ran dry: the rest stays silent",
+		"			const n = Math.min(out.length - i, chunk.length - this.pos);",
+		"			out.set(chunk.subarray(this.pos, this.pos + n), i);",
+		"			i += n; this.pos += n; this.played += n;",
+		"			if (this.pos == chunk.length) { this.chunks.shift(); this.pos = 0; }",
+		"		}",
+		"		if (++this.quanta % 8 == 0) this.port.postMessage(this.played); // about as often as pico8.js's own callback ran",
+		"		return true;",
+		"	}",
+		"});"
+	].join("\n");
+	function p8_queue_audio(ctx)
+	{
+		if (!ctx.audioWorklet || typeof AudioWorkletNode == "undefined") return;
+		var create_script_processor = ctx.createScriptProcessor.bind(ctx);
+		var module = ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([p8_audio_queue_worklet], {type: "text/javascript"})));
+		ctx.createScriptProcessor = function(size, inputs, outputs)
+		{
+			var out = ctx.createGain(); // pico8.js connects this to the destination
+			var stand_in = {
+				bufferSize: size, onaudioprocess: null,
+				connect: function(dest){ return out.connect(dest); },
+				disconnect: function(){ out.disconnect(); }
+			};
+			var port = null, sent = 0, played = 0;
+			function fill()
+			{
+				while (port && stand_in.onaudioprocess && sent - played < size * p8_audio_queue_buffers)
+				{
+					var data = new Float32Array(size);
+					stand_in.onaudioprocess({outputBuffer: {getChannelData: function(){ return data; }}});
+					port.postMessage(data, [data.buffer]);
+					sent += size;
+				}
+			}
+			module.then(function()
+			{
+				var node = new AudioWorkletNode(ctx, "p8_audio_queue", {numberOfInputs: 0, outputChannelCount: [1]});
+				node.connect(out);
+				port = node.port;
+				port.onmessage = function(e){ played = e.data; fill(); };
+				fill();
+			}, function()
+			{
+				console.log("** p8_queue_audio failed, using a ScriptProcessorNode");
+				var real = create_script_processor(size, inputs, outputs);
+				real.onaudioprocess = function(e){ if (stand_in.onaudioprocess) stand_in.onaudioprocess(e); };
+				real.connect(out);
+			});
+			return stand_in;
+		};
+	}
+
 	// carts are mixed at very different loudness, so even them out with a slowly moving volume knob between
 	// pico8.js and the speakers: a gain that settles over a few seconds, followed by a limiter that only catches overs.
 	// pico8.js connects its output to <context>.destination, so that property is pointed at our input node.
 	// the analyser only gets sampled 10 times a second, so it costs next to nothing
 	var p8_target_rms = 0.08;               // about -22 dBFS
+	var p8_quiet_rms = 0.056;               // about -25 dBFS: only carts quieter than this get turned up, and only up to here
 	var p8_min_gain = 0.25, p8_max_gain = 4; // -12 dB .. +12 dB
 	var p8_reset_loudness = function(){};   // set below once the audio is up; called when carts are swapped
 	function p8_normalize_audio(ctx)
@@ -810,12 +878,12 @@ html { background: #000; }
 		}
 
 		var buf = new Float32Array(analyser.fftSize);
-		var mean_square = 0, peak = 0, frames = 0;
+		var mean_square = 0, peak = 0, frames = 0, loudest = 0;
 		// a new game starts measuring afresh, so it settles as fast as the first one instead of trailing the last game's level,
 		// and from unity gain: a quiet game's boost carried over would make a loud one clip until the gain caught up
 		p8_reset_loudness = function()
 		{
-			mean_square = peak = frames = 0;
+			mean_square = peak = frames = loudest = 0;
 			gain.gain.cancelScheduledValues(ctx.currentTime);
 			gain.gain.setValueAtTime(1, ctx.currentTime);
 		};
@@ -841,9 +909,15 @@ html { background: #000; }
 			var k = Math.max(1 / frames, 0.02);
 			mean_square += (ms - mean_square) * k;
 			peak = Math.max(max, peak * 0.995); // peak hold that decays over ~20 seconds
+			if (frames > 50) loudest = Math.max(loudest, mean_square); // once the average has settled
 
+			// loud carts come down to the target. a cart is only turned up if even its loudest stretch so far is quiet:
+			// otherwise quiet ambience, or a room with no music, would raise the volume and its next jump or explosion
+			// would play far louder than on lexaloffle.com (DUNGEON!'s jumps did)
+			var target = p8_target_rms / Math.sqrt(mean_square);
+			if (target > 1) target = Math.max(1, p8_quiet_rms / Math.sqrt(Math.max(mean_square, loudest)));
 			// never boost a cart past full scale, so normalising can't introduce clipping
-			var target = Math.min(p8_target_rms / Math.sqrt(mean_square), 0.98 / peak);
+			target = Math.min(target, 0.98 / peak);
 			target = Math.min(p8_max_gain, Math.max(p8_min_gain, target));
 			// quick for the first second of sound, so a loud game comes down right away, then slow so it doesn't pump
 			gain.gain.setTargetAtTime(target, ctx.currentTime, frames <= 10 ? 0.15 : 1);
