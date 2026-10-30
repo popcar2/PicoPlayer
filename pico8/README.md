@@ -10,3 +10,4 @@ I (well, Claude) made a few changes to make it more convenient for quickly brows
 * Multi-cart games are downloaded ahead of time and swapped without connecting to external servers
 * The audio is normalized (some games were way too quiet and some are way too loud), with a limiter to stop sudden loud sounds from clipping
 * Mobile controls appear white when pressed and have been adjusted to work properly with horizontal rotations
+* The deprecated `unload` listener is replaced with `pagehide`, so the page can go into the back/forward cache

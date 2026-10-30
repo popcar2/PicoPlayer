@@ -61,9 +61,10 @@ nav a:last-child { margin-left: auto; }
 #player { flex: 1; min-width: 0; margin-left: 2.5rem; }  /* room for the closed info tab, which overlays it */
 #player iframe { display: block; width: 100%; height: 100%; border: 0; }
 
-/* loading spinner, covering the player while a game boots */
+/* loading spinner, covering the player while a game boots. shown from the first paint, before any script runs,
+   so the svg is inline rather than a request that would hold it back */
 #player { position: relative; }
-#loading { position: absolute; inset: 0; background: #000 url(assets/loading.svg) center no-repeat; pointer-events: none; }
+#loading { position: absolute; inset: 0; background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 75 75'%3E%3Crect x='30' y='0' width='15' height='15' fill='%23FF004D'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.525s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='45' y='15' width='15' height='15' fill='%23FFCCAA'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.45s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='60' y='30' width='15' height='15' fill='%23FF77A8'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.375s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='45' y='45' width='15' height='15' fill='%231D2B53'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.3s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='30' y='60' width='15' height='15' fill='%2329ADFF'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.225s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='15' y='45' width='15' height='15' fill='%2300E436'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.15s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='0' y='30' width='15' height='15' fill='%23FFEC27'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.075s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='15' y='15' width='15' height='15' fill='%23FFA300'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='0s' repeatCount='indefinite'/%3E%3C/rect%3E%3C/svg%3E") center no-repeat; pointer-events: none; }
 #loading[hidden] { display: none; }
 
 /* tucked below the screen with a thin strip showing; slides up when the cursor nears the bottom.
@@ -181,6 +182,8 @@ nav a:last-child { margin-left: auto; }
   border: 3px solid #000;
   border-bottom: 0;
 }
+/* the sprite sheet isn't fetched until the shelf gets .thumbnails (see play.html), so it doesn't slow the first game down */
+.shelf:not(.thumbnails) .thumbnail { background-image: none; }
 .cart span {
   display: block;
   padding: .2rem .25rem;
@@ -522,7 +525,12 @@ nav a:last-child { margin-left: auto; }
 .cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 1431; --y: 1431; }
 .cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 1561; --y: 1431; }
   </style>
-  <script src="js/fixi.js?v=f513737c"></script>
+  <script src="js/fixi.js?v=f513737c" defer></script>
+  <!-- the first game waits for DOMContentLoaded, which waits for the deferred js/stats.js at the end of the body. the browser
+       would fetch that late and at low priority, so ask for it here, and connect early to the counter it loads -->
+  <link rel="preload" href="js/stats.js?v=f553d9a0" as="script">
+  <link rel="preconnect" href="https://gc.zgo.at">
+  <link rel="preconnect" href="https://popcar2.goatcounter.com">
 </head>
 <body class="browse">
   <nav><a href="./">PicoPlayer</a><a id="random" href="play">Random Game</a></nav>
@@ -535,7 +543,7 @@ nav a:last-child { margin-left: auto; }
     </aside>
     <main id="player">
       <iframe id="screen" title="PICO-8" allow="autoplay; fullscreen; gamepad"></iframe>
-      <div id="loading" role="status" aria-label="Loading game" hidden></div>
+      <div id="loading" role="status" aria-label="Loading game"></div>
     </main>
   </div>
 
@@ -755,7 +763,11 @@ nav a:last-child { margin-left: auto; }
       let previous = document.querySelector(".cart[aria-current]")
       previous?.removeAttribute("aria-current")
       cart.setAttribute("aria-current", "true")
-      history.replaceState(null, "", "#" + cart.getAttribute("fx-action").split("/")[1])  // shareable link to this game
+      // shareable link to this game. each game after the first gets its own history entry, so Back returns to the
+      // previous game rather than leaving the page (going Back lands here with the hash already set, so no new entry)
+      let hash = "#" + cart.getAttribute("fx-action").split("/")[1]
+      if (!previous) history.replaceState(null, "", hash)
+      else if (location.hash != hash) history.pushState(null, "", hash)
       if (touch.matches) setShelfOpen(false)
       else slideTo(cart.offsetLeft - (carousel.clientWidth - cart.offsetWidth) / 2, previous ? 450 : 0)
     }, { signal })
@@ -770,6 +782,11 @@ nav a:last-child { margin-left: auto; }
       if (open && cart) carousel.scrollTop = cart.offsetTop - (carousel.clientHeight - cart.offsetHeight) / 2
     }
     shelfToggle.addEventListener("click", () => setShelfOpen(!shelf.classList.contains("open")))
+
+    // the thumbnails are one big sprite sheet that would compete with the player for bandwidth, and the shelf starts out
+    // of sight: fetch it once the first game is running (showLoading below), or straight away if the shelf is wanted first
+    let showThumbnails = () => shelf.classList.add("thumbnails")
+    for (let type of ["mouseenter", "focusin", "pointerdown"]) shelf.addEventListener(type, showThumbnails, { once: true })  // not click: inserting the first game clicks a cartridge
 
     // first visit with a mouse (touch screens have the Games bar): an arrow points out the shelf until it's first opened, which is then remembered
     let tutorial = document.querySelector("#tutorial")
@@ -915,13 +932,18 @@ nav a:last-child { margin-left: auto; }
       loading.hidden = false
       booted.then(function check() {
         if (load != loads) return
-        if (screen.contentWindow.pico8_state?.frame_number > 0) loading.hidden = true
+        if (screen.contentWindow.pico8_state?.frame_number > 0) {
+          loading.hidden = true
+          showThumbnails()
+        }
         else requestAnimationFrame(check)
       })
     }
 
-    // fixi wires up the buttons on DOMContentLoaded first, then we insert the linked cartridge (#<slug>) or a random one
+    // on DOMContentLoaded we insert the linked cartridge (#<slug>) or a random one. fixi is deferred, so its own
+    // DOMContentLoaded listener comes after this one: ask it to wire up the buttons first (it skips them later)
     document.addEventListener("DOMContentLoaded", () => {
+      document.dispatchEvent(new Event("fx:process"))
       let game = location.hash.slice(1)
       let carts = [...document.querySelectorAll(".cart")]
       let linked = carts.find((cart) => cart.getAttribute("fx-action") == `games/${game}/meta.html`)
@@ -929,10 +951,13 @@ nav a:last-child { margin-left: auto; }
       cart.click()
     }, { signal })
 
-    // a game's link opened while already on this page only changes the hash, so insert that cartridge ourselves
-    addEventListener("hashchange", () => {
-      document.querySelector(`.cart[fx-action="games/${location.hash.slice(1)}/meta.html"]`)?.click()
-    }, { signal })
+    // Back and Forward between games, or a game's link opened while already on this page, only change the hash, so insert
+    // that cartridge ourselves. both events can fire for one change, and the second finds the cartridge already in
+    let insertFromHash = () => {
+      document.querySelector(`.cart[fx-action="games/${location.hash.slice(1)}/meta.html"]:not([aria-current])`)?.click()
+    }
+    addEventListener("popstate", insertFromHash, { signal })
+    addEventListener("hashchange", insertFromHash, { signal })
   }
   </script>
   <script src="js/stats.js?v=f553d9a0" defer></script>
