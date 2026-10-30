@@ -80,6 +80,43 @@ nav a:last-child { margin-left: auto; }
 }
 .shelf:hover, .shelf:focus-within, .shelf.held { transform: none; }  /* held: the cursor left the window below it */
 
+/* first visit, with a mouse: a note with an arrow bobbing down at the shelf's strip, in the bottom right corner or (.centred, placed by
+   play.html's script) centred between the game and the window's edge. it doesn't catch the mouse, so moving onto it
+   reaches the shelf's hover band behind it */
+#tutorial {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.25rem;  /* just above the shelf's strip */
+  z-index: 2;  /* over the game, under the shelf once it slides up */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .75rem;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+#tutorial.centred { right: 0; align-items: center; }  /* left is set to the game's right edge */
+#tutorial[hidden] { display: none; }
+/* invisible until play.html's script has found where it goes, so it doesn't jump there once the game shows up */
+#tutorial:not(.placed), #tutorial.gone { opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
+#tutorial span {
+  max-width: 16rem;
+  color: #fff1e8;
+  font-size: 1.25rem;
+  font-weight: bold;
+  line-height: 1.3;
+  text-align: right;
+}
+#tutorial.centred span { text-align: center; }
+#tutorial svg {
+  width: 3rem;
+  height: 3.75rem;
+  fill: #ff004d;
+  animation: bob 1s ease-in-out infinite alternate;
+}
+@keyframes bob { from { translate: 0 -.5rem; } }  /* bobs up from where it sits, so it never dips below the game */
+@media (prefers-reduced-motion: reduce) { #tutorial svg { animation: none; } }
+
 /* a tab on the shelf's top right edge, only there while the shelf is up */
 #search {
   position: absolute;
@@ -247,6 +284,7 @@ nav a:last-child { margin-left: auto; }
     transform: translateY(calc(100% - 2rem));
   }
   .shelf.open { transform: none; }
+  #tutorial { display: none; }  /* the Games bar is in plain sight, and there's no free spot that keeps clear of the game and its controls */
   #search, .shelf:hover #search, .shelf:focus-within #search { top: 0; right: auto; left: 50%; translate: -50% -100%; visibility: hidden; }
   .shelf.open #search { visibility: visible; }
   /* dims the page behind the open sheet, and taps on it close the sheet */
@@ -501,6 +539,8 @@ nav a:last-child { margin-left: auto; }
     </main>
   </div>
 
+  <div id="tutorial" hidden><span>Hover at the bottom of the screen to browse games</span><svg viewBox="0 0 16 20" aria-hidden="true"><path d="M8 20 0 12h5V0h6v12h5z"/></svg></div>
+
   <footer class="shelf"><button id="shelf-toggle" aria-expanded="false">Games</button><input id="search" type="search" placeholder="Search..." aria-label="Search games" autocomplete="off" spellcheck="false"><div class="carousel">
     <button class="cart" fx-action="games/8-legs-to-love/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>8 Legs to Love</span></button>
     <button class="cart" fx-action="games/mots-8-ball-pool/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>8-Ball Pool</span></button>
@@ -730,6 +770,46 @@ nav a:last-child { margin-left: auto; }
       if (open && cart) carousel.scrollTop = cart.offsetTop - (carousel.clientHeight - cart.offsetHeight) / 2
     }
     shelfToggle.addEventListener("click", () => setShelfOpen(!shelf.classList.contains("open")))
+
+    // first visit with a mouse (touch screens have the Games bar): an arrow points out the shelf until it's first opened, which is then remembered
+    let tutorial = document.querySelector("#tutorial")
+    try { tutorial.hidden = localStorage.getItem("tutorial-seen") == "true" } catch {}
+    function dismissTutorial() {
+      if (tutorial.hidden || tutorial.classList.contains("gone")) return
+      tutorial.classList.add("gone")  // fades out
+      clearInterval(placing)
+      try { localStorage.setItem("tutorial-seen", true) } catch {}
+    }
+    // centred in the gap between the game and the right edge of the window, with the arrow's tip level with the game's
+    // bottom edge. the player page sizes the game itself (and resizes it with the window), so its right edge, menu buttons
+    // included, and its bottom are measured a few times a second while shown. too narrow a gap, or no game to measure,
+    // leaves it in the corner. it fades in once the game has measured the same twice in a row (the player hides the game
+    // until it's running, then may resize it once more), or after a few seconds if there's never a game to measure
+    let measured
+    function placeTutorial() {
+      let edge = 0, bottom = 0
+      try {
+        let screen = document.querySelector("#screen"), doc = screen.contentDocument, frame = screen.getBoundingClientRect()
+        for (let el of doc.querySelectorAll("#canvas, .p8_menu_button")) {  // each button, as their box has no width
+          let rect = el.getBoundingClientRect()
+          if (!rect.width) continue
+          edge = Math.max(edge, frame.left + rect.right)
+          if (el.id == "canvas") bottom = frame.top + rect.bottom
+        }
+      } catch {}
+      let fits = edge && bottom && innerWidth - edge >= 12 * 16
+      tutorial.style.left = fits ? edge + "px" : ""
+      tutorial.style.bottom = fits ? innerHeight - bottom + "px" : ""
+      tutorial.classList.toggle("centred", !!fits)
+      if (edge && measured == edge + "," + bottom) tutorial.classList.add("placed")
+      measured = edge + "," + bottom
+    }
+    let placing = tutorial.hidden || touch.matches ? 0 : setInterval(placeTutorial, 250)
+    document.addEventListener("page:leave", () => clearInterval(placing), { signal })
+    if (placing) placeTutorial()
+    setTimeout(() => tutorial.classList.add("placed"), 5000)
+    shelf.addEventListener("mouseenter", () => { if (!touch.matches) dismissTutorial() })
+    shelf.addEventListener("focusin", dismissTutorial)
     shelf.addEventListener("click", (e) => { if (e.target == shelf) setShelfOpen(false) })
 
     // the search box hides every cartridge whose name doesn't match as you type, and brings the first match into view.

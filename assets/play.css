@@ -54,6 +54,43 @@ nav a:last-child { margin-left: auto; }
 }
 .shelf:hover, .shelf:focus-within, .shelf.held { transform: none; }  /* held: the cursor left the window below it */
 
+/* first visit, with a mouse: a note with an arrow bobbing down at the shelf's strip, in the bottom right corner or (.centred, placed by
+   play.html's script) centred between the game and the window's edge. it doesn't catch the mouse, so moving onto it
+   reaches the shelf's hover band behind it */
+#tutorial {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.25rem;  /* just above the shelf's strip */
+  z-index: 2;  /* over the game, under the shelf once it slides up */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .75rem;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+#tutorial.centred { right: 0; align-items: center; }  /* left is set to the game's right edge */
+#tutorial[hidden] { display: none; }
+/* invisible until play.html's script has found where it goes, so it doesn't jump there once the game shows up */
+#tutorial:not(.placed), #tutorial.gone { opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
+#tutorial span {
+  max-width: 16rem;
+  color: #fff1e8;
+  font-size: 1.25rem;
+  font-weight: bold;
+  line-height: 1.3;
+  text-align: right;
+}
+#tutorial.centred span { text-align: center; }
+#tutorial svg {
+  width: 3rem;
+  height: 3.75rem;
+  fill: #ff004d;
+  animation: bob 1s ease-in-out infinite alternate;
+}
+@keyframes bob { from { translate: 0 -.5rem; } }  /* bobs up from where it sits, so it never dips below the game */
+@media (prefers-reduced-motion: reduce) { #tutorial svg { animation: none; } }
+
 /* a tab on the shelf's top right edge, only there while the shelf is up */
 #search {
   position: absolute;
@@ -221,6 +258,7 @@ nav a:last-child { margin-left: auto; }
     transform: translateY(calc(100% - 2rem));
   }
   .shelf.open { transform: none; }
+  #tutorial { display: none; }  /* the Games bar is in plain sight, and there's no free spot that keeps clear of the game and its controls */
   #search, .shelf:hover #search, .shelf:focus-within #search { top: 0; right: auto; left: 50%; translate: -50% -100%; visibility: hidden; }
   .shelf.open #search { visibility: visible; }
   /* dims the page behind the open sheet, and taps on it close the sheet */

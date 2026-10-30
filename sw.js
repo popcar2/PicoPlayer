@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-4af1ad0a"
+let version = "picoplayer-f0a41c05"
 let files = {
   "about.html": "23419aa9",
   "assets/github.svg": "a5101cbd",
@@ -414,7 +414,7 @@ let files = {
   "manifest.webmanifest": "8aad173e",
   "pico8/pico8.js": "70cb21bf",
   "pico8/player.html": "0c98165e",
-  "play.html": "5c7ac154",
+  "play.html": "546b626f",
   "technical_deets.html": "bb238870",
 }
 // precache:end
