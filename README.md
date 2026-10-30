@@ -1,5 +1,5 @@
 <h1 align="center"><a href="https://picoplayer.net">PicoPlayer</a></h1>
-<h2 align="center">A tiny website for curated PICO 8 games</h2>
+<h3 align="center">A tiny website for curated PICO 8 games</h3>
 
 PicoPlayer is a non-commercial, open source, minimalist website that collects a curated list of PICO-8 games and makes them super convenient to play and sift through. No ads, no shovelware, no gotchas.
 
