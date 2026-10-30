@@ -808,8 +808,14 @@ html { background: #000; }
 
 		var buf = new Float32Array(analyser.fftSize);
 		var mean_square = 0, peak = 0, frames = 0;
-		// a new game starts measuring afresh, so it settles as fast as the first one instead of trailing the last game's level
-		p8_reset_loudness = function(){ mean_square = peak = frames = 0; };
+		// a new game starts measuring afresh, so it settles as fast as the first one instead of trailing the last game's level,
+		// and from unity gain: a quiet game's boost carried over would make a loud one clip until the gain caught up
+		p8_reset_loudness = function()
+		{
+			mean_square = peak = frames = 0;
+			gain.gain.cancelScheduledValues(ctx.currentTime);
+			gain.gain.setValueAtTime(1, ctx.currentTime);
+		};
 		setInterval(function()
 		{
 			if (ctx.state != "running") return;
@@ -836,7 +842,8 @@ html { background: #000; }
 			// never boost a cart past full scale, so normalising can't introduce clipping
 			var target = Math.min(p8_target_rms / Math.sqrt(mean_square), 0.98 / peak);
 			target = Math.min(p8_max_gain, Math.max(p8_min_gain, target));
-			gain.gain.setTargetAtTime(target, ctx.currentTime, 1);
+			// quick for the first second of sound, so a loud game comes down right away, then slow so it doesn't pump
+			gain.gain.setTargetAtTime(target, ctx.currentTime, frames <= 10 ? 0.15 : 1);
 		}, 100);
 	}
 
