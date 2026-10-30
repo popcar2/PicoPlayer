@@ -24,7 +24,7 @@ However, here are some *general* guidelines:
 
 ---
 
-AI disclosure: This project is AI-assisted using Claude. The general architecture and website design were made by myself, with lots of extensive testing/reviewing. I also played and curated the list of games myself. None of the games included are AI generated.
+AI disclosure: This project is AI-assisted using Claude. The general architecture and website design were made by myself, with lots of extensive testing/reviewing. I also played and curated the list of games myself. None of the games included are AI generated. None of the text you're reading is AI generated.
 
 ---
 
