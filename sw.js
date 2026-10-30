@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-4a51c4e2"
+let version = "picoplayer-41016fd0"
 let files = {
   "about.html": "23419aa9",
   "assets/github.svg": "a5101cbd",
@@ -130,7 +130,7 @@ let files = {
   "games/impossible-mission-rt/meta.html": "93b3b115",
   "games/into-ruins/into-ruins.p8.rom": "77e8a36c",
   "games/into-ruins/intoruins.p8.rom": "77e8a36c",
-  "games/into-ruins/intoruins_main-7.p8.rom": "6def639c",
+  "games/into-ruins/intoruins_main-7.p8.rom": "ffb9434f",
   "games/into-ruins/meta.html": "48a29ec0",
   "games/invader-overload/invader-overload.p8.rom": "67f58cb9",
   "games/invader-overload/meta.html": "75ed0630",
@@ -411,8 +411,9 @@ let files = {
   "js/stats.js": "f553d9a0",
   "js/transitions.js": "c0fe748c",
   "manifest.webmanifest": "8aad173e",
-  "pico8/pico8.js": "5e21ee85",
-  "pico8/player.html": "2ae0238c",
+  "pico8/pico8.js": "ab2fb81b",
+  "pico8/pico8.wasm": "c4ab0847",
+  "pico8/player.html": "3168719f",
   "play.html": "ea5366f4",
   "technical_deets.html": "bb238870",
 }

@@ -29,7 +29,7 @@ done
 
 list=$(
   {
-    ls *.html js/*.js manifest.webmanifest assets/* pico8/*.html pico8/*.js | grep -v '\.css$'  # the stylesheets are inlined into the pages
+    ls *.html js/*.js manifest.webmanifest assets/* pico8/*.html pico8/*.js pico8/*.wasm | grep -v '\.css$'  # the stylesheets are inlined into the pages
     ls games/*/meta.html games/*/*.p8.rom games/*/*.bin
   } | sort | xargs md5sum | awk '{ printf "  \"%s\": \"%s\",\n", $2, substr($1, 1, 8) }'
 )

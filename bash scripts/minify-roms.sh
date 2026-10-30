@@ -21,6 +21,27 @@ for rom in "$@"; do
   python3 -I -c 'import sys; open(sys.argv[2], "wb").write(open(sys.argv[1], "rb").read().ljust(32768, b"\0"))' \
     "$rom" "$tmp/in.p8.rom"
   python3 "$shrinko8" "$tmp/in.p8.rom" "$tmp/out.p8.rom" --minify-safe-only || { echo "$rom: skipped, shrinko8 failed" >&2; continue; }
+  # shrinko8 can turn "if c then (x).f() end" into the shorthand "if(c)(x).f()", which PICO-8 reads as calling the
+  # condition and then fails to parse (this broke Into Ruins). so decode what it made and skip the rom if any shorthand
+  # if or while has a statement starting with "("
+  python3 "$shrinko8" "$tmp/out.p8.rom" "$tmp/out.p8" || { echo "$rom: skipped, shrinko8 can't read its own output" >&2; continue; }
+  python3 -I -c '
+import re, sys
+lua = open(sys.argv[2], encoding="utf-8", errors="replace").read().split("__lua__\n", 1)[-1].split("\n__", 1)[0]
+for line in lua.split("\n"):
+    for m in re.finditer(r"\b(if|while)\s*\(", line):
+        i, depth, quote = m.end(), 1, None  # find the paren closing the condition, skipping over strings
+        while i < len(line) and depth:
+            c = line[i]
+            if quote:
+                if c == "\\": i += 1
+                elif c == quote: quote = None
+            elif c in "\"\x27": quote = c
+            elif c == "(": depth += 1
+            elif c == ")": depth -= 1
+            i += 1
+        if not depth and re.match(r"\s*\(", line[i:]): sys.exit(sys.argv[1] + ": skipped, shrinko8 made a shorthand PICO-8 misreads: " + line[m.start():i + 30])
+' "$rom" "$tmp/out.p8" || continue
   # keep the new rom only if everything before the code (0x4300 on: graphics, map, sound) is the same and, for
   # compressed code, nothing was stored after it (some carts reload() data from there, which re-encoding would lose)
   python3 -I -c '

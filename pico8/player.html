@@ -7,8 +7,9 @@ html { background: #000; }
 </style>
 <title>PICO-8 Cartridge</title>
 <meta name="viewport" content="width=device-width, user-scalable=no">
-<!-- fetched alongside the carts rather than after them (p8_run_cart adds the script once they are in) -->
-<link rel="preload" href="pico8.js?v=4" as="script">
+<!-- fetched alongside the carts rather than after them (p8_run_cart adds the script once they are in, which then fetches the wasm) -->
+<link rel="preload" href="pico8.js?v=5" as="script">
+<link rel="preload" href="pico8.wasm?v=5" as="fetch" type="application/wasm" crossorigin>
 <script type="text/javascript">
 	// shared player: the cart comes from ?cart=<url of a .p8.rom> instead of being baked into pico8.js.
 	// multi-cart games pass more carts as extra ?cart= params: pico8.js takes every cart's name in _cartname and
@@ -908,7 +909,7 @@ html { background: #000; }
 
 		}
 		e.type = "application/javascript";
-		e.src = "pico8.js?v=4"; // bump when pico8.js is patched so browsers drop the cached copy
+		e.src = "pico8.js?v=5"; // bump (here, in the preloads above and in pico8.js's wasmBinaryFile) when pico8.js or pico8.wasm is patched so browsers drop the cached copy
 		e.id = "e_script";
 		
 		// load and run once the cart is decoded (unless p8_load_cart already put other carts in)
