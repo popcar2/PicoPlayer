@@ -966,6 +966,45 @@ html { background: #000; }
 		window.location.hash = ""; // triggers reload
 	}
 
+	// saves (cartdata, cstore) live in /user_data, which pico8.js mounts from IndexedDB itself, but asynchronously while the
+	// cart boots, and it writes config.txt and syncs the folder back straight away. that sync scans /user_data before the
+	// mount has filled it, so it deletes every save from IndexedDB (lexaloffle.com's slower boot happens to dodge this), and a
+	// cart that calls cartdata() in _init reads nothing. so mount it here instead, holding pico8.js back until it's read in,
+	// and run its syncs one at a time. runs as a Module.preRun, once pico8.js has set up FS but before it starts
+	function p8_mount_user_data()
+	{
+		var mount = FS.mount.bind(FS), sync = FS.syncfs.bind(FS), queue = Promise.resolve(), ours = false, mounted = false;
+		FS.mount = function(type, opts, mountpoint)
+		{
+			if (mountpoint == "/user_data" && ours) return; // pico8.js's own mount
+			return mount.apply(null, arguments);
+		};
+		FS.syncfs = function(populate, callback)
+		{
+			if (typeof populate == "function") { callback = populate; populate = false; }
+			callback = callback || function(){};
+			if (populate && mounted) { setTimeout(function(){ callback(null); }); return; } // pico8.js's own read: done below
+			queue = queue.then(function(){ return new Promise(function(done){ sync(populate, function(err){ done(); callback(err); }); }); });
+		};
+		function mkdir(path){ try { FS.stat(path); } catch(err) { FS.mkdir(path); } }
+		mkdir("/user_data");
+		mount(IDBFS, {}, "/user_data");
+		ours = true;
+		addRunDependency("p8_user_data");
+		FS.syncfs(true, function(err)
+		{
+			if (err) console.log("** could not mount filesystem", err);
+			else
+			{
+				mounted = true;
+				codo_mounted_filesystem = 1;
+				// what pico8.js makes once it has mounted, so the cart can save before its callback gets here
+				["cdata", "cstore", "carts", "backup", "plates", "bbs", "bbs/carts", "bbs/labels"].forEach(function(dir){ mkdir("/user_data/" + dir); });
+			}
+			removeRunDependency("p8_user_data");
+		});
+	}
+
 	var p8_is_running = false;
 	var p8_script = null;
 	var Module = null;
@@ -1493,6 +1532,7 @@ canvas{
 	var canvas = document.getElementById("canvas");
 	Module = {};
 	Module.canvas = canvas;
+	Module.preRun = [p8_mount_user_data];
 
 	// from @ultrabrite's shell: test if an AudioContext can be created outside of an event callback.
 	// If it can't be created, then require pressing the start button to run the cartridge
