@@ -4,7 +4,7 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-3ba8e060"
+let version = "picoplayer-adc4f59a"
 let files = {
   "about.html": "4fbb5bd1",
   "assets/github.svg": "a5101cbd",
@@ -14,7 +14,7 @@ let files = {
   "assets/icon-any-512.png": "ff2eb6b9",
   "assets/icon-any.svg": "07bdfcfb",
   "assets/icon.svg": "ddbab87b",
-  "assets/thumbnails.webp": "89817ced",
+  "assets/thumbnails.webp": "9af2a16f",
   "assets/tutorial.webp": "98afe733",
   "games/8-legs-to-love/8-legs-to-love.p8.rom": "d617c5f2",
   "games/8-legs-to-love/meta.html": "38aea05b",
@@ -127,8 +127,6 @@ let files = {
   "games/hungry-harry-3d/meta.html": "a82cce36",
   "games/hydra/hydra.p8.rom": "97eee69b",
   "games/hydra/meta.html": "10911390",
-  "games/impossible-mission-rt/impossible-mission-rt.p8.rom": "282adfc2",
-  "games/impossible-mission-rt/meta.html": "93b3b115",
   "games/into-ruins/into-ruins.p8.rom": "77e8a36c",
   "games/into-ruins/intoruins.p8.rom": "77e8a36c",
   "games/into-ruins/intoruins_main-7.p8.rom": "ffb9434f",
@@ -414,8 +412,8 @@ let files = {
   "manifest.webmanifest": "8aad173e",
   "pico8/pico8.js": "c323d259",
   "pico8/pico8.wasm": "d9cefa8b",
-  "pico8/player.html": "150e7337",
-  "play.html": "d1939ab9",
+  "pico8/player.html": "4d16d5d3",
+  "play.html": "bcf4a7ea",
   "technical_deets.html": "e41d9176",
 }
 // precache:end

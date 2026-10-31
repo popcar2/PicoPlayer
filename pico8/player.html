@@ -782,22 +782,34 @@ html { background: #000; }
 	// silence whenever that callback is a little late, which crackles (lexaloffle.com too, but quiet carts the normaliser
 	// turns up, like DUNGEON!, made it obvious). so pico8.js gets a stand-in instead: the same callback is run a few buffers
 	// ahead and its output queued in an AudioWorklet, which then has ~60ms to spare instead of none.
+	// if it does run dry anyway, the sound fades out and back in rather than cutting to silence, which pops
 	// without AudioWorklet (old browsers, plain http) pico8.js gets the real ScriptProcessorNode as before
 	var p8_audio_queue_buffers = 3;
 	var p8_audio_queue_worklet = [
 		"registerProcessor('p8_audio_queue', class extends AudioWorkletProcessor {",
-		"	constructor() { super(); this.chunks = []; this.pos = 0; this.played = 0; this.quanta = 0; this.port.onmessage = (e) => this.chunks.push(e.data); }",
+		"	constructor() { super(); this.chunks = []; this.pos = 0; this.played = 0; this.quanta = 0; this.last = 0; this.dry = 0; this.fade_in = 1;",
+		"		this.port.onmessage = (e) => this.chunks.push(e.data); }",
 		"	process(inputs, outputs) {",
 		"		const out = outputs[0][0];",
-		"		for (let i = 0; i < out.length; ) {",
+		"		let i = 0;",
+		"		while (i < out.length) {",
 		"			const chunk = this.chunks[0];",
-		"			if (!chunk) break; // ran dry: the rest stays silent",
+		"			if (!chunk) break;",
 		"			const n = Math.min(out.length - i, chunk.length - this.pos);",
 		"			out.set(chunk.subarray(this.pos, this.pos + n), i);",
 		"			i += n; this.pos += n; this.played += n;",
 		"			if (this.pos == chunk.length) { this.chunks.shift(); this.pos = 0; }",
 		"		}",
-		"		if (++this.quanta % 8 == 0) this.port.postMessage(this.played); // about as often as pico8.js's own callback ran",
+		"		// back after running dry: ease in from silence instead of jumping straight into the waveform",
+		"		for (let j = 0; j < i && this.fade_in < 1; j++) { this.fade_in = Math.min(1, this.fade_in + 1 / 64); out[j] *= this.fade_in; }",
+		"		if (i > 0) this.last = out[i - 1];",
+		"		if (i < out.length) {",
+		"			// ran dry: let the last sample die away over a millisecond or so instead of dropping to zero, which pops",
+		"			for (; i < out.length; i++) { this.last *= 0.95; out[i] = this.last; }",
+		"			if (this.played > 0 && this.fade_in == 1) this.dry++;",
+		"			this.fade_in = 0;",
+		"		}",
+		"		if (++this.quanta % 8 == 0) this.port.postMessage([this.played, this.dry]); // about as often as pico8.js's own callback ran",
 		"		return true;",
 		"	}",
 		"});"
@@ -815,7 +827,7 @@ html { background: #000; }
 				connect: function(dest){ return out.connect(dest); },
 				disconnect: function(){ out.disconnect(); }
 			};
-			var port = null, sent = 0, played = 0;
+			var port = null, sent = 0, played = 0, dry = 0;
 			function fill()
 			{
 				while (port && stand_in.onaudioprocess && sent - played < size * p8_audio_queue_buffers)
@@ -831,7 +843,16 @@ html { background: #000; }
 				var node = new AudioWorkletNode(ctx, "p8_audio_queue", {numberOfInputs: 0, outputChannelCount: [1]});
 				node.connect(out);
 				port = node.port;
-				port.onmessage = function(e){ played = e.data; fill(); };
+				port.onmessage = function(e)
+				{
+					played = e.data[0];
+					if (e.data[1] > dry)
+					{
+						dry = e.data[1];
+						console.log("** audio queue ran dry (" + dry + "x)");
+					}
+					fill();
+				};
 				fill();
 			}, function()
 			{

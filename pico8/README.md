@@ -8,7 +8,7 @@ I (well, Claude) made a few quality-of-life changes to the player, making it mor
 * The player is made separate from each game so it's cached and re-used by the browser when switching games
 * Choosing another game swaps the new ROM into the running player instead of reloading it, and some extra boot wait was removed to make swapping games almost instant
 * Multi-cart games are downloaded ahead of time and hosted on PicoPlayer without connecting to external servers
-* The audio is normalized (some games were way too quiet and some are way too loud), with a limiter to stop sudden loud sounds from clipping
+* The audio is normalized (some games were way too quiet and some are way too loud), with a limiter to stop sudden loud sounds from clipping. The audio buffer is also increased slightly vs the original PICO 8 player to try and reduce sudden pops on Chromium browsers.
 * Mobile controls appear white when pressed and have been adjusted to work properly with horizontal rotations
 * The deprecated `unload` listener is replaced with `pagehide`
 * This is currently using the WebAssembly build of version 0.2.7
