@@ -872,6 +872,7 @@ html { background: #000; }
 	var p8_target_rms = 0.08;               // about -22 dBFS
 	var p8_quiet_rms = 0.056;               // about -25 dBFS: only carts quieter than this get turned up, and only up to here
 	var p8_min_gain = 0.25, p8_max_gain = 4; // -12 dB .. +12 dB
+	var p8_default_volume = 192;            // pico8_state.sound_volume (0..256) a fresh pico8 starts at; the levels above are measured there
 	var p8_reset_loudness = function(){};   // set below once the audio is up; called when carts are swapped
 	function p8_normalize_audio(ctx)
 	{
@@ -900,6 +901,7 @@ html { background: #000; }
 
 		var buf = new Float32Array(analyser.fftSize);
 		var mean_square = 0, peak = 0, frames = 0, loudest = 0;
+		var volume = p8_default_volume, settle = 0;
 		// a new game starts measuring afresh, so it settles as fast as the first one instead of trailing the last game's level,
 		// and from unity gain: a quiet game's boost carried over would make a loud one clip until the gain caught up
 		p8_reset_loudness = function()
@@ -911,8 +913,20 @@ html { background: #000; }
 		setInterval(function()
 		{
 			if (ctx.state != "running") return;
-			analyser.getFloatTimeDomainData(buf);
 
+			// pico8's own volume setting (0..7 in the pause menu, ctrl -/+, 0 when the sound is off) scales its output before the
+			// analyser hears it, so measure as if it were at the default: otherwise turning a game down would just make the
+			// normaliser turn it back up. what's still in the queue and the analyser's window has the old volume for a moment
+			if (pico8_state.sound_volume !== undefined && pico8_state.sound_volume != volume)
+			{
+				volume = pico8_state.sound_volume;
+				settle = 3;
+			}
+			if (settle > 0) { settle--; return; }
+			if (volume == 0) return;
+			var scale = volume / p8_default_volume; // pico8's output is linear in it
+
+			analyser.getFloatTimeDomainData(buf);
 			var sum = 0, max = 0;
 			for (var i = 0; i < buf.length; i++)
 			{
@@ -920,7 +934,8 @@ html { background: #000; }
 				sum += s * s;
 				if (s > max) max = s; else if (-s > max) max = -s;
 			}
-			var ms = sum / buf.length;
+			var ms = sum / buf.length / (scale * scale);
+			max /= scale;
 
 			// silence and near silence (pause menu, sound off, gaps between sfx) don't count, or quiet moments would pump the volume up
 			if (ms < 1e-5) return; // -50 dBFS
@@ -937,8 +952,8 @@ html { background: #000; }
 			// would play far louder than on lexaloffle.com (DUNGEON!'s jumps did)
 			var target = p8_target_rms / Math.sqrt(mean_square);
 			if (target > 1) target = Math.max(1, p8_quiet_rms / Math.sqrt(Math.max(mean_square, loudest)));
-			// never boost a cart past full scale, so normalising can't introduce clipping
-			target = Math.min(target, 0.98 / peak);
+			// never boost a cart past full scale, so normalising can't introduce clipping (at the volume it's played at)
+			target = Math.min(target, 0.98 / (peak * scale));
 			target = Math.min(p8_max_gain, Math.max(p8_min_gain, target));
 			// quick for the first second of sound, so a loud game comes down right away, then slow so it doesn't pump
 			gain.gain.setTargetAtTime(target, ctx.currentTime, frames <= 10 ? 0.15 : 1);
