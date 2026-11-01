@@ -7,6 +7,20 @@ It's designed to be as fast and tiny as possible, jumping through tons of hoops 
 
 If you'd like to read more on how it works, see the [technical details page](https://picoplayer.net/technical_deets).
 
+# Usage
+
+1. Download the repo
+2. Run `python serve_local_server.py`
+3. Have fun
+
+Since the project is just a static website, you don't need to download anything extra or run through a build process.
+
+You can also install it as a PWA to conveniently play offline without having to open a server every time.
+
+<img width=50% alt="Screenshot_20261101_020527" src="https://github.com/user-attachments/assets/568415f7-ec64-40f5-bb8d-38febec8c383" />
+
+<sub>This is on Chromium, other browsers might not have native PWA support.</sub>
+
 # Contributing
 
 The project is pretty much finished, but I'm open to adding more games, fixing bugs, or optimizing the project further.
@@ -28,6 +42,6 @@ AI disclosure: This project is AI-assisted using Claude. The general architectur
 
 ---
 
-**[PICO 8](https://www.lexaloffle.com/pico-8.php) is created and owned by Lexaloffle games. Please support the original project.**
+**[PICO 8](https://www.lexaloffle.com/pico-8.php) is created and owned by Lexaloffle Games. Please support the original project.**
 
 If you like the project, please [consider donating](https://ko-fi.com/popcar2).
