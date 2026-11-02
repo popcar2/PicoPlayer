@@ -1,6 +1,6 @@
 #!/bin/sh
 # Pack every games/<slug>/thumbnail.png into one sprite sheet (assets/thumbnails.webp), so the shelf loads one image
-# instead of one per game, and write css/thumbnails.css, which points each cartridge at its tile by slug.
+# instead of one per game, write css/thumbnails.css, and point each cartridge in play.html at its tile.
 # Run it again whenever a game is added or removed. Needs ImageMagick (with WebP support).
 set -e
 cd "$(dirname "$(realpath "$0")")/.."
@@ -26,11 +26,11 @@ v=$(md5sum assets/thumbnails.webp | cut -c1-8)  # cache-buster, so a rebuilt she
   echo "  background-size: calc($(magick identify -format %w assets/thumbnails.webp) * var(--s)) auto;"
   echo "  background-position: calc(var(--x) * var(--s) * -1) calc(var(--y) * var(--s) * -1);"
   echo "}"
-  i=0
-  for thumbnail in $thumbnails; do
-    slug=$(basename "$(dirname "$thumbnail")")
-    echo ".cart[fx-action=\"games/$slug/meta.html\"] .thumbnail { --x: $((i % cols * 130 + 1)); --y: $((i / cols * 130 + 1)); }"
-    i=$((i + 1))
-  done
 } > css/thumbnails.css
+i=0
+for thumbnail in $thumbnails; do
+  slug=$(basename "$(dirname "$thumbnail")")
+  sed -i -E "s#(fx-action=\"games/$slug/meta\.html\"><i class=\"thumbnail\")[^>]*>#\1 style=\"--x:$((i % cols * 130 + 1));--y:$((i / cols * 130 + 1))\">#" play.html
+  i=$((i + 1))
+done
 echo "packed $n thumbnails into assets/thumbnails.webp (${cols}x$rows, $(wc -c < assets/thumbnails.webp) bytes)"

@@ -29,6 +29,12 @@ for ref in $(grep -ohE 'src="js/[^"?]*\.js' *.html | cut -d'"' -f2 | sort -u); d
   sed -i -E "s#((href|src)=\"$ref)(\?v=[0-9a-f]*)?\"#\1?v=$v\"#g" *.html
 done
 
+# the same for the player's two big files. the wasm first, since its stamp is inside pico8.js, which then gets hashed
+wasm=$(md5sum pico8/pico8.wasm | cut -c1-8)
+sed -i -E "s#(pico8\.wasm\?v=)[0-9a-f]+#\1$wasm#g" pico8/pico8.js pico8/player.html
+js=$(md5sum pico8/pico8.js | cut -c1-8)
+sed -i -E "s#(pico8\.js\?v=)[0-9a-f]+#\1$js#g" pico8/player.html
+
 list=$(
   {
     ls *.html js/*.js manifest.webmanifest assets/* pico8/*.html pico8/*.js pico8/*.wasm | grep -v 'assets/social.png'  # the link preview image is only for other sites. css/ isn't listed: the stylesheets are inlined into the pages

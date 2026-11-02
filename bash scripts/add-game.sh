@@ -57,12 +57,21 @@ cart=$(fetch "$1")
 rom "$cart" "$dir/$slug.p8.rom"
 label "$cart" "$dir/thumbnail.png"
 shift 5
-carts="games/$slug/$slug.p8.rom"  # the main cart first, then the extras, for data-cart
+main=$slug.p8.rom
+extras=
 for extra in "$@"; do
   png=$(fetch "$extra")
-  rom "$png" "$dir/$(basename "$png" .png).rom"
-  carts="$carts games/$slug/$(basename "$png" .png).rom"
+  name=$(basename "$png" .png).rom
+  rom "$png" "$dir/$name"
+  # a game that load()s its own main cart lists it as an extra too. keep the name it looks for, not a second copy
+  if cmp -s "$dir/$main" "$dir/$name"; then
+    rm "$dir/$main"
+    main=$name
+  else
+    extras="$extras games/$slug/$name"
+  fi
 done
+carts="games/$slug/$main$extras"  # the main cart first, then the extras, for data-cart
 sh "$(dirname "$(realpath "$0")")/minify-roms.sh" "$dir"/*.p8.rom
 
 cd "$dir"
@@ -76,7 +85,7 @@ EOF
 # add its cartridge to the shelf (unless it's already there), then put the shelf back in alphabetical order
 cd ../..
 if ! grep -q "fx-action=\"games/$slug/meta.html\"" play.html; then
-  button="    <button class=\"cart\" fx-action=\"games/$slug/meta.html\" fx-target=\"#meta\" fx-swap=\"innerHTML\"><i class=\"thumbnail\"></i><span>$title</span></button>" \
+  button="    <button class=\"cart\" fx-action=\"games/$slug/meta.html\"><i class=\"thumbnail\"></i><span>$title</span></button>" \
     awk '/^  <\/div><\/footer>/ { print ENVIRON["button"] } 1' play.html > play.html.tmp
   mv play.html.tmp play.html
 fi

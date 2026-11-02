@@ -17,13 +17,12 @@
   <meta property="og:image:alt" content="PicoPlayer: curated PICO-8 games in your browser, above a row of game thumbnails">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="color-scheme" content="dark">
-  <style>html { background: #000; visibility: hidden; } @view-transition { navigation: auto; }</style>
-  <script src="js/transitions.js?v=c0fe748c" defer></script>
+  <style>html { background: #000; } @view-transition { navigation: auto; }</style>
+  <!-- here in the head because this event can fire before the end of the body, where the script that waits on it runs -->
+  <script>addEventListener("pagereveal", (e) => window.fadeDone = e.viewTransition?.finished, { once: true })</script>
+  <script src="js/transitions.js?v=7c067bc7" defer></script>
   <style data-src="css/base.css">
 * { box-sizing: border-box; }
-
-/* the pages hide <html> inline until this sheet arrives, so they never flash unstyled */
-html { visibility: visible; }
 
 body {
   margin: 0;
@@ -76,7 +75,6 @@ nav a:last-child { margin-left: auto; }
    so the svg is inline rather than a request that would hold it back */
 #player { position: relative; }
 #loading { position: absolute; inset: 0; background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 75 75'%3E%3Crect x='30' y='0' width='15' height='15' fill='%23FF004D'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.525s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='45' y='15' width='15' height='15' fill='%23FFCCAA'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.45s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='60' y='30' width='15' height='15' fill='%23FF77A8'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.375s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='45' y='45' width='15' height='15' fill='%231D2B53'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.3s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='30' y='60' width='15' height='15' fill='%2329ADFF'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.225s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='15' y='45' width='15' height='15' fill='%2300E436'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.15s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='0' y='30' width='15' height='15' fill='%23FFEC27'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.075s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='15' y='15' width='15' height='15' fill='%23FFA300'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='0s' repeatCount='indefinite'/%3E%3C/rect%3E%3C/svg%3E") center no-repeat; pointer-events: none; }
-#loading[hidden] { display: none; }
 
 /* tucked below the screen with a thin strip showing; slides up when the cursor nears the bottom.
    the transparent top padding is the "near the bottom" band that triggers it */
@@ -105,7 +103,6 @@ nav a:last-child { margin-left: auto; }
 /* a dark backdrop, so it stays readable over the game or the Game Info panel. a spread shadow, so it reaches past the
    image (and over its bob) without moving it */
 #tutorial { background: rgb(0 0 0 / .7); box-shadow: 0 0 0 .75rem rgb(0 0 0 / .7); }
-#tutorial[hidden] { display: none; }
 /* invisible until play.html's script has picked its size, so it doesn't shrink once the game shows up */
 #tutorial:not(.placed), #tutorial.gone { opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
 #tutorial img {
@@ -158,7 +155,7 @@ nav a:last-child { margin-left: auto; }
 @media (hover: hover) {
   .carousel { scrollbar-width: auto; }
   @supports selector(::-webkit-scrollbar) {
-    .carousel { scrollbar-width: auto; scrollbar-color: auto; }
+    .carousel { scrollbar-color: auto; }
     .carousel::-webkit-scrollbar { height: 16px; background: #333; }
     .carousel::-webkit-scrollbar-thumb { background: #5f574f; }
   }
@@ -270,9 +267,6 @@ nav a:last-child { margin-left: auto; }
 .info a { color: #29adff; overflow-wrap: anywhere; }
 .info hr { border: 0; border-top: 1px solid #555; margin: 0 0 1rem; }
 .info .source { color: #888; font-size: .75rem; }
-.info dl { display: grid; grid-template-columns: auto 1fr; gap: .25rem .75rem; margin: 0; }
-.info dt { color: #fff; white-space: nowrap; }
-.info dd { margin: 0; }
 
 #shelf-toggle { display: none; }
 
@@ -360,7 +354,7 @@ nav a:last-child { margin-left: auto; }
   <link rel="icon" href="assets/icon.svg">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="theme-color" content="#000">
-  <script src="js/offline_pwa.js?v=e66a0d34" defer></script>
+  <script src="js/offline_pwa.js?v=f23748ea" defer></script>
   <style data-src="css/thumbnails.css">
 /* generated by build-thumbnails.sh: each cartridge's thumbnail art, as a tile of thumbnails.webp */
 .cart { container-type: inline-size; }  /* so the thumbnail can measure the cartridge (cqw) */
@@ -370,168 +364,11 @@ nav a:last-child { margin-left: auto; }
   background-size: calc(1690 * var(--s)) auto;
   background-position: calc(var(--x) * var(--s) * -1) calc(var(--y) * var(--s) * -1);
 }
-.cart[fx-action="games/8-legs-to-love/meta.html"] .thumbnail { --x: 1; --y: 1; }
-.cart[fx-action="games/air-delivery/meta.html"] .thumbnail { --x: 131; --y: 1; }
-.cart[fx-action="games/alfonzos-bowling-challenge/meta.html"] .thumbnail { --x: 261; --y: 1; }
-.cart[fx-action="games/baba-is-you-demake/meta.html"] .thumbnail { --x: 391; --y: 1; }
-.cart[fx-action="games/balloon/meta.html"] .thumbnail { --x: 521; --y: 1; }
-.cart[fx-action="games/barp-the-balldragon/meta.html"] .thumbnail { --x: 651; --y: 1; }
-.cart[fx-action="games/bas/meta.html"] .thumbnail { --x: 781; --y: 1; }
-.cart[fx-action="games/beam/meta.html"] .thumbnail { --x: 911; --y: 1; }
-.cart[fx-action="games/birds-with-guns/meta.html"] .thumbnail { --x: 1041; --y: 1; }
-.cart[fx-action="games/blood-of-vladula-jr/meta.html"] .thumbnail { --x: 1171; --y: 1; }
-.cart[fx-action="games/breakout-hero/meta.html"] .thumbnail { --x: 1301; --y: 1; }
-.cart[fx-action="games/brutal-pico-race/meta.html"] .thumbnail { --x: 1431; --y: 1; }
-.cart[fx-action="games/bubble-bobble/meta.html"] .thumbnail { --x: 1561; --y: 1; }
-.cart[fx-action="games/build-a-jetpack/meta.html"] .thumbnail { --x: 1; --y: 131; }
-.cart[fx-action="games/bun-bun-samurai/meta.html"] .thumbnail { --x: 131; --y: 131; }
-.cart[fx-action="games/bunny-survivor/meta.html"] .thumbnail { --x: 261; --y: 131; }
-.cart[fx-action="games/bustin/meta.html"] .thumbnail { --x: 391; --y: 131; }
-.cart[fx-action="games/cab-ride/meta.html"] .thumbnail { --x: 521; --y: 131; }
-.cart[fx-action="games/caped-feline-arena/meta.html"] .thumbnail { --x: 651; --y: 131; }
-.cart[fx-action="games/cherry-bomb/meta.html"] .thumbnail { --x: 781; --y: 131; }
-.cart[fx-action="games/combo-pool/meta.html"] .thumbnail { --x: 911; --y: 131; }
-.cart[fx-action="games/crimson-night/meta.html"] .thumbnail { --x: 1041; --y: 131; }
-.cart[fx-action="games/demon-castle/meta.html"] .thumbnail { --x: 1171; --y: 131; }
-.cart[fx-action="games/digger/meta.html"] .thumbnail { --x: 1301; --y: 131; }
-.cart[fx-action="games/dodge/meta.html"] .thumbnail { --x: 1431; --y: 131; }
-.cart[fx-action="games/dominion-ex/meta.html"] .thumbnail { --x: 1561; --y: 131; }
-.cart[fx-action="games/donsol/meta.html"] .thumbnail { --x: 1; --y: 261; }
-.cart[fx-action="games/dont-dig-up-the-dead/meta.html"] .thumbnail { --x: 131; --y: 261; }
-.cart[fx-action="games/downward/meta.html"] .thumbnail { --x: 261; --y: 261; }
-.cart[fx-action="games/driftmania/meta.html"] .thumbnail { --x: 391; --y: 261; }
-.cart[fx-action="games/dungeon/meta.html"] .thumbnail { --x: 521; --y: 261; }
-.cart[fx-action="games/dust-bunny/meta.html"] .thumbnail { --x: 651; --y: 261; }
-.cart[fx-action="games/feathered-escape/meta.html"] .thumbnail { --x: 781; --y: 261; }
-.cart[fx-action="games/feed-the-ducks/meta.html"] .thumbnail { --x: 911; --y: 261; }
-.cart[fx-action="games/floodedcaves/meta.html"] .thumbnail { --x: 1041; --y: 261; }
-.cart[fx-action="games/freezing-knights/meta.html"] .thumbnail { --x: 1171; --y: 261; }
-.cart[fx-action="games/gars-den/meta.html"] .thumbnail { --x: 1301; --y: 261; }
-.cart[fx-action="games/ghost-house/meta.html"] .thumbnail { --x: 1431; --y: 261; }
-.cart[fx-action="games/guncho/meta.html"] .thumbnail { --x: 1561; --y: 261; }
-.cart[fx-action="games/hakai/meta.html"] .thumbnail { --x: 1; --y: 391; }
-.cart[fx-action="games/happy-larry/meta.html"] .thumbnail { --x: 131; --y: 391; }
-.cart[fx-action="games/harolds-bad-day/meta.html"] .thumbnail { --x: 261; --y: 391; }
-.cart[fx-action="games/high-stakes/meta.html"] .thumbnail { --x: 391; --y: 391; }
-.cart[fx-action="games/holiday-bowling/meta.html"] .thumbnail { --x: 521; --y: 391; }
-.cart[fx-action="games/holiday-jumper/meta.html"] .thumbnail { --x: 651; --y: 391; }
-.cart[fx-action="games/hot-wax/meta.html"] .thumbnail { --x: 781; --y: 391; }
-.cart[fx-action="games/hungry-harry-3d/meta.html"] .thumbnail { --x: 911; --y: 391; }
-.cart[fx-action="games/hydra/meta.html"] .thumbnail { --x: 1041; --y: 391; }
-.cart[fx-action="games/into-ruins/meta.html"] .thumbnail { --x: 1171; --y: 391; }
-.cart[fx-action="games/invader-overload/meta.html"] .thumbnail { --x: 1301; --y: 391; }
-.cart[fx-action="games/just-one-boss/meta.html"] .thumbnail { --x: 1431; --y: 391; }
-.cart[fx-action="games/katamari-christmassy/meta.html"] .thumbnail { --x: 1561; --y: 391; }
-.cart[fx-action="games/lab-cat/meta.html"] .thumbnail { --x: 1; --y: 521; }
-.cart[fx-action="games/linecraft/meta.html"] .thumbnail { --x: 131; --y: 521; }
-.cart[fx-action="games/little-dragon-adventure/meta.html"] .thumbnail { --x: 261; --y: 521; }
-.cart[fx-action="games/little-eidolons/meta.html"] .thumbnail { --x: 391; --y: 521; }
-.cart[fx-action="games/little-necromancer/meta.html"] .thumbnail { --x: 521; --y: 521; }
-.cart[fx-action="games/loop/meta.html"] .thumbnail { --x: 651; --y: 521; }
-.cart[fx-action="games/mai-chans-sweet-buns/meta.html"] .thumbnail { --x: 781; --y: 521; }
-.cart[fx-action="games/mapuzzle/meta.html"] .thumbnail { --x: 911; --y: 521; }
-.cart[fx-action="games/marballs-2/meta.html"] .thumbnail { --x: 1041; --y: 521; }
-.cart[fx-action="games/marble-merger/meta.html"] .thumbnail { --x: 1171; --y: 521; }
-.cart[fx-action="games/meas-castle/meta.html"] .thumbnail { --x: 1301; --y: 521; }
-.cart[fx-action="games/motion-rec/meta.html"] .thumbnail { --x: 1431; --y: 521; }
-.cart[fx-action="games/mots-8-ball-pool/meta.html"] .thumbnail { --x: 1561; --y: 521; }
-.cart[fx-action="games/mots-grand-prix/meta.html"] .thumbnail { --x: 1; --y: 651; }
-.cart[fx-action="games/muse/meta.html"] .thumbnail { --x: 131; --y: 651; }
-.cart[fx-action="games/nanoman/meta.html"] .thumbnail { --x: 261; --y: 651; }
-.cart[fx-action="games/neath/meta.html"] .thumbnail { --x: 391; --y: 651; }
-.cart[fx-action="games/nemo-2/meta.html"] .thumbnail { --x: 521; --y: 651; }
-.cart[fx-action="games/nemo/meta.html"] .thumbnail { --x: 651; --y: 651; }
-.cart[fx-action="games/nemonic-crypt/meta.html"] .thumbnail { --x: 781; --y: 651; }
-.cart[fx-action="games/nest-2/meta.html"] .thumbnail { --x: 911; --y: 651; }
-.cart[fx-action="games/night-ride/meta.html"] .thumbnail { --x: 1041; --y: 651; }
-.cart[fx-action="games/one-room-dungeon/meta.html"] .thumbnail { --x: 1171; --y: 651; }
-.cart[fx-action="games/orul/meta.html"] .thumbnail { --x: 1301; --y: 651; }
-.cart[fx-action="games/pakpok/meta.html"] .thumbnail { --x: 1431; --y: 651; }
-.cart[fx-action="games/pengo/meta.html"] .thumbnail { --x: 1561; --y: 651; }
-.cart[fx-action="games/petal-quest/meta.html"] .thumbnail { --x: 1; --y: 781; }
-.cart[fx-action="games/petal-to-the-metal/meta.html"] .thumbnail { --x: 131; --y: 781; }
-.cart[fx-action="games/pico-ball/meta.html"] .thumbnail { --x: 261; --y: 781; }
-.cart[fx-action="games/pico-checkmate/meta.html"] .thumbnail { --x: 391; --y: 781; }
-.cart[fx-action="games/pico-de-pon/meta.html"] .thumbnail { --x: 521; --y: 781; }
-.cart[fx-action="games/pico-dino/meta.html"] .thumbnail { --x: 651; --y: 781; }
-.cart[fx-action="games/pico-froggo/meta.html"] .thumbnail { --x: 781; --y: 781; }
-.cart[fx-action="games/pico-off-road/meta.html"] .thumbnail { --x: 911; --y: 781; }
-.cart[fx-action="games/pico-pirates/meta.html"] .thumbnail { --x: 1041; --y: 781; }
-.cart[fx-action="games/pico-snail-dream-castle/meta.html"] .thumbnail { --x: 1171; --y: 781; }
-.cart[fx-action="games/pico-tennis/meta.html"] .thumbnail { --x: 1301; --y: 781; }
-.cart[fx-action="games/pico-world-race/meta.html"] .thumbnail { --x: 1431; --y: 781; }
-.cart[fx-action="games/pico-zombie-garden/meta.html"] .thumbnail { --x: 1561; --y: 781; }
-.cart[fx-action="games/picohot/meta.html"] .thumbnail { --x: 1; --y: 911; }
-.cart[fx-action="games/picolumia/meta.html"] .thumbnail { --x: 131; --y: 911; }
-.cart[fx-action="games/picowars/meta.html"] .thumbnail { --x: 261; --y: 911; }
-.cart[fx-action="games/pieces-of-cake/meta.html"] .thumbnail { --x: 391; --y: 911; }
-.cart[fx-action="games/pigments/meta.html"] .thumbnail { --x: 521; --y: 911; }
-.cart[fx-action="games/pirates-trial/meta.html"] .thumbnail { --x: 651; --y: 911; }
-.cart[fx-action="games/pizza-panda/meta.html"] .thumbnail { --x: 781; --y: 911; }
-.cart[fx-action="games/pole-station/meta.html"] .thumbnail { --x: 911; --y: 911; }
-.cart[fx-action="games/pony-9000/meta.html"] .thumbnail { --x: 1041; --y: 911; }
-.cart[fx-action="games/poom/meta.html"] .thumbnail { --x: 1171; --y: 911; }
-.cart[fx-action="games/province/meta.html"] .thumbnail { --x: 1301; --y: 911; }
-.cart[fx-action="games/pullfrog/meta.html"] .thumbnail { --x: 1431; --y: 911; }
-.cart[fx-action="games/qbert/meta.html"] .thumbnail { --x: 1561; --y: 911; }
-.cart[fx-action="games/quest-for-the-book-of-truth/meta.html"] .thumbnail { --x: 1; --y: 1041; }
-.cart[fx-action="games/return-of-the-slimepires/meta.html"] .thumbnail { --x: 131; --y: 1041; }
-.cart[fx-action="games/rolly/meta.html"] .thumbnail { --x: 261; --y: 1041; }
-.cart[fx-action="games/ruby-eyes/meta.html"] .thumbnail { --x: 391; --y: 1041; }
-.cart[fx-action="games/samurise/meta.html"] .thumbnail { --x: 521; --y: 1041; }
-.cart[fx-action="games/scrap-boy/meta.html"] .thumbnail { --x: 651; --y: 1041; }
-.cart[fx-action="games/shadows-of-dunwich/meta.html"] .thumbnail { --x: 781; --y: 1041; }
-.cart[fx-action="games/shooting-star/meta.html"] .thumbnail { --x: 911; --y: 1041; }
-.cart[fx-action="games/snekburd/meta.html"] .thumbnail { --x: 1041; --y: 1041; }
-.cart[fx-action="games/snow/meta.html"] .thumbnail { --x: 1171; --y: 1041; }
-.cart[fx-action="games/sokoblox/meta.html"] .thumbnail { --x: 1301; --y: 1041; }
-.cart[fx-action="games/solais/meta.html"] .thumbnail { --x: 1431; --y: 1041; }
-.cart[fx-action="games/sphongos/meta.html"] .thumbnail { --x: 1561; --y: 1041; }
-.cart[fx-action="games/star-anise-chronicles/meta.html"] .thumbnail { --x: 1; --y: 1171; }
-.cart[fx-action="games/star-patrol/meta.html"] .thumbnail { --x: 131; --y: 1171; }
-.cart[fx-action="games/steps/meta.html"] .thumbnail { --x: 261; --y: 1171; }
-.cart[fx-action="games/subsurface/meta.html"] .thumbnail { --x: 391; --y: 1171; }
-.cart[fx-action="games/suika/meta.html"] .thumbnail { --x: 521; --y: 1171; }
-.cart[fx-action="games/super-disc-box/meta.html"] .thumbnail { --x: 651; --y: 1171; }
-.cart[fx-action="games/super-world-of-goo/meta.html"] .thumbnail { --x: 781; --y: 1171; }
-.cart[fx-action="games/swordfish/meta.html"] .thumbnail { --x: 911; --y: 1171; }
-.cart[fx-action="games/tad/meta.html"] .thumbnail { --x: 1041; --y: 1171; }
-.cart[fx-action="games/tera-mind-over-matter/meta.html"] .thumbnail { --x: 1171; --y: 1171; }
-.cart[fx-action="games/terra-nova-pinball/meta.html"] .thumbnail { --x: 1301; --y: 1171; }
-.cart[fx-action="games/the-lost-night/meta.html"] .thumbnail { --x: 1431; --y: 1171; }
-.cart[fx-action="games/the-story-of-zeldo/meta.html"] .thumbnail { --x: 1561; --y: 1171; }
-.cart[fx-action="games/thunder-bella/meta.html"] .thumbnail { --x: 1; --y: 1301; }
-.cart[fx-action="games/time-for-lunch/meta.html"] .thumbnail { --x: 131; --y: 1301; }
-.cart[fx-action="games/tiny-hawk/meta.html"] .thumbnail { --x: 261; --y: 1301; }
-.cart[fx-action="games/to-a-starling/meta.html"] .thumbnail { --x: 391; --y: 1301; }
-.cart[fx-action="games/trial-of-the-sorcerer/meta.html"] .thumbnail { --x: 521; --y: 1301; }
-.cart[fx-action="games/trichromat/meta.html"] .thumbnail { --x: 651; --y: 1301; }
-.cart[fx-action="games/tutankham/meta.html"] .thumbnail { --x: 781; --y: 1301; }
-.cart[fx-action="games/ufo-swamp-odyssey/meta.html"] .thumbnail { --x: 911; --y: 1301; }
-.cart[fx-action="games/undune-2/meta.html"] .thumbnail { --x: 1041; --y: 1301; }
-.cart[fx-action="games/up-and-away/meta.html"] .thumbnail { --x: 1171; --y: 1301; }
-.cart[fx-action="games/vacay-volley/meta.html"] .thumbnail { --x: 1301; --y: 1301; }
-.cart[fx-action="games/valdi-shadows/meta.html"] .thumbnail { --x: 1431; --y: 1301; }
-.cart[fx-action="games/villager/meta.html"] .thumbnail { --x: 1561; --y: 1301; }
-.cart[fx-action="games/walker/meta.html"] .thumbnail { --x: 1; --y: 1431; }
-.cart[fx-action="games/whiplash-taxi/meta.html"] .thumbnail { --x: 131; --y: 1431; }
-.cart[fx-action="games/willo/meta.html"] .thumbnail { --x: 261; --y: 1431; }
-.cart[fx-action="games/willthemangetfrog/meta.html"] .thumbnail { --x: 391; --y: 1431; }
-.cart[fx-action="games/witch-loves-bullets/meta.html"] .thumbnail { --x: 521; --y: 1431; }
-.cart[fx-action="games/wizardish/meta.html"] .thumbnail { --x: 651; --y: 1431; }
-.cart[fx-action="games/wolfenstein-3d/meta.html"] .thumbnail { --x: 781; --y: 1431; }
-.cart[fx-action="games/woodworm/meta.html"] .thumbnail { --x: 911; --y: 1431; }
-.cart[fx-action="games/x-wing-vs-tie-fighter/meta.html"] .thumbnail { --x: 1041; --y: 1431; }
-.cart[fx-action="games/x-zero/meta.html"] .thumbnail { --x: 1171; --y: 1431; }
-.cart[fx-action="games/zip-zapper/meta.html"] .thumbnail { --x: 1301; --y: 1431; }
-.cart[fx-action="games/zoo-keeper/meta.html"] .thumbnail { --x: 1431; --y: 1431; }
   </style>
   <script src="js/fixi.js?v=f513737c" defer></script>
   <!-- the first game waits for DOMContentLoaded, which waits for the deferred js/stats.js at the end of the body. the browser
-       would fetch that late and at low priority, so ask for it here, and connect early to the counter it loads -->
-  <link rel="preload" href="js/stats.js?v=f553d9a0" as="script">
-  <link rel="preconnect" href="https://gc.zgo.at">
-  <link rel="preconnect" href="https://popcar2.goatcounter.com">
+       would fetch that late and at low priority, so ask for it here -->
+  <link rel="preload" href="js/stats.js?v=52946261" as="script">
 </head>
 <body class="browse">
   <nav><a href="./">PicoPlayer</a><a id="random" href="play">Random Game</a></nav>
@@ -551,161 +388,161 @@ nav a:last-child { margin-left: auto; }
   <div id="tutorial" hidden><img src="assets/tutorial.webp" alt="Move your mouse down here to browse games!" width="372" height="189"></div>
 
   <footer class="shelf"><button id="shelf-toggle" aria-expanded="false">Games</button><input id="search" type="search" placeholder="Search..." aria-label="Search games" autocomplete="off" spellcheck="false"><div class="carousel">
-    <button class="cart" fx-action="games/8-legs-to-love/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>8 Legs to Love</span></button>
-    <button class="cart" fx-action="games/mots-8-ball-pool/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>8-Ball Pool</span></button>
-    <button class="cart" fx-action="games/air-delivery/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Air Delivery</span></button>
-    <button class="cart" fx-action="games/alfonzos-bowling-challenge/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Alfonzo's Bowling Challenge</span></button>
-    <button class="cart" fx-action="games/baba-is-you-demake/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Baba Is You Demake</span></button>
-    <button class="cart" fx-action="games/balloon/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Balloon</span></button>
-    <button class="cart" fx-action="games/barp-the-balldragon/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Barp the Balldragon</span></button>
-    <button class="cart" fx-action="games/bas/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>BAS</span></button>
-    <button class="cart" fx-action="games/beam/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Beam</span></button>
-    <button class="cart" fx-action="games/birds-with-guns/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Birds With Guns</span></button>
-    <button class="cart" fx-action="games/blood-of-vladula-jr/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Blood of Vladula jr.</span></button>
-    <button class="cart" fx-action="games/breakout-hero/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Breakout Hero</span></button>
-    <button class="cart" fx-action="games/brutal-pico-race/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Brutal Pico Race</span></button>
-    <button class="cart" fx-action="games/bubble-bobble/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Bubble Bobble</span></button>
-    <button class="cart" fx-action="games/build-a-jetpack/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Build a Jetpack</span></button>
-    <button class="cart" fx-action="games/bun-bun-samurai/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Bun Bun Samurai</span></button>
-    <button class="cart" fx-action="games/bunny-survivor/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Buns: Bunny Survivor</span></button>
-    <button class="cart" fx-action="games/bustin/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Bustin&#x27;</span></button>
-    <button class="cart" fx-action="games/cab-ride/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Cab Ride</span></button>
-    <button class="cart" fx-action="games/caped-feline-arena/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Caped Feline Arena</span></button>
-    <button class="cart" fx-action="games/cherry-bomb/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Cherry Bomb</span></button>
-    <button class="cart" fx-action="games/combo-pool/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Combo Pool</span></button>
-    <button class="cart" fx-action="games/crimson-night/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Crimson Night</span></button>
-    <button class="cart" fx-action="games/demon-castle/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Demon Castle</span></button>
-    <button class="cart" fx-action="games/digger/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Digger</span></button>
-    <button class="cart" fx-action="games/dodge/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Dodge</span></button>
-    <button class="cart" fx-action="games/dominion-ex/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Dominion Ex</span></button>
-    <button class="cart" fx-action="games/dont-dig-up-the-dead/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Don&#x27;t Dig Up the Dead</span></button>
-    <button class="cart" fx-action="games/donsol/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Donsol for PICO-8</span></button>
-    <button class="cart" fx-action="games/downward/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Downward</span></button>
-    <button class="cart" fx-action="games/driftmania/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Driftmania</span></button>
-    <button class="cart" fx-action="games/dungeon/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>DUNGEON!</span></button>
-    <button class="cart" fx-action="games/dust-bunny/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Dust Bunny</span></button>
-    <button class="cart" fx-action="games/feathered-escape/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Feathered Escape</span></button>
-    <button class="cart" fx-action="games/feed-the-ducks/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Feed The Ducks</span></button>
-    <button class="cart" fx-action="games/floodedcaves/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>floodedcaves</span></button>
-    <button class="cart" fx-action="games/freezing-knights/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Freezing Knights</span></button>
-    <button class="cart" fx-action="games/gars-den/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Gar's Den</span></button>
-    <button class="cart" fx-action="games/ghost-house/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Ghost House</span></button>
-    <button class="cart" fx-action="games/guncho/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Guncho</span></button>
-    <button class="cart" fx-action="games/hakai/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>HAKAI</span></button>
-    <button class="cart" fx-action="games/happy-larry/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Happy Larry and the Vampire Bat</span></button>
-    <button class="cart" fx-action="games/harolds-bad-day/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Harold's Bad Day</span></button>
-    <button class="cart" fx-action="games/high-stakes/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>High Stakes</span></button>
-    <button class="cart" fx-action="games/holiday-jumper/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Holiday Jumper</span></button>
-    <button class="cart" fx-action="games/hot-wax/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Hot Wax</span></button>
-    <button class="cart" fx-action="games/hungry-harry-3d/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Hungry Harry 3D</span></button>
-    <button class="cart" fx-action="games/hydra/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Hydra</span></button>
-    <button class="cart" fx-action="games/into-ruins/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Into Ruins</span></button>
-    <button class="cart" fx-action="games/invader-overload/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Invader Overload</span></button>
-    <button class="cart" fx-action="games/just-one-boss/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Just One Boss</span></button>
-    <button class="cart" fx-action="games/katamari-christmassy/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Katamari Christmassy</span></button>
-    <button class="cart" fx-action="games/lab-cat/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Lab Cat</span></button>
-    <button class="cart" fx-action="games/linecraft/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Linecraft</span></button>
-    <button class="cart" fx-action="games/little-dragon-adventure/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Little Dragon Adventure</span></button>
-    <button class="cart" fx-action="games/little-eidolons/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Little Eidolons</span></button>
-    <button class="cart" fx-action="games/little-necromancer/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Little Necromancer</span></button>
-    <button class="cart" fx-action="games/loop/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Loop</span></button>
-    <button class="cart" fx-action="games/mai-chans-sweet-buns/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Mai-Chan's Sweet Buns</span></button>
-    <button class="cart" fx-action="games/mapuzzle/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Mapuzzle</span></button>
-    <button class="cart" fx-action="games/marballs-2/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Marballs 2</span></button>
-    <button class="cart" fx-action="games/marble-merger/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Marble Merger</span></button>
-    <button class="cart" fx-action="games/meas-castle/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Mea's Castle</span></button>
-    <button class="cart" fx-action="games/mots-grand-prix/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Mot's Grand Prix</span></button>
-    <button class="cart" fx-action="games/motion-rec/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>MOTION●REC</span></button>
-    <button class="cart" fx-action="games/muse/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Muse</span></button>
-    <button class="cart" fx-action="games/nanoman/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Nanoman</span></button>
-    <button class="cart" fx-action="games/neath/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Neath</span></button>
-    <button class="cart" fx-action="games/nemo/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>NEMO</span></button>
-    <button class="cart" fx-action="games/nemo-2/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>NEMO - Puzzle Pack II</span></button>
-    <button class="cart" fx-action="games/nemonic-crypt/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Nemonic Crypt</span></button>
-    <button class="cart" fx-action="games/nest-2/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>NEST 2: Fast-paced Coin-Op Action</span></button>
-    <button class="cart" fx-action="games/night-ride/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Night Ride</span></button>
-    <button class="cart" fx-action="games/one-room-dungeon/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>One Room Dungeon</span></button>
-    <button class="cart" fx-action="games/orul/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>ORUL</span></button>
-    <button class="cart" fx-action="games/pakpok/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pakpok</span></button>
-    <button class="cart" fx-action="games/pengo/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pengo</span></button>
-    <button class="cart" fx-action="games/petal-quest/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Petal Quest</span></button>
-    <button class="cart" fx-action="games/petal-to-the-metal/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Petal to the Metal</span></button>
-    <button class="cart" fx-action="games/pico-checkmate/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico Checkmate</span></button>
-    <button class="cart" fx-action="games/pico-de-pon/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico de Pon</span></button>
-    <button class="cart" fx-action="games/pico-dino/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico Dino</span></button>
-    <button class="cart" fx-action="games/pico-froggo/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico Froggo: Hop Across the Seasons</span></button>
-    <button class="cart" fx-action="games/pico-off-road/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico Off Road</span></button>
-    <button class="cart" fx-action="games/pico-pirates/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico Pirates!</span></button>
-    <button class="cart" fx-action="games/pico-snail-dream-castle/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico Snail!: Dream Castle</span></button>
-    <button class="cart" fx-action="games/pico-tennis/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico Tennis</span></button>
-    <button class="cart" fx-action="games/pico-world-race/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico World Race</span></button>
-    <button class="cart" fx-action="games/pico-zombie-garden/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pico Zombie Garden</span></button>
-    <button class="cart" fx-action="games/pico-ball/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>PICO-BALL: a Sports Game Starring Jelpi</span></button>
-    <button class="cart" fx-action="games/picohot/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>PICOHOT</span></button>
-    <button class="cart" fx-action="games/picolumia/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Picolumia</span></button>
-    <button class="cart" fx-action="games/picowars/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>PicoWars</span></button>
-    <button class="cart" fx-action="games/pieces-of-cake/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pieces of Cake</span></button>
-    <button class="cart" fx-action="games/pigments/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pigments</span></button>
-    <button class="cart" fx-action="games/pirates-trial/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pirate's Trial</span></button>
-    <button class="cart" fx-action="games/pizza-panda/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>PIZZA PANDA</span></button>
-    <button class="cart" fx-action="games/pole-station/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pole Station</span></button>
-    <button class="cart" fx-action="games/pony-9000/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pony 9000</span></button>
-    <button class="cart" fx-action="games/poom/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>POOM</span></button>
-    <button class="cart" fx-action="games/province/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Province</span></button>
-    <button class="cart" fx-action="games/pullfrog/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Pullfrog</span></button>
-    <button class="cart" fx-action="games/qbert/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Q*Bert</span></button>
-    <button class="cart" fx-action="games/quest-for-the-book-of-truth/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Quest for the Book of Truth</span></button>
-    <button class="cart" fx-action="games/return-of-the-slimepires/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Return of the SLIMEPIRES!</span></button>
-    <button class="cart" fx-action="games/rolly/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Rolly</span></button>
-    <button class="cart" fx-action="games/ruby-eyes/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Ruby Eyes</span></button>
-    <button class="cart" fx-action="games/star-patrol/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>S.P.A.C.E. Star Patrol Against Cosmic Enemies</span></button>
-    <button class="cart" fx-action="games/samurise/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Samurise</span></button>
-    <button class="cart" fx-action="games/scrap-boy/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Scrap Boy</span></button>
-    <button class="cart" fx-action="games/shadows-of-dunwich/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Shadows of Dunwich</span></button>
-    <button class="cart" fx-action="games/shooting-star/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Shooting Star</span></button>
-    <button class="cart" fx-action="games/snekburd/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Snekburd</span></button>
-    <button class="cart" fx-action="games/snow/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Snow!</span></button>
-    <button class="cart" fx-action="games/sokoblox/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Sokoblox</span></button>
-    <button class="cart" fx-action="games/solais/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Solais</span></button>
-    <button class="cart" fx-action="games/sphongos/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>SPHONGOS</span></button>
-    <button class="cart" fx-action="games/star-anise-chronicles/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Star Anise Chronicles</span></button>
-    <button class="cart" fx-action="games/steps/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Steps</span></button>
-    <button class="cart" fx-action="games/subsurface/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Subsurface</span></button>
-    <button class="cart" fx-action="games/suika/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Suika Game Demake</span></button>
-    <button class="cart" fx-action="games/super-disc-box/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Super Disc Box</span></button>
-    <button class="cart" fx-action="games/super-world-of-goo/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>SUPER World of Goo!</span></button>
-    <button class="cart" fx-action="games/swordfish/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Swordfish</span></button>
-    <button class="cart" fx-action="games/tad/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>TAD</span></button>
-    <button class="cart" fx-action="games/tera-mind-over-matter/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Tera: Mind Over Matter</span></button>
-    <button class="cart" fx-action="games/terra-nova-pinball/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Terra Nova Pinball</span></button>
-    <button class="cart" fx-action="games/the-lost-night/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>The Lost Night</span></button>
-    <button class="cart" fx-action="games/the-story-of-zeldo/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>The Story of Zeldo</span></button>
-    <button class="cart" fx-action="games/thunder-bella/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Thunder Bella</span></button>
-    <button class="cart" fx-action="games/time-for-lunch/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Time For Lunch</span></button>
-    <button class="cart" fx-action="games/tiny-hawk/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Tiny Hawk: Pico-Sk8r</span></button>
-    <button class="cart" fx-action="games/to-a-starling/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>To a Starling</span></button>
-    <button class="cart" fx-action="games/holiday-bowling/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Totally Accurate Holiday Bowling</span></button>
-    <button class="cart" fx-action="games/trial-of-the-sorcerer/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Trial of the Sorcerer</span></button>
-    <button class="cart" fx-action="games/trichromat/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>trichromat</span></button>
-    <button class="cart" fx-action="games/tutankham/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Tutankham</span></button>
-    <button class="cart" fx-action="games/ufo-swamp-odyssey/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>UFO Swamp Odyssey</span></button>
-    <button class="cart" fx-action="games/undune-2/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>UnDUNE II - The Demaking of a Dynasty</span></button>
-    <button class="cart" fx-action="games/up-and-away/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Up and Away</span></button>
-    <button class="cart" fx-action="games/vacay-volley/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Vacay Volley</span></button>
-    <button class="cart" fx-action="games/valdi-shadows/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Valdi: Shadows</span></button>
-    <button class="cart" fx-action="games/villager/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Villager</span></button>
-    <button class="cart" fx-action="games/walker/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Walker</span></button>
-    <button class="cart" fx-action="games/whiplash-taxi/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Whiplash Taxi Co</span></button>
-    <button class="cart" fx-action="games/willo/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Willo</span></button>
-    <button class="cart" fx-action="games/willthemangetfrog/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>willthemangetfrog</span></button>
-    <button class="cart" fx-action="games/witch-loves-bullets/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Witch Loves Bullets</span></button>
-    <button class="cart" fx-action="games/wizardish/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Wizardish</span></button>
-    <button class="cart" fx-action="games/wolfenstein-3d/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Wolfenstein 3D</span></button>
-    <button class="cart" fx-action="games/woodworm/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Woodworm</span></button>
-    <button class="cart" fx-action="games/x-wing-vs-tie-fighter/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>X-Wing vs. TIE Fighter</span></button>
-    <button class="cart" fx-action="games/x-zero/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>X-Zero</span></button>
-    <button class="cart" fx-action="games/zip-zapper/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Zip Zapper</span></button>
-    <button class="cart" fx-action="games/zoo-keeper/meta.html" fx-target="#meta" fx-swap="innerHTML"><i class="thumbnail"></i><span>Zoo Keeper</span></button>
+    <button class="cart" fx-action="games/8-legs-to-love/meta.html"><i class="thumbnail" style="--x:1;--y:1"></i><span>8 Legs to Love</span></button>
+    <button class="cart" fx-action="games/mots-8-ball-pool/meta.html"><i class="thumbnail" style="--x:1561;--y:521"></i><span>8-Ball Pool</span></button>
+    <button class="cart" fx-action="games/air-delivery/meta.html"><i class="thumbnail" style="--x:131;--y:1"></i><span>Air Delivery</span></button>
+    <button class="cart" fx-action="games/alfonzos-bowling-challenge/meta.html"><i class="thumbnail" style="--x:261;--y:1"></i><span>Alfonzo's Bowling Challenge</span></button>
+    <button class="cart" fx-action="games/baba-is-you-demake/meta.html"><i class="thumbnail" style="--x:391;--y:1"></i><span>Baba Is You Demake</span></button>
+    <button class="cart" fx-action="games/balloon/meta.html"><i class="thumbnail" style="--x:521;--y:1"></i><span>Balloon</span></button>
+    <button class="cart" fx-action="games/barp-the-balldragon/meta.html"><i class="thumbnail" style="--x:651;--y:1"></i><span>Barp the Balldragon</span></button>
+    <button class="cart" fx-action="games/bas/meta.html"><i class="thumbnail" style="--x:781;--y:1"></i><span>BAS</span></button>
+    <button class="cart" fx-action="games/beam/meta.html"><i class="thumbnail" style="--x:911;--y:1"></i><span>Beam</span></button>
+    <button class="cart" fx-action="games/birds-with-guns/meta.html"><i class="thumbnail" style="--x:1041;--y:1"></i><span>Birds With Guns</span></button>
+    <button class="cart" fx-action="games/blood-of-vladula-jr/meta.html"><i class="thumbnail" style="--x:1171;--y:1"></i><span>Blood of Vladula jr.</span></button>
+    <button class="cart" fx-action="games/breakout-hero/meta.html"><i class="thumbnail" style="--x:1301;--y:1"></i><span>Breakout Hero</span></button>
+    <button class="cart" fx-action="games/brutal-pico-race/meta.html"><i class="thumbnail" style="--x:1431;--y:1"></i><span>Brutal Pico Race</span></button>
+    <button class="cart" fx-action="games/bubble-bobble/meta.html"><i class="thumbnail" style="--x:1561;--y:1"></i><span>Bubble Bobble</span></button>
+    <button class="cart" fx-action="games/build-a-jetpack/meta.html"><i class="thumbnail" style="--x:1;--y:131"></i><span>Build a Jetpack</span></button>
+    <button class="cart" fx-action="games/bun-bun-samurai/meta.html"><i class="thumbnail" style="--x:131;--y:131"></i><span>Bun Bun Samurai</span></button>
+    <button class="cart" fx-action="games/bunny-survivor/meta.html"><i class="thumbnail" style="--x:261;--y:131"></i><span>Buns: Bunny Survivor</span></button>
+    <button class="cart" fx-action="games/bustin/meta.html"><i class="thumbnail" style="--x:391;--y:131"></i><span>Bustin&#x27;</span></button>
+    <button class="cart" fx-action="games/cab-ride/meta.html"><i class="thumbnail" style="--x:521;--y:131"></i><span>Cab Ride</span></button>
+    <button class="cart" fx-action="games/caped-feline-arena/meta.html"><i class="thumbnail" style="--x:651;--y:131"></i><span>Caped Feline Arena</span></button>
+    <button class="cart" fx-action="games/cherry-bomb/meta.html"><i class="thumbnail" style="--x:781;--y:131"></i><span>Cherry Bomb</span></button>
+    <button class="cart" fx-action="games/combo-pool/meta.html"><i class="thumbnail" style="--x:911;--y:131"></i><span>Combo Pool</span></button>
+    <button class="cart" fx-action="games/crimson-night/meta.html"><i class="thumbnail" style="--x:1041;--y:131"></i><span>Crimson Night</span></button>
+    <button class="cart" fx-action="games/demon-castle/meta.html"><i class="thumbnail" style="--x:1171;--y:131"></i><span>Demon Castle</span></button>
+    <button class="cart" fx-action="games/digger/meta.html"><i class="thumbnail" style="--x:1301;--y:131"></i><span>Digger</span></button>
+    <button class="cart" fx-action="games/dodge/meta.html"><i class="thumbnail" style="--x:1431;--y:131"></i><span>Dodge</span></button>
+    <button class="cart" fx-action="games/dominion-ex/meta.html"><i class="thumbnail" style="--x:1561;--y:131"></i><span>Dominion Ex</span></button>
+    <button class="cart" fx-action="games/dont-dig-up-the-dead/meta.html"><i class="thumbnail" style="--x:131;--y:261"></i><span>Don&#x27;t Dig Up the Dead</span></button>
+    <button class="cart" fx-action="games/donsol/meta.html"><i class="thumbnail" style="--x:1;--y:261"></i><span>Donsol for PICO-8</span></button>
+    <button class="cart" fx-action="games/downward/meta.html"><i class="thumbnail" style="--x:261;--y:261"></i><span>Downward</span></button>
+    <button class="cart" fx-action="games/driftmania/meta.html"><i class="thumbnail" style="--x:391;--y:261"></i><span>Driftmania</span></button>
+    <button class="cart" fx-action="games/dungeon/meta.html"><i class="thumbnail" style="--x:521;--y:261"></i><span>DUNGEON!</span></button>
+    <button class="cart" fx-action="games/dust-bunny/meta.html"><i class="thumbnail" style="--x:651;--y:261"></i><span>Dust Bunny</span></button>
+    <button class="cart" fx-action="games/feathered-escape/meta.html"><i class="thumbnail" style="--x:781;--y:261"></i><span>Feathered Escape</span></button>
+    <button class="cart" fx-action="games/feed-the-ducks/meta.html"><i class="thumbnail" style="--x:911;--y:261"></i><span>Feed The Ducks</span></button>
+    <button class="cart" fx-action="games/floodedcaves/meta.html"><i class="thumbnail" style="--x:1041;--y:261"></i><span>floodedcaves</span></button>
+    <button class="cart" fx-action="games/freezing-knights/meta.html"><i class="thumbnail" style="--x:1171;--y:261"></i><span>Freezing Knights</span></button>
+    <button class="cart" fx-action="games/gars-den/meta.html"><i class="thumbnail" style="--x:1301;--y:261"></i><span>Gar's Den</span></button>
+    <button class="cart" fx-action="games/ghost-house/meta.html"><i class="thumbnail" style="--x:1431;--y:261"></i><span>Ghost House</span></button>
+    <button class="cart" fx-action="games/guncho/meta.html"><i class="thumbnail" style="--x:1561;--y:261"></i><span>Guncho</span></button>
+    <button class="cart" fx-action="games/hakai/meta.html"><i class="thumbnail" style="--x:1;--y:391"></i><span>HAKAI</span></button>
+    <button class="cart" fx-action="games/happy-larry/meta.html"><i class="thumbnail" style="--x:131;--y:391"></i><span>Happy Larry and the Vampire Bat</span></button>
+    <button class="cart" fx-action="games/harolds-bad-day/meta.html"><i class="thumbnail" style="--x:261;--y:391"></i><span>Harold's Bad Day</span></button>
+    <button class="cart" fx-action="games/high-stakes/meta.html"><i class="thumbnail" style="--x:391;--y:391"></i><span>High Stakes</span></button>
+    <button class="cart" fx-action="games/holiday-jumper/meta.html"><i class="thumbnail" style="--x:651;--y:391"></i><span>Holiday Jumper</span></button>
+    <button class="cart" fx-action="games/hot-wax/meta.html"><i class="thumbnail" style="--x:781;--y:391"></i><span>Hot Wax</span></button>
+    <button class="cart" fx-action="games/hungry-harry-3d/meta.html"><i class="thumbnail" style="--x:911;--y:391"></i><span>Hungry Harry 3D</span></button>
+    <button class="cart" fx-action="games/hydra/meta.html"><i class="thumbnail" style="--x:1041;--y:391"></i><span>Hydra</span></button>
+    <button class="cart" fx-action="games/into-ruins/meta.html"><i class="thumbnail" style="--x:1171;--y:391"></i><span>Into Ruins</span></button>
+    <button class="cart" fx-action="games/invader-overload/meta.html"><i class="thumbnail" style="--x:1301;--y:391"></i><span>Invader Overload</span></button>
+    <button class="cart" fx-action="games/just-one-boss/meta.html"><i class="thumbnail" style="--x:1431;--y:391"></i><span>Just One Boss</span></button>
+    <button class="cart" fx-action="games/katamari-christmassy/meta.html"><i class="thumbnail" style="--x:1561;--y:391"></i><span>Katamari Christmassy</span></button>
+    <button class="cart" fx-action="games/lab-cat/meta.html"><i class="thumbnail" style="--x:1;--y:521"></i><span>Lab Cat</span></button>
+    <button class="cart" fx-action="games/linecraft/meta.html"><i class="thumbnail" style="--x:131;--y:521"></i><span>Linecraft</span></button>
+    <button class="cart" fx-action="games/little-dragon-adventure/meta.html"><i class="thumbnail" style="--x:261;--y:521"></i><span>Little Dragon Adventure</span></button>
+    <button class="cart" fx-action="games/little-eidolons/meta.html"><i class="thumbnail" style="--x:391;--y:521"></i><span>Little Eidolons</span></button>
+    <button class="cart" fx-action="games/little-necromancer/meta.html"><i class="thumbnail" style="--x:521;--y:521"></i><span>Little Necromancer</span></button>
+    <button class="cart" fx-action="games/loop/meta.html"><i class="thumbnail" style="--x:651;--y:521"></i><span>Loop</span></button>
+    <button class="cart" fx-action="games/mai-chans-sweet-buns/meta.html"><i class="thumbnail" style="--x:781;--y:521"></i><span>Mai-Chan's Sweet Buns</span></button>
+    <button class="cart" fx-action="games/mapuzzle/meta.html"><i class="thumbnail" style="--x:911;--y:521"></i><span>Mapuzzle</span></button>
+    <button class="cart" fx-action="games/marballs-2/meta.html"><i class="thumbnail" style="--x:1041;--y:521"></i><span>Marballs 2</span></button>
+    <button class="cart" fx-action="games/marble-merger/meta.html"><i class="thumbnail" style="--x:1171;--y:521"></i><span>Marble Merger</span></button>
+    <button class="cart" fx-action="games/meas-castle/meta.html"><i class="thumbnail" style="--x:1301;--y:521"></i><span>Mea's Castle</span></button>
+    <button class="cart" fx-action="games/mots-grand-prix/meta.html"><i class="thumbnail" style="--x:1;--y:651"></i><span>Mot's Grand Prix</span></button>
+    <button class="cart" fx-action="games/motion-rec/meta.html"><i class="thumbnail" style="--x:1431;--y:521"></i><span>MOTION●REC</span></button>
+    <button class="cart" fx-action="games/muse/meta.html"><i class="thumbnail" style="--x:131;--y:651"></i><span>Muse</span></button>
+    <button class="cart" fx-action="games/nanoman/meta.html"><i class="thumbnail" style="--x:261;--y:651"></i><span>Nanoman</span></button>
+    <button class="cart" fx-action="games/neath/meta.html"><i class="thumbnail" style="--x:391;--y:651"></i><span>Neath</span></button>
+    <button class="cart" fx-action="games/nemo/meta.html"><i class="thumbnail" style="--x:651;--y:651"></i><span>NEMO</span></button>
+    <button class="cart" fx-action="games/nemo-2/meta.html"><i class="thumbnail" style="--x:521;--y:651"></i><span>NEMO - Puzzle Pack II</span></button>
+    <button class="cart" fx-action="games/nemonic-crypt/meta.html"><i class="thumbnail" style="--x:781;--y:651"></i><span>Nemonic Crypt</span></button>
+    <button class="cart" fx-action="games/nest-2/meta.html"><i class="thumbnail" style="--x:911;--y:651"></i><span>NEST 2: Fast-paced Coin-Op Action</span></button>
+    <button class="cart" fx-action="games/night-ride/meta.html"><i class="thumbnail" style="--x:1041;--y:651"></i><span>Night Ride</span></button>
+    <button class="cart" fx-action="games/one-room-dungeon/meta.html"><i class="thumbnail" style="--x:1171;--y:651"></i><span>One Room Dungeon</span></button>
+    <button class="cart" fx-action="games/orul/meta.html"><i class="thumbnail" style="--x:1301;--y:651"></i><span>ORUL</span></button>
+    <button class="cart" fx-action="games/pakpok/meta.html"><i class="thumbnail" style="--x:1431;--y:651"></i><span>Pakpok</span></button>
+    <button class="cart" fx-action="games/pengo/meta.html"><i class="thumbnail" style="--x:1561;--y:651"></i><span>Pengo</span></button>
+    <button class="cart" fx-action="games/petal-quest/meta.html"><i class="thumbnail" style="--x:1;--y:781"></i><span>Petal Quest</span></button>
+    <button class="cart" fx-action="games/petal-to-the-metal/meta.html"><i class="thumbnail" style="--x:131;--y:781"></i><span>Petal to the Metal</span></button>
+    <button class="cart" fx-action="games/pico-checkmate/meta.html"><i class="thumbnail" style="--x:391;--y:781"></i><span>Pico Checkmate</span></button>
+    <button class="cart" fx-action="games/pico-de-pon/meta.html"><i class="thumbnail" style="--x:521;--y:781"></i><span>Pico de Pon</span></button>
+    <button class="cart" fx-action="games/pico-dino/meta.html"><i class="thumbnail" style="--x:651;--y:781"></i><span>Pico Dino</span></button>
+    <button class="cart" fx-action="games/pico-froggo/meta.html"><i class="thumbnail" style="--x:781;--y:781"></i><span>Pico Froggo: Hop Across the Seasons</span></button>
+    <button class="cart" fx-action="games/pico-off-road/meta.html"><i class="thumbnail" style="--x:911;--y:781"></i><span>Pico Off Road</span></button>
+    <button class="cart" fx-action="games/pico-pirates/meta.html"><i class="thumbnail" style="--x:1041;--y:781"></i><span>Pico Pirates!</span></button>
+    <button class="cart" fx-action="games/pico-snail-dream-castle/meta.html"><i class="thumbnail" style="--x:1171;--y:781"></i><span>Pico Snail!: Dream Castle</span></button>
+    <button class="cart" fx-action="games/pico-tennis/meta.html"><i class="thumbnail" style="--x:1301;--y:781"></i><span>Pico Tennis</span></button>
+    <button class="cart" fx-action="games/pico-world-race/meta.html"><i class="thumbnail" style="--x:1431;--y:781"></i><span>Pico World Race</span></button>
+    <button class="cart" fx-action="games/pico-zombie-garden/meta.html"><i class="thumbnail" style="--x:1561;--y:781"></i><span>Pico Zombie Garden</span></button>
+    <button class="cart" fx-action="games/pico-ball/meta.html"><i class="thumbnail" style="--x:261;--y:781"></i><span>PICO-BALL: a Sports Game Starring Jelpi</span></button>
+    <button class="cart" fx-action="games/picohot/meta.html"><i class="thumbnail" style="--x:1;--y:911"></i><span>PICOHOT</span></button>
+    <button class="cart" fx-action="games/picolumia/meta.html"><i class="thumbnail" style="--x:131;--y:911"></i><span>Picolumia</span></button>
+    <button class="cart" fx-action="games/picowars/meta.html"><i class="thumbnail" style="--x:261;--y:911"></i><span>PicoWars</span></button>
+    <button class="cart" fx-action="games/pieces-of-cake/meta.html"><i class="thumbnail" style="--x:391;--y:911"></i><span>Pieces of Cake</span></button>
+    <button class="cart" fx-action="games/pigments/meta.html"><i class="thumbnail" style="--x:521;--y:911"></i><span>Pigments</span></button>
+    <button class="cart" fx-action="games/pirates-trial/meta.html"><i class="thumbnail" style="--x:651;--y:911"></i><span>Pirate's Trial</span></button>
+    <button class="cart" fx-action="games/pizza-panda/meta.html"><i class="thumbnail" style="--x:781;--y:911"></i><span>PIZZA PANDA</span></button>
+    <button class="cart" fx-action="games/pole-station/meta.html"><i class="thumbnail" style="--x:911;--y:911"></i><span>Pole Station</span></button>
+    <button class="cart" fx-action="games/pony-9000/meta.html"><i class="thumbnail" style="--x:1041;--y:911"></i><span>Pony 9000</span></button>
+    <button class="cart" fx-action="games/poom/meta.html"><i class="thumbnail" style="--x:1171;--y:911"></i><span>POOM</span></button>
+    <button class="cart" fx-action="games/province/meta.html"><i class="thumbnail" style="--x:1301;--y:911"></i><span>Province</span></button>
+    <button class="cart" fx-action="games/pullfrog/meta.html"><i class="thumbnail" style="--x:1431;--y:911"></i><span>Pullfrog</span></button>
+    <button class="cart" fx-action="games/qbert/meta.html"><i class="thumbnail" style="--x:1561;--y:911"></i><span>Q*Bert</span></button>
+    <button class="cart" fx-action="games/quest-for-the-book-of-truth/meta.html"><i class="thumbnail" style="--x:1;--y:1041"></i><span>Quest for the Book of Truth</span></button>
+    <button class="cart" fx-action="games/return-of-the-slimepires/meta.html"><i class="thumbnail" style="--x:131;--y:1041"></i><span>Return of the SLIMEPIRES!</span></button>
+    <button class="cart" fx-action="games/rolly/meta.html"><i class="thumbnail" style="--x:261;--y:1041"></i><span>Rolly</span></button>
+    <button class="cart" fx-action="games/ruby-eyes/meta.html"><i class="thumbnail" style="--x:391;--y:1041"></i><span>Ruby Eyes</span></button>
+    <button class="cart" fx-action="games/star-patrol/meta.html"><i class="thumbnail" style="--x:131;--y:1171"></i><span>S.P.A.C.E. Star Patrol Against Cosmic Enemies</span></button>
+    <button class="cart" fx-action="games/samurise/meta.html"><i class="thumbnail" style="--x:521;--y:1041"></i><span>Samurise</span></button>
+    <button class="cart" fx-action="games/scrap-boy/meta.html"><i class="thumbnail" style="--x:651;--y:1041"></i><span>Scrap Boy</span></button>
+    <button class="cart" fx-action="games/shadows-of-dunwich/meta.html"><i class="thumbnail" style="--x:781;--y:1041"></i><span>Shadows of Dunwich</span></button>
+    <button class="cart" fx-action="games/shooting-star/meta.html"><i class="thumbnail" style="--x:911;--y:1041"></i><span>Shooting Star</span></button>
+    <button class="cart" fx-action="games/snekburd/meta.html"><i class="thumbnail" style="--x:1041;--y:1041"></i><span>Snekburd</span></button>
+    <button class="cart" fx-action="games/snow/meta.html"><i class="thumbnail" style="--x:1171;--y:1041"></i><span>Snow!</span></button>
+    <button class="cart" fx-action="games/sokoblox/meta.html"><i class="thumbnail" style="--x:1301;--y:1041"></i><span>Sokoblox</span></button>
+    <button class="cart" fx-action="games/solais/meta.html"><i class="thumbnail" style="--x:1431;--y:1041"></i><span>Solais</span></button>
+    <button class="cart" fx-action="games/sphongos/meta.html"><i class="thumbnail" style="--x:1561;--y:1041"></i><span>SPHONGOS</span></button>
+    <button class="cart" fx-action="games/star-anise-chronicles/meta.html"><i class="thumbnail" style="--x:1;--y:1171"></i><span>Star Anise Chronicles</span></button>
+    <button class="cart" fx-action="games/steps/meta.html"><i class="thumbnail" style="--x:261;--y:1171"></i><span>Steps</span></button>
+    <button class="cart" fx-action="games/subsurface/meta.html"><i class="thumbnail" style="--x:391;--y:1171"></i><span>Subsurface</span></button>
+    <button class="cart" fx-action="games/suika/meta.html"><i class="thumbnail" style="--x:521;--y:1171"></i><span>Suika Game Demake</span></button>
+    <button class="cart" fx-action="games/super-disc-box/meta.html"><i class="thumbnail" style="--x:651;--y:1171"></i><span>Super Disc Box</span></button>
+    <button class="cart" fx-action="games/super-world-of-goo/meta.html"><i class="thumbnail" style="--x:781;--y:1171"></i><span>SUPER World of Goo!</span></button>
+    <button class="cart" fx-action="games/swordfish/meta.html"><i class="thumbnail" style="--x:911;--y:1171"></i><span>Swordfish</span></button>
+    <button class="cart" fx-action="games/tad/meta.html"><i class="thumbnail" style="--x:1041;--y:1171"></i><span>TAD</span></button>
+    <button class="cart" fx-action="games/tera-mind-over-matter/meta.html"><i class="thumbnail" style="--x:1171;--y:1171"></i><span>Tera: Mind Over Matter</span></button>
+    <button class="cart" fx-action="games/terra-nova-pinball/meta.html"><i class="thumbnail" style="--x:1301;--y:1171"></i><span>Terra Nova Pinball</span></button>
+    <button class="cart" fx-action="games/the-lost-night/meta.html"><i class="thumbnail" style="--x:1431;--y:1171"></i><span>The Lost Night</span></button>
+    <button class="cart" fx-action="games/the-story-of-zeldo/meta.html"><i class="thumbnail" style="--x:1561;--y:1171"></i><span>The Story of Zeldo</span></button>
+    <button class="cart" fx-action="games/thunder-bella/meta.html"><i class="thumbnail" style="--x:1;--y:1301"></i><span>Thunder Bella</span></button>
+    <button class="cart" fx-action="games/time-for-lunch/meta.html"><i class="thumbnail" style="--x:131;--y:1301"></i><span>Time For Lunch</span></button>
+    <button class="cart" fx-action="games/tiny-hawk/meta.html"><i class="thumbnail" style="--x:261;--y:1301"></i><span>Tiny Hawk: Pico-Sk8r</span></button>
+    <button class="cart" fx-action="games/to-a-starling/meta.html"><i class="thumbnail" style="--x:391;--y:1301"></i><span>To a Starling</span></button>
+    <button class="cart" fx-action="games/holiday-bowling/meta.html"><i class="thumbnail" style="--x:521;--y:391"></i><span>Totally Accurate Holiday Bowling</span></button>
+    <button class="cart" fx-action="games/trial-of-the-sorcerer/meta.html"><i class="thumbnail" style="--x:521;--y:1301"></i><span>Trial of the Sorcerer</span></button>
+    <button class="cart" fx-action="games/trichromat/meta.html"><i class="thumbnail" style="--x:651;--y:1301"></i><span>trichromat</span></button>
+    <button class="cart" fx-action="games/tutankham/meta.html"><i class="thumbnail" style="--x:781;--y:1301"></i><span>Tutankham</span></button>
+    <button class="cart" fx-action="games/ufo-swamp-odyssey/meta.html"><i class="thumbnail" style="--x:911;--y:1301"></i><span>UFO Swamp Odyssey</span></button>
+    <button class="cart" fx-action="games/undune-2/meta.html"><i class="thumbnail" style="--x:1041;--y:1301"></i><span>UnDUNE II - The Demaking of a Dynasty</span></button>
+    <button class="cart" fx-action="games/up-and-away/meta.html"><i class="thumbnail" style="--x:1171;--y:1301"></i><span>Up and Away</span></button>
+    <button class="cart" fx-action="games/vacay-volley/meta.html"><i class="thumbnail" style="--x:1301;--y:1301"></i><span>Vacay Volley</span></button>
+    <button class="cart" fx-action="games/valdi-shadows/meta.html"><i class="thumbnail" style="--x:1431;--y:1301"></i><span>Valdi: Shadows</span></button>
+    <button class="cart" fx-action="games/villager/meta.html"><i class="thumbnail" style="--x:1561;--y:1301"></i><span>Villager</span></button>
+    <button class="cart" fx-action="games/walker/meta.html"><i class="thumbnail" style="--x:1;--y:1431"></i><span>Walker</span></button>
+    <button class="cart" fx-action="games/whiplash-taxi/meta.html"><i class="thumbnail" style="--x:131;--y:1431"></i><span>Whiplash Taxi Co</span></button>
+    <button class="cart" fx-action="games/willo/meta.html"><i class="thumbnail" style="--x:261;--y:1431"></i><span>Willo</span></button>
+    <button class="cart" fx-action="games/willthemangetfrog/meta.html"><i class="thumbnail" style="--x:391;--y:1431"></i><span>willthemangetfrog</span></button>
+    <button class="cart" fx-action="games/witch-loves-bullets/meta.html"><i class="thumbnail" style="--x:521;--y:1431"></i><span>Witch Loves Bullets</span></button>
+    <button class="cart" fx-action="games/wizardish/meta.html"><i class="thumbnail" style="--x:651;--y:1431"></i><span>Wizardish</span></button>
+    <button class="cart" fx-action="games/wolfenstein-3d/meta.html"><i class="thumbnail" style="--x:781;--y:1431"></i><span>Wolfenstein 3D</span></button>
+    <button class="cart" fx-action="games/woodworm/meta.html"><i class="thumbnail" style="--x:911;--y:1431"></i><span>Woodworm</span></button>
+    <button class="cart" fx-action="games/x-wing-vs-tie-fighter/meta.html"><i class="thumbnail" style="--x:1041;--y:1431"></i><span>X-Wing vs. TIE Fighter</span></button>
+    <button class="cart" fx-action="games/x-zero/meta.html"><i class="thumbnail" style="--x:1171;--y:1431"></i><span>X-Zero</span></button>
+    <button class="cart" fx-action="games/zip-zapper/meta.html"><i class="thumbnail" style="--x:1301;--y:1431"></i><span>Zip Zapper</span></button>
+    <button class="cart" fx-action="games/zoo-keeper/meta.html"><i class="thumbnail" style="--x:1431;--y:1431"></i><span>Zoo Keeper</span></button>
   </div></footer>
 
   <script>
@@ -720,6 +557,7 @@ nav a:last-child { margin-left: auto; }
     let shelfToggle = document.querySelector("#shelf-toggle")
     let touch = matchMedia("(hover: none)")  // phones and tablets: the shelf is a pop-up sheet instead of a hover strip
     let target = 0, frame = 0
+    let screen = document.querySelector("#screen")
     let clamp = (x) => Math.max(0, Math.min(x, carousel.scrollWidth - carousel.clientWidth))
 
     // ease-in-out tween to a scroll position (ms = 0 jumps straight there)
@@ -804,7 +642,7 @@ nav a:last-child { margin-left: auto; }
     function sizeTutorial() {
       let edge = null
       try {
-        let screen = document.querySelector("#screen"), rect = screen.contentDocument.querySelector("#canvas").getBoundingClientRect()
+        let rect = screen.contentDocument.querySelector("#canvas").getBoundingClientRect()
         if (rect.width) edge = screen.getBoundingClientRect().left + rect.left
       } catch {}
       // 3x if it fits in the gap with 16px either side, else 2x. centred in the gap when that fits, else in the corner.
@@ -871,7 +709,9 @@ nav a:last-child { margin-left: auto; }
     document.addEventListener("mouseover", () => shelf.classList.remove("held"), { signal })
 
     // no view transitions: they cover the page with a snapshot, freezing the slide and dropping the shelf's hover
-    document.addEventListener("fx:config", (e) => e.detail.cfg.transition = false, { signal })
+    // and every cartridge loads its game's details into the same place
+    let details = document.querySelector("#meta")
+    document.addEventListener("fx:config", (e) => Object.assign(e.detail.cfg, { transition: false, target: details, swap: "innerHTML" }), { signal })
 
     // the info panel opens and closes from its tab, and remembers which way it was left
     let info = document.querySelector("#info")
@@ -884,7 +724,7 @@ nav a:last-child { margin-left: auto; }
     try { setInfoOpen(localStorage.getItem("info-open") == "true") } catch {}
     toggle.addEventListener("click", () => {
       setInfoOpen(!info.classList.contains("open"))
-      document.querySelector("#screen").focus()  // keep the keys going to the game
+      screen.focus()  // keep the keys going to the game
     })
     // on touch screens, tapping outside the open panel (its ::before backdrop) closes it
     info.addEventListener("click", (e) => { if (e.target == info) setInfoOpen(false) })
@@ -894,7 +734,6 @@ nav a:last-child { margin-left: auto; }
     // once the player is up it swaps carts in place (p8_load_cart) instead of reloading
     document.addEventListener("fx:swapped", () => {
       let meta = document.querySelector("#meta [data-cart]")
-      let screen = document.querySelector("#screen")
       let details = document.querySelector("#meta .info")
       let byline = document.createElement("p")  // the title and creator, shown at the top of the panel on touch screens where #meta is hidden
       byline.className = "byline"
@@ -904,25 +743,36 @@ nav a:last-child { margin-left: auto; }
       body.scrollTop = 0  // start the new game's info from the top
       document.title = meta.dataset.title + " · PicoPlayer"
       window.countGame?.(meta.dataset.cart.split("/")[1], meta.dataset.title)  // js/stats.js, unless a blocker stopped it
-      let carts = meta.dataset.cart.split(" ").map((cart) => "../" + cart)  // main cart first, then any extra carts it loads
-      let banks = meta.dataset.banks && "../" + meta.dataset.banks  // data banks some games stream in (see pico8/player.html)
+      let query = meta.dataset.cart.split(" ").map((cart) => "cart=../" + cart).join("&")  // main cart first, then any extra carts it loads
+      if (meta.dataset.banks) query += "&banks=../" + meta.dataset.banks  // data banks some games stream in (see pico8/player.html)
       let player = screen.contentWindow
-      if (player.p8_load_cart && !screen.dataset.loading) showLoading(screen, player.p8_load_cart(carts, banks))
+      if (player.p8_load_cart && !screen.dataset.loading) showLoading(player.p8_load_cart(query))
       else {
         screen.dataset.loading = true  // until the player page loads, swapping would reach the old one
-        showLoading(screen, new Promise((resolve) => screen.addEventListener("load", () => {
+        showLoading(new Promise((resolve) => screen.addEventListener("load", () => {
           delete screen.dataset.loading
           resolve()
         }, { once: true })))
-        player.location.replace("pico8/player.html?" + carts.map((cart) => "cart=" + cart).join("&") + (banks ? "&banks=" + banks : ""))
+        bootPlayer(query)
       }
       screen.focus()
     }, { signal })
 
     // the spinner covers the player from picking a game until the new game draws its first frame.
     // it waits for the new game to be booted first (or the player page to load), since until then pico8_state is still the old game's
+    // booting the player for the first time can freeze the page (about 2s in WebKit), so it waits for the fade into
+    // this page to finish. games picked in the meantime only change which one it boots
+    let bootQuery
+    function bootPlayer(query) {
+      if (!bootQuery) Promise.resolve(window.fadeDone).catch(() => {}).then(() => {
+        if (!signal.aborted) screen.contentWindow.location.replace("pico8/player.html?" + bootQuery)
+        bootQuery = null
+      })
+      bootQuery = query
+    }
+
     let loading = document.querySelector("#loading"), loads = 0
-    function showLoading(screen, booted) {
+    function showLoading(booted) {
       let load = ++loads  // a newer pick takes over, and its own wait hides the spinner
       loading.hidden = false
       booted.then(function check() {
@@ -955,6 +805,6 @@ nav a:last-child { margin-left: auto; }
     addEventListener("hashchange", insertFromHash, { signal })
   }
   </script>
-  <script src="js/stats.js?v=f553d9a0" defer></script>
+  <script src="js/stats.js?v=52946261" defer></script>
 </body>
 </html>

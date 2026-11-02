@@ -4,9 +4,9 @@
 // and copies the rest over from the previous cache. the list below is written by "bash scripts/build-offline.sh"
 
 // precache:start
-let version = "picoplayer-fa0f62bf"
+let version = "picoplayer-9cea0d59"
 let files = {
-  "about.html": "4fbb5bd1",
+  "about.html": "45f0499a",
   "assets/github.svg": "a5101cbd",
   "assets/icon-192.png": "145db495",
   "assets/icon-512.png": "993067c2",
@@ -87,7 +87,6 @@ let files = {
   "games/feed-the-ducks/meta.html": "60d1a621",
   "games/floodedcaves/floodedcaves.p8.rom": "f6f6d61f",
   "games/floodedcaves/meta.html": "86b79454",
-  "games/freezing-knights/freezing-knights.p8.rom": "064bea1f",
   "games/freezing-knights/freezing_knights_battle1.p8.rom": "cfb360ae",
   "games/freezing-knights/freezing_knights_battle2.p8.rom": "da660eb6",
   "games/freezing-knights/freezing_knights_battle3.p8.rom": "3e7e28a8",
@@ -102,7 +101,7 @@ let files = {
   "games/freezing-knights/freezing_knights_map.p8.rom": "05309aa0",
   "games/freezing-knights/freezing_knights_rest.p8.rom": "6df72a40",
   "games/freezing-knights/freezing_knights_start.p8.rom": "064bea1f",
-  "games/freezing-knights/meta.html": "0c14ec69",
+  "games/freezing-knights/meta.html": "cf645c0f",
   "games/gars-den/gars-den.p8.rom": "6f4053ea",
   "games/gars-den/meta.html": "0ed29fb1",
   "games/ghost-house/ghost-house.p8.rom": "69f9024e",
@@ -127,10 +126,9 @@ let files = {
   "games/hungry-harry-3d/meta.html": "a82cce36",
   "games/hydra/hydra.p8.rom": "97eee69b",
   "games/hydra/meta.html": "10911390",
-  "games/into-ruins/into-ruins.p8.rom": "77e8a36c",
   "games/into-ruins/intoruins.p8.rom": "77e8a36c",
   "games/into-ruins/intoruins_main-7.p8.rom": "ffb9434f",
-  "games/into-ruins/meta.html": "48a29ec0",
+  "games/into-ruins/meta.html": "bcd20a6d",
   "games/invader-overload/invader-overload.p8.rom": "67f58cb9",
   "games/invader-overload/meta.html": "75ed0630",
   "games/just-one-boss/just-one-boss.p8.rom": "673bf2d4",
@@ -169,10 +167,9 @@ let files = {
   "games/motion-rec/motion-rec.p8.rom": "982a5459",
   "games/mots-8-ball-pool/meta.html": "75103b60",
   "games/mots-8-ball-pool/mots-8-ball-pool.p8.rom": "e63e6d1f",
-  "games/mots-grand-prix/meta.html": "3d359859",
+  "games/mots-grand-prix/meta.html": "8cc1948c",
   "games/mots-grand-prix/mot_grandprix2.p8.rom": "e639c3b2",
   "games/mots-grand-prix/mot_grandprix2game.p8.rom": "8ca31d4e",
-  "games/mots-grand-prix/mots-grand-prix.p8.rom": "e639c3b2",
   "games/muse/meta.html": "c4403c89",
   "games/muse/muse.p8.rom": "ac9b6e1b",
   "games/nanoman/meta.html": "94fd0563",
@@ -201,8 +198,7 @@ let files = {
   "games/petal-quest/petal-quest.p8.rom": "7d979694",
   "games/petal-to-the-metal/meta.html": "78c18ca1",
   "games/petal-to-the-metal/petal-to-the-metal.p8.rom": "7b3a1c09",
-  "games/pico-ball/meta.html": "a20deff4",
-  "games/pico-ball/pico-ball.p8.rom": "1f262d0b",
+  "games/pico-ball/meta.html": "0ecf76fc",
   "games/pico-ball/pico_ball.p8.rom": "1f262d0b",
   "games/pico-ball/pico_ball_match.p8.rom": "b8a2ec55",
   "games/pico-checkmate/meta.html": "6751bc40",
@@ -348,18 +344,16 @@ let files = {
   "games/tiny-hawk/tiny-hawk.p8.rom": "957f013d",
   "games/to-a-starling/meta.html": "e275f4f6",
   "games/to-a-starling/to-a-starling.p8.rom": "1469196c",
-  "games/trial-of-the-sorcerer/meta.html": "a9426d38",
+  "games/trial-of-the-sorcerer/meta.html": "876e69e7",
   "games/trial-of-the-sorcerer/mot_sorcerer.p8.rom": "7f68a69c",
   "games/trial-of-the-sorcerer/mot_sorcerergame.p8.rom": "ded87528",
-  "games/trial-of-the-sorcerer/trial-of-the-sorcerer.p8.rom": "7f68a69c",
   "games/trichromat/meta.html": "922469f1",
   "games/trichromat/trichromat.p8.rom": "28063b4e",
   "games/tutankham/meta.html": "e465a1ed",
   "games/tutankham/tutankham.p8.rom": "3c8e7c58",
   "games/ufo-swamp-odyssey/meta.html": "dd23046f",
   "games/ufo-swamp-odyssey/ufo-swamp-odyssey.p8.rom": "6fa3b16b",
-  "games/undune-2/meta.html": "fb54bca9",
-  "games/undune-2/undune-2.p8.rom": "a1dd68bd",
+  "games/undune-2/meta.html": "6b5b3599",
   "games/undune-2/undune2.p8.rom": "a1dd68bd",
   "games/undune-2/undune2_credits.p8.rom": "52577aef",
   "games/undune-2/undune2_map1.p8.rom": "5bef4541",
@@ -404,17 +398,17 @@ let files = {
   "games/zip-zapper/zip-zapper.p8.rom": "dfb1e851",
   "games/zoo-keeper/meta.html": "f7b46c27",
   "games/zoo-keeper/zoo-keeper.p8.rom": "ec0d7e6e",
-  "index.html": "23a76dd2",
+  "index.html": "e0e1c111",
   "js/fixi.js": "f513737c",
-  "js/offline_pwa.js": "e66a0d34",
-  "js/stats.js": "f553d9a0",
-  "js/transitions.js": "c0fe748c",
+  "js/offline_pwa.js": "f23748ea",
+  "js/stats.js": "52946261",
+  "js/transitions.js": "7c067bc7",
   "manifest.webmanifest": "8aad173e",
-  "pico8/pico8.js": "c323d259",
+  "pico8/pico8.js": "1dce1910",
   "pico8/pico8.wasm": "d9cefa8b",
-  "pico8/player.html": "2e6e4521",
-  "play.html": "bcf4a7ea",
-  "technical_deets.html": "e41d9176",
+  "pico8/player.html": "49648613",
+  "play.html": "3adc08bb",
+  "technical_deets.html": "78c7b488",
 }
 // precache:end
 
@@ -427,8 +421,7 @@ let keyFor = (path) => new URL(path + "?v=" + files[path], scope).href
 // (player.html?cart=, the thumbnails' cache-buster), the root means index.html, and a page
 // linked without its extension (/play, as GitHub Pages serves it) means its .html file
 function pathFor(url) {
-  url = new URL(url)
-  if (url.origin != scope.origin || !url.pathname.startsWith(scope.pathname)) return
+  if (!url.pathname.startsWith(scope.pathname)) return
   let path = decodeURIComponent(url.pathname.slice(scope.pathname.length)) || "index.html"
   if (files[path]) return path
   if (files[path + ".html"]) return path + ".html"
@@ -478,16 +471,22 @@ self.addEventListener("activate", (e) => e.waitUntil((async () => {
 })()))
 
 // the installed app asks for everything. a few at a time, with the pages and the player before the carts, and pausing
-// whenever an open page is loading something, so it isn't stuck behind hundreds of downloads sharing the connection
+// whenever an open page is loading something, so it isn't stuck behind hundreds of downloads sharing the connection.
+// every page load in the app asks again, so that's ignored during a download, and only what's missing gets queued
+let downloading
 self.addEventListener("message", (e) => {
-  if (e.data != "download-all") return
-  let paths = Object.keys(files).sort((a, b) => a.startsWith("games/") - b.startsWith("games/"))
-  e.waitUntil(caches.open(version).then((cache) => Promise.all(Array.from({ length: 4 }, async () => {
-    while (paths.length) {
-      await untilIdle()
-      await store(cache, paths.shift()).catch(() => {})
-    }
-  }))))
+  if (e.data != "download-all" || downloading) return
+  downloading = caches.open(version).then(async (cache) => {
+    let have = new Set((await cache.keys()).map((request) => request.url))
+    let paths = Object.keys(files).filter((path) => !have.has(keyFor(path))).sort((a, b) => a.startsWith("games/") - b.startsWith("games/"))
+    await Promise.all(Array.from({ length: 4 }, async () => {
+      while (paths.length) {
+        await untilIdle()
+        await store(cache, paths.shift()).catch(() => {})
+      }
+    }))
+  }).finally(() => downloading = null)
+  e.waitUntil(downloading)
 })
 
 // listed files come from the cache, or the network (and are kept) the first time. anything else of ours

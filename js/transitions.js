@@ -2,7 +2,7 @@
 
 // browsers without cross-document view transitions (Firefox) ignore the pages' @view-transition rule, but they do run
 // same-document ones. so there, following a link to another of our pages fetches it and swaps it into this one inside
-// a view transition, which gives the same crossfade: its missing stylesheets and scripts are added first, then its
+// a view transition, which gives the same crossfade: its missing styles and scripts are added first, then its
 // title and body replace ours and its inline scripts run as on a real load (play.html's script is written to allow that)
 if (!window.CSSViewTransitionRule && document.startViewTransition) {
   let shown = location.pathname, visits = 0
@@ -13,9 +13,9 @@ if (!window.CSSViewTransitionRule && document.startViewTransition) {
       let response = await fetch(url)
       if (!response.ok || !response.headers.get("content-type")?.includes("text/html")) throw response
       let page = new DOMParser().parseFromString(await response.text(), "text/html")
-      await Promise.all([...page.head.querySelectorAll("link[rel=stylesheet], script[src], style[data-src]")].map(load))
+      await Promise.all([...page.head.querySelectorAll("script[src], style[data-src]")].map(load))
       if (current != visits) return  // a newer click took over
-      document.startViewTransition(() => {
+      let transition = document.startViewTransition(() => {
         document.dispatchEvent(new Event("page:leave"))  // the old page drops its listeners on document and window
         if (push) history.pushState(null, "", url)
         shown = location.pathname
@@ -24,23 +24,24 @@ if (!window.CSSViewTransitionRule && document.startViewTransition) {
         document.body.querySelectorAll("script").forEach(run)
         scrollTo(0, 0)
         document.dispatchEvent(new Event("DOMContentLoaded"))  // fixi and play.html set up on it
-      }).updateCallbackDone.catch(() => location.href = url)
+      })
+      window.fadeDone = transition.finished  // play.html waits on it. this runs first: the callback above is always async
+      transition.updateCallbackDone.catch(() => location.href = url)
     } catch {
       location.href = url  // anything unexpected gets a plain page load instead
     }
   }
 
-  // adds a stylesheet or script the new page has and we don't, resolving once it has loaded. stylesheets inlined by
+  // adds a script the new page has and we don't, resolving once it has loaded. stylesheets inlined by
   // build-offline.sh (<style data-src>) are added as they are
   function load(tag) {
     if (tag.localName == "style") {
       if (!document.head.querySelector(`style[data-src="${tag.dataset.src}"]`)) document.head.append(document.importNode(tag, true))
       return
     }
-    let attr = tag.localName == "link" ? "href" : "src"
-    let url = new URL(tag.getAttribute(attr), location).href
-    if ([...document.head.querySelectorAll(tag.localName)].some((old) => old[attr] == url)) return
-    let copy = document.createElement(tag.localName)
+    let url = new URL(tag.getAttribute("src"), location).href
+    if ([...document.head.querySelectorAll("script")].some((old) => old.src == url)) return
+    let copy = document.createElement("script")
     for (let a of tag.attributes) copy.setAttribute(a.name, a.value)
     return new Promise((resolve) => { copy.onload = copy.onerror = resolve; document.head.append(copy) })
   }

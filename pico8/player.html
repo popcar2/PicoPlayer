@@ -8,8 +8,8 @@ html { background: #000; }
 <title>PICO-8 Cartridge</title>
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <!-- fetched alongside the carts rather than after them (p8_run_cart adds the script once they are in, which then fetches the wasm) -->
-<link rel="preload" href="pico8.js?v=6" as="script">
-<link rel="preload" href="pico8.wasm?v=6" as="fetch" type="application/wasm" crossorigin>
+<link rel="preload" href="pico8.js?v=1dce1910" as="script">
+<link rel="preload" href="pico8.wasm?v=d9cefa8b" as="fetch" type="application/wasm" crossorigin>
 <script type="text/javascript">
 	// shared player: the cart comes from ?cart=<url of a .p8.rom> instead of being baked into pico8.js.
 	// multi-cart games pass more carts as extra ?cart= params: pico8.js takes every cart's name in _cartname and
@@ -17,8 +17,7 @@ html { background: #000; }
 	// games with data banks also pass ?banks=<url prefix>, each bank being <prefix><number>.bin (see pico8_gpio below)
 	var p8_cart_url = null, _cartname = null, _cartdat = null, p8_banks = null;
 	var _cdpos = 0, iii = 0, ciii = 0;
-	var p8_params = new URLSearchParams(location.search);
-	var p8_cart_ready = p8_fetch_carts(p8_params.getAll("cart"), p8_params.get("banks"));
+	var p8_cart_ready = p8_fetch_query(location.search);
 
 	// a .p8.rom is the cart's 32k of memory as is
 	async function p8_fetch_cart(url)
@@ -45,22 +44,23 @@ html { background: #000; }
 		};
 	}
 
-	function p8_player_query(urls, banks)
+	function p8_fetch_query(query)
 	{
-		return urls.map(function(url){ return "cart=" + url; }).join("&") + (banks ? "&banks=" + banks : "");
+		var params = new URLSearchParams(query);
+		return p8_fetch_carts(params.getAll("cart"), params.get("banks"));
 	}
 
-	// swap to other carts (urls as for ?cart=) without reloading the page, like lexaloffle.com's player does:
+	// swap to other carts (a query as for this page's url) without reloading the page, like lexaloffle.com's player does:
 	// codo_command 6 reboots the running machine, which reads the embedded carts again. resolves once the new
 	// carts are booted (pico8_state.frame_number counts their frames from then), or once a later call takes over
 	var p8_loads = 0;
-	async function p8_load_cart(urls, banks)
+	async function p8_load_cart(query)
 	{
 		var load = ++p8_loads;
-		var set_carts = await p8_fetch_carts(urls, banks);
+		var set_carts = await p8_fetch_query(query);
 		if (load != p8_loads) return;
 		set_carts();
-		history.replaceState(null, "", "?" + p8_player_query(urls, banks));  // a reload keeps the new carts
+		history.replaceState(null, "", "?" + query);  // a reload keeps the new carts
 		codo_command = 6;
 		while (codo_command == 6) await new Promise(requestAnimationFrame);  // pico8.js takes the command on its next frame
 		await new Promise(requestAnimationFrame);
@@ -137,9 +137,6 @@ html { background: #000; }
 	
 	// options
 
-	// fullscreen, sound, close button at top when playing on touchscreen
-	var p8_allow_mobile_menu = false;
-
 	// p8_autoplay true to boot the cartridge automatically after page load when possible
 	// if the browser can not create an audio context outside of a user gesture (e.g. on iOS), p8_autoplay has no effect
 	var p8_autoplay = true;
@@ -214,7 +211,6 @@ html { background: #000; }
 "p8b_pause0":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAKUlEQVRIx2NgGHbg/8cX/7FhctWNWjBqwagFoxaMWjBqwagF5Fkw5AAAPaGZvsIUtXUAAAAASUVORK5CYII=",
 "p8b_sound0":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAANklEQVRIx2NgGDHg/8cX/5Hx0LEA3cChYwEugwavBcRG4qgFoxYMZwuGfk4efqXp8KnRBj0AAMz7cLDnG4FeAAAAAElFTkSuQmCC",
 "p8b_sound1":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAPUlEQVRIx2NgGDHg/8cX/5Hx0LEA3cChYwEugwhZQLQDqG4BsZFIKMhGLRi1YChbMPRz8vArTYdPjTboAQCSVgpXUWQAMAAAAABJRU5ErkJggg==",
-"p8b_close":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAU0lEQVRIx2NkoDFgpJsF/z+++I8iwS9BkuW49A+cBcRaREgf/Swg1SJi1dHfAkIG4EyOOIJy4Cwg1iJCiWDUAvItGLqpaOjm5KFfmg79Gm3ItioAl+mAGVYIZUUAAAAASUVORK5CYII=",
 
 "controls_left_panel":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAAB5fY51AAAEI0lEQVR42u3dMU7DQBCG0Tjam9DTcP8jpEmfswS5iHBhAsLxev/hvQY6pGXyZRTQ+nQCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHqbHEEtl+vt7hS+fLy/mXHBQqxEi/6aI/AiFW9SnB2BWDkDBAtAsADBAhAsAMECBAtAsAAECxAsAMECECxAsAAEC0CwONJ8tYvrXRAsImK19j0IFsPGSrQQLCJiNV+et7xAT7QQLIaN1dr3ooVgMWysRAvBIipWooVgERUr0UKwiIqVaCFYRMVKtBAsomIlWggWUbESLQSLqFiJFoJFVKxEC8EiKlaihWARFSvRQrDYJSSVfhaCBSBYAIIFCBbAHpoj4Bl/scOGBWDD4lX8iwE2LADBAgQLQLAABAsQLADBAhAsQLAABAtAsADBAhAsAMECBAtAsAAECxAsAMECECxAsAAECxAsAMECECxAsMh1ud7uTsHZVDcZyFo8Yt5sVJ6NyUAaSNEyIymaXwZepIKd4mwoQbAFC0CwAMECECwAwQIEC0CwAAQLECwAwQIQLECwAAQLQLAAwQI4UHME2/10QZq7usyBObBhRQwpmBUb1nADuPbuaUD/p2ezMH+1admwhosVfBcxb2SCJVaIlmAhVoiWYIkVoiVagiVWiJZgiZVYIVqCJVaIlmgJllghWoIlViBagiVWiJZoCZZYIVqCJVYgWoIlViBaggUIlnc0sPELlmghVmIlWKKFWAmWaIFYCZZoIVYIlmghVoIlWiBWgiVaiJVgIVqIlWCJFoiVYIkWYiVYiBZiJViihViJ1XbNEWyL1mMQRYvfvIGJlQ1rmE0LzIoNyyBiDrBhAYIFIFiAYAEIFoBgAYIFIFgAggUIFoBgAQgWIFgAggUgWIBgDc+Nn1D/tdH8YupwgZy5qG4ykKIlVmZDsDjshSlazqQqH7p793Q2CBaAYAGCBSBYAIIFCBaAYAEIFiBYAIIFIFiAYAEIFoBgAYIFIFgAggUIFoBgAQgWIFgAggUgWIBgAQgWwENzBKxZPub9CJ7WjA0LsGFRV+9N5+jNDhsWgGABggUgWACCxW56fgjuA3cEiz9Z/nWwR0iWP8P/YCFYDBstsUKwiIiWWCFYRERLrBAsIqIlVggWEdESKwSLiGiJFYJFRLTECsEiIlpihWARES2xQrCIiJZYIVhEREusECwioiVWCBYx0RIrBIuoaIkVr+YhFHTZtMCGBQgWgGABCBYgWACCBSBYgGABCBaAYAGCBSBYAIIFCBbj2uOR8s6AEbhexgsWYri3SKhKczcXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMA2n+e0UMDzh3yTAAAAAElFTkSuQmCC",
 
@@ -233,59 +229,9 @@ html { background: #000; }
 
 
 	// --------------------------------------------------------------------------------------------------------------------------------
-	// pico-8 0.2.2: allow dropping files
+	// pico8.js has code that reads these for dropped carts, which this player doesn't take
 	var p8_dropped_cart = null;
 	var p8_dropped_cart_name = "";
-	function p8_drop_file(e)
-	{
-		// console.log("@@ dropping file...");
-	
-		e.stopPropagation();
-		e.preventDefault();
-
-		if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0])
-		{
-			// read from file
-			reader = new FileReader();
-			reader.onload = function (event)
-			{
-				p8_dropped_cart_name = 'untitled.p8';
-				if (typeof e.dataTransfer.files[0].name !== 'undefined') p8_dropped_cart_name = e.dataTransfer.files[0].name;
-				if (typeof e.dataTransfer.files[0].fileName !== 'undefined') p8_dropped_cart_name = e.dataTransfer.files[0].fileName;
-				p8_dropped_cart = reader.result;
-				// data:image/png;base64
-				e.stopPropagation();
-				e.preventDefault();
-				codo_command = 9; // read directly from p8_dropped_cart with libb64 decoder
-			};
-			reader.readAsDataURL(e.dataTransfer.files[0]);
-			
-		}
-		else
-		{
-			// read from url (or data url)
-			txt = e.dataTransfer.getData('Text');
-			if (txt){
-				p8_dropped_cart_name = "untitled.p8.png";
-				p8_dropped_cart = txt;
-				codo_command = 9;
-			}
-		}
-	}
-	function nop(evt) {
-		evt.stopPropagation();
-		evt.preventDefault();
-	}
-	function dragover(evt) {
-		evt.stopPropagation();
-		evt.preventDefault();
-		Module.pico8DragOver();
-	}
-	function dragstop(evt) {
-		evt.stopPropagation();
-		evt.preventDefault();
-		Module.pico8DragStop();
-	}
 
 	// download (pico-8 0.2.4d web exports can save a .wav file)
 	function download_browser_file(filename, contents)
@@ -331,7 +277,6 @@ html { background: #000; }
 		}
 		
 		p8_buttons_hash = hash;
-		// console.log("@@ updating button icons");
 
 		els = document.getElementsByClassName('p8_menu_button');
 		for (i = 0; i < els.length; i++)
@@ -350,21 +295,7 @@ html { background: #000; }
 
 			// hide all buttons for touch mode (can pause with menu buttons)
 			
-			var is_visible = p8_is_running;
-
-			if ((!p8_touch_detected || !p8_allow_mobile_menu) && el.parentElement.id == "p8_menu_buttons_touch")
-				is_visible = false;
-
-			if (p8_touch_detected && el.parentElement.id == "p8_menu_buttons")
-				is_visible = false;
-
-			if (is_fullscreen) 
-				is_visible = false;
-
-			if (is_visible)
-				el.style.display="";
-			else
-				el.style.display="none";
+			el.style.display = p8_is_running && !p8_touch_detected && !is_fullscreen ? "" : "none";
 		}
 		requestAnimationFrame(p8_update_button_icons);
 	}
@@ -417,7 +348,6 @@ html { background: #000; }
 			if (canvas)
 			{
 				var rect = canvas.getBoundingClientRect();
-				//console.log(rect.top, rect.right, rect.bottom, rect.left, x, y);
 
 				if (x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom)
 				{
@@ -426,7 +356,6 @@ html { background: #000; }
 						Math.floor((y - rect.top) * 128 / (rect.bottom - rect.top)),
 						step < 2 ? 1 : 0
 					];
-					// return; // commented -- blocks overlapping buttons
 				}else
 				{
 					pico8_mouse[2] = 0;
@@ -457,7 +386,6 @@ html { background: #000; }
 				{
 					// stick
 
-					mask = 0xf; // dpad
 					var cx = 0 + r*3;
 					var cy = hb - r*3;
 
@@ -480,7 +408,6 @@ html { background: #000; }
 				{
 					// button; diagonal split from bottom right corner
 				
-					mask = 0x30;
 					
 					// one or both of [X], [O]
 					if ( (hb-y) > (w-x) * 0.8) b |= 0x10;
@@ -635,7 +562,6 @@ html { background: #000; }
 		if (!p8_touch_detected) // mobile: update every frame because nothing can be trusted
 		if (p8_update_layout_hash == update_hash)
 		{
-			//console.log("p8_update_layout(): skipping");
 			requestAnimationFrame(p8_update_layout);
 			return;
 		}
@@ -649,7 +575,7 @@ html { background: #000; }
 		// mobile in portrait mode: put screen at top (w / a little extra space for fullscreen button if needed)
 		// (don't cart too about buttons overlapping screen)
 		if (p8_touch_detected && p8_is_running && document.body.clientWidth < document.body.clientHeight)
-			p8_playarea.style.marginTop = p8_allow_mobile_menu ? 32 : 8;
+			p8_playarea.style.marginTop = 8;
 		else if (p8_touch_detected && p8_is_running) // landscape: slightly above vertical center (only relevant for iPad / highres devices)
 			p8_playarea.style.marginTop = (document.body.clientHeight - csize) / 4;
 		else
@@ -703,8 +629,6 @@ html { background: #000; }
 				el.setAttribute("src", p8_gfx_dat["controls_left_panel"]);
 			p8_match_box(document.getElementById("controls_left_lit"), el);
 			
-			// scroll to cart (commented; was a failed attempt to prevent scroll-on-drag on some browsers)
-			// p8_frame.scrollIntoView(true);
 
 			document.getElementById("touch_controls_gfx").style.display="table";
 			document.getElementById("touch_controls_background").style.display="table";
@@ -715,20 +639,12 @@ html { background: #000; }
 			document.getElementById("touch_controls_background").style.display="none";
 		}
 
-		if (!p8_is_running)
-		{
-			p8_playarea.style.display="none";
-			p8_container.style.display="flex";
-			p8_container.style.marginTop="auto";
-
-			el = document.getElementById("p8_start_button");
-			if (el) el.style.display="flex";
-		}
 		requestAnimationFrame(p8_update_layout);
 	}
 
 
-	var p8_touch_detected = false;
+	// touch screens show the on-screen controls straight away instead of after the first tap on the game
+	var p8_touch_detected = matchMedia("(hover: none)").matches;
 	addEventListener("touchstart", function(event)
 	{
 		p8_touch_detected = true;
@@ -769,7 +685,6 @@ html { background: #000; }
 					dummy_source_sfx.buffer = pico8_audio_context.createBuffer(1, 1, 22050); // dummy
 					dummy_source_sfx.connect(pico8_audio_context.destination);
 					dummy_source_sfx.start(1, 0.25); // gives InvalidStateError -- why? hasn't been played before 
-					//dummy_source_sfx.noteOn(0); // deleteme
 				}
 				catch(err) {
 					console.log("** dummy_source_sfx.start(1, 0.25) failed");
@@ -960,12 +875,6 @@ html { background: #000; }
 		}, 100);
 	}
 
-	function p8_close_cart()
-	{
-		// just reload page! used for touch buttons -- hard to roll back state 
-		window.location.hash = ""; // triggers reload
-	}
-
 	// saves (cartdata, cstore) live in /user_data, which pico8.js mounts from IndexedDB itself, but asynchronously while the
 	// cart boots, and it writes config.txt and syncs the folder back straight away. that sync scans /user_data before the
 	// mount has filled it, so it deletes every save from IndexedDB (lexaloffle.com's slower boot happens to dodge this), and a
@@ -973,10 +882,10 @@ html { background: #000; }
 	// and run its syncs one at a time. runs as a Module.preRun, once pico8.js has set up FS but before it starts
 	function p8_mount_user_data()
 	{
-		var mount = FS.mount.bind(FS), sync = FS.syncfs.bind(FS), queue = Promise.resolve(), ours = false, mounted = false;
+		var mount = FS.mount.bind(FS), sync = FS.syncfs.bind(FS), queue = Promise.resolve(), mounted = false;
 		FS.mount = function(type, opts, mountpoint)
 		{
-			if (mountpoint == "/user_data" && ours) return; // pico8.js's own mount
+			if (mountpoint == "/user_data") return; // pico8.js's own mount (ours uses the original)
 			return mount.apply(null, arguments);
 		};
 		FS.syncfs = function(populate, callback)
@@ -989,7 +898,6 @@ html { background: #000; }
 		function mkdir(path){ try { FS.stat(path); } catch(err) { FS.mkdir(path); } }
 		mkdir("/user_data");
 		mount(IDBFS, {}, "/user_data");
-		ours = true;
 		addRunDependency("p8_user_data");
 		FS.syncfs(true, function(err)
 		{
@@ -1006,33 +914,14 @@ html { background: #000; }
 	}
 
 	var p8_is_running = false;
-	var p8_script = null;
 	var Module = null;
 	function p8_run_cart()
 	{
 		if (p8_is_running) return;
 		p8_is_running = true;
 
-		// touch: hide everything except p8_frame_0
-		if (p8_touch_detected)
-		{
-			el = document.getElementById("body_0");
-			el2 = document.getElementById("p8_frame_0");
-			if (el && el2)
-			{
-				el.style.display="none";
-				el.parentNode.appendChild(el2);
-			}
-		}
-
 		// create audio context and wake it up (for iOS -- needs happen inside touch event)		
 		p8_create_audio_context();
-
-		// show touch elements
-		els = document.getElementsByClassName('p8_controller_area');
-		for (i = 0; i < els.length; i++)
-			els[i].style.display="";
-
 
 		// install touch events. These also serve to block scrolling / pinching / zooming on phones when p8_is_running
 			// moved event.preventDefault(); calls into pico8_buttons_event() (want to let top buttons pass through)
@@ -1043,7 +932,6 @@ html { background: #000; }
 
 		// load and run script
 		e = document.createElement("script");
-		p8_script = e;
 		e.onload = function(){
 			
 			// show canvas / menu buttons only after loading
@@ -1058,40 +946,14 @@ html { background: #000; }
 
 		}
 		e.type = "application/javascript";
-		e.src = "pico8.js?v=6"; // bump (here, in the preloads above and in pico8.js's wasmBinaryFile) when pico8.js or pico8.wasm is patched so browsers drop the cached copy
-		e.id = "e_script";
+		e.src = "pico8.js?v=1dce1910";
 		
 		// load and run once the cart is decoded (unless p8_load_cart already put other carts in)
 		p8_cart_ready.then(function(set_carts){ if (!p8_loads) set_carts(); document.body.appendChild(e); });
 
-		// hide start button and show canvas / menu buttons. hide start button
-		el = document.getElementById("p8_start_button");
-		if (el) el.style.display="none";
-
-		// add #playing for touchscreen devices (allows back button to close)
-		// X button can also be used to trigger this 
-		if (p8_touch_detected)
-		{
-			window.location.hash = "#playing";
-			window.onhashchange = function()
-			{
-				if (window.location.hash.search("playing") < 0)
-					window.location.reload();
-			}
-		}
-
-		// install drag&drop listeners
-		{
-			let canvas = document.getElementById("canvas");
-			if (canvas)
-			{
-				canvas.addEventListener('dragenter', dragover, false);
-				canvas.addEventListener('dragover', dragover, false);
-				canvas.addEventListener('dragleave', dragstop, false);
-				canvas.addEventListener('drop', nop, false);
-				canvas.addEventListener('drop', p8_drop_file, false);
-			}
-		}
+		// a file dropped on the game does nothing, rather than the browser leaving the game to open it
+		addEventListener("dragover", function(e){ e.preventDefault(); });
+		addEventListener("drop", function(e){ e.preventDefault(); });
 	}
 
 	
@@ -1287,7 +1149,6 @@ html { background: #000; }
 		});
 
 		// Unassign disconnected gamepads.
-		// gps.forEach(function (gp, i) { if (gp && !gp.connected) { p8_unassign_gamepad(i); }});
 		gps.forEach(function (gp, i) { if (!gp || !gp.connected) { p8_unassign_gamepad(i); }}); // https://www.lexaloffle.com/bbs/?pid=87132#p
 
 
@@ -1413,56 +1274,23 @@ canvas{
 }
 
 
-.p8_start_button{
-	cursor:pointer;
-	background:#000;
-	-webkit-background-size:cover; -moz-background-size:cover; -o-background-size:cover; background-size:cover;
-}
-
-.button_gfx{
-	stroke-width:2;
-	stroke: #ffffff;
-	stroke-opacity:0.4;
-	fill-opacity:0.2;
-	fill:black;
-}
-
-.button_gfx_icon{
-	stroke-width:3;
-	stroke: #909090;
-	stroke-opacity:0.7;
-	fill:none;
-}
-
 -->
 </STYLE>
 
 </head>
 
 <body style="padding:0px; margin:0px; overflow:hidden; background-color:#000; color:#ccc">
-<div id="body_0"> <!-- hide this when playing in mobile (p8_touch_detected) so that elements don't affect layout -->
 
 
 <!-- Add any content above the cart here -->
 
 
-<div id="p8_frame_0" style="max-width:800px; max-height:800px; margin:auto;"> <!-- double function: limit size, and display only this div for touch devices -->
+<div id="p8_frame_0" style="max-width:800px; max-height:800px; margin:auto;"> <!-- limits the size -->
 <div id="p8_frame" style="display:flex; width:100%; max-width:95vw; height:100vw; max-height:95vh; margin:auto;">
 
-	<div id="p8_menu_buttons_touch" style="position:absolute; width:100%; z-index:10; left:0px;">
-		<div class="p8_menu_button" id="p8b_full"  style="float:left;margin-left:10px" onClick="p8_give_focus(); p8_request_fullscreen();"></div>
-		<div class="p8_menu_button" id="p8b_sound" style="float:left;margin-left:10px" onClick="p8_give_focus(); p8_create_audio_context(); Module.pico8ToggleSound();"></div>
-		<div class="p8_menu_button" id="p8b_close" style="float:right; margin-right:10px" onClick="p8_close_cart();"></div>
-	</div>
-
 	<div id="p8_container"
-		style="margin:auto; display:table;"
-		onclick="p8_create_audio_context(); p8_run_cart();">
-
-		<div id="p8_start_button" class="p8_start_button" style="width:100%; height:100%; display:flex;">
-			<img width=80 height=80 style="margin:auto;"
-		src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAABpklEQVR42u3au23DQBCEYUXOXIGKcujQXUgFuA0XIKgW90Q9oEAg+Ljd27vd2RsCf058gEDqhofPj+OB6SMCAQlIQAIyAhKQgARkBAQDnM6XSRsB7/2e/tSA0//12fCAKsQX3ntDA4oRFwBRIc0AixE38BAhTQGLEAsBUSDNAXcRhYDRIZsAPlp99VECRoXsDpgN0g0wC6Q7IDpkGEBUyG6A0+vKBtkdMBukG2AWSHdAdMgwgKiQ4QDRIMMCokCGB4wOCQPYFVKw2cABNocUjl6wgE0gFashPKAZpHJ2TQNYBVmxW6cDFENWDv9pAUshCVgJScBKSAISkD9hPkT4GkNAMdzepyj8Kye852EBLe51CZHHWQK4JcThD1SlcHPEYY/0a+A0n6SkGZV6w6WZNb3g4Id1b7hwgGhwYQBR4dwB0eHcALPAdQfMBhcOEA0uDCAqnDsgOpwbYBa4poA/31+rZYFrBriFpwGMCtcEcA9PAhgdzhywBK8EEQXOFFCCtwaIBmcGKMWbI6LCmQBq8R6hw5kAMgISkIAEJCAjIAEJSEBGQI9ukV7lRn9nD+gAAAAASUVORK5CYII="/>
-		</div>
+		style="margin:auto; display:flex;"
+		onclick="p8_create_audio_context();">
 
 		<div id="p8_playarea" style="display:none; margin:auto;
 				-webkit-user-select:none; -moz-user-select: none; user-select: none; -webkit-touch-callout:none;
@@ -1542,9 +1370,6 @@ canvas{
 	if (p8_autoplay)
 	{
 		p8_run_cart();
-		// touch screens: show the on-screen controls straight away instead of after the first tap on the game.
-		// set after p8_run_cart so it doesn't also push a #playing history entry on every game switch
-		if (matchMedia("(hover: none)").matches) p8_touch_detected = true;
 		["pointerdown", "keydown", "touchstart"].forEach(function(type)
 		{
 			addEventListener(type, function(){ p8_create_audio_context(); }, {once: true, capture: true});
@@ -1570,6 +1395,5 @@ canvas{
 
 
 
-</div> <!-- body_0 -->
 </body></html>
 

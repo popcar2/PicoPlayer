@@ -39,7 +39,6 @@ nav a:last-child { margin-left: auto; }
    so the svg is inline rather than a request that would hold it back */
 #player { position: relative; }
 #loading { position: absolute; inset: 0; background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 75 75'%3E%3Crect x='30' y='0' width='15' height='15' fill='%23FF004D'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.525s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='45' y='15' width='15' height='15' fill='%23FFCCAA'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.45s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='60' y='30' width='15' height='15' fill='%23FF77A8'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.375s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='45' y='45' width='15' height='15' fill='%231D2B53'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.3s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='30' y='60' width='15' height='15' fill='%2329ADFF'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.225s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='15' y='45' width='15' height='15' fill='%2300E436'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.15s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='0' y='30' width='15' height='15' fill='%23FFEC27'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='-0.075s' repeatCount='indefinite'/%3E%3C/rect%3E%3Crect x='15' y='15' width='15' height='15' fill='%23FFA300'%3E%3Canimate attributeName='opacity' values='1;0' dur='.6s' calcMode='linear' begin='0s' repeatCount='indefinite'/%3E%3C/rect%3E%3C/svg%3E") center no-repeat; pointer-events: none; }
-#loading[hidden] { display: none; }
 
 /* tucked below the screen with a thin strip showing; slides up when the cursor nears the bottom.
    the transparent top padding is the "near the bottom" band that triggers it */
@@ -68,7 +67,6 @@ nav a:last-child { margin-left: auto; }
 /* a dark backdrop, so it stays readable over the game or the Game Info panel. a spread shadow, so it reaches past the
    image (and over its bob) without moving it */
 #tutorial { background: rgb(0 0 0 / .7); box-shadow: 0 0 0 .75rem rgb(0 0 0 / .7); }
-#tutorial[hidden] { display: none; }
 /* invisible until play.html's script has picked its size, so it doesn't shrink once the game shows up */
 #tutorial:not(.placed), #tutorial.gone { opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
 #tutorial img {
@@ -121,7 +119,7 @@ nav a:last-child { margin-left: auto; }
 @media (hover: hover) {
   .carousel { scrollbar-width: auto; }
   @supports selector(::-webkit-scrollbar) {
-    .carousel { scrollbar-width: auto; scrollbar-color: auto; }
+    .carousel { scrollbar-color: auto; }
     .carousel::-webkit-scrollbar { height: 16px; background: #333; }
     .carousel::-webkit-scrollbar-thumb { background: #5f574f; }
   }
@@ -233,9 +231,6 @@ nav a:last-child { margin-left: auto; }
 .info a { color: #29adff; overflow-wrap: anywhere; }
 .info hr { border: 0; border-top: 1px solid #555; margin: 0 0 1rem; }
 .info .source { color: #888; font-size: .75rem; }
-.info dl { display: grid; grid-template-columns: auto 1fr; gap: .25rem .75rem; margin: 0; }
-.info dt { color: #fff; white-space: nowrap; }
-.info dd { margin: 0; }
 
 #shelf-toggle { display: none; }
 

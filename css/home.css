@@ -68,9 +68,3 @@
   text-align: center;
 }
 
-/* touch screens get the hint about the Games bar instead of hovering */
-.hint-touch { display: none; }
-@media (hover: none) {
-  .hint-hover { display: none; }
-  .hint-touch { display: block; }
-}
