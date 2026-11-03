@@ -372,12 +372,12 @@ nav a:last-child { margin-left: auto; }
 </head>
 <body class="browse">
   <nav><a href="./">PicoPlayer</a><a id="random" href="play">Random Game</a></nav>
-  <div id="meta"></div>
+  <div id="meta" data-nosnippet></div>
 
   <div class="stage">
     <aside id="info">
       <button id="info-toggle" aria-expanded="false" aria-controls="info-body">Game Info</button>
-      <div id="info-body"></div>
+      <div id="info-body" data-nosnippet></div>
     </aside>
     <main id="player">
       <iframe id="screen" title="PICO-8" allow="autoplay; fullscreen; gamepad"></iframe>
@@ -387,7 +387,7 @@ nav a:last-child { margin-left: auto; }
 
   <div id="tutorial" hidden><img src="assets/tutorial.webp" alt="Move your mouse down here to browse games!" width="372" height="189"></div>
 
-  <footer class="shelf"><button id="shelf-toggle" aria-expanded="false">Games</button><input id="search" type="search" placeholder="Search..." aria-label="Search games" autocomplete="off" spellcheck="false"><div class="carousel">
+  <footer class="shelf"><button id="shelf-toggle" aria-expanded="false">Games</button><input id="search" type="search" placeholder="Search..." aria-label="Search games" autocomplete="off" spellcheck="false"><div class="carousel" data-nosnippet>
     <button class="cart" fx-action="games/8-legs-to-love/meta.html"><i class="thumbnail" style="--x:1;--y:1"></i><span>8 Legs to Love</span></button>
     <button class="cart" fx-action="games/mots-8-ball-pool/meta.html"><i class="thumbnail" style="--x:1561;--y:521"></i><span>8-Ball Pool</span></button>
     <button class="cart" fx-action="games/air-delivery/meta.html"><i class="thumbnail" style="--x:131;--y:1"></i><span>Air Delivery</span></button>
@@ -593,6 +593,9 @@ nav a:last-child { margin-left: auto; }
     // grabbing the scrollbar (a press on the carousel itself) takes over from any slide or glide still going
     carousel.addEventListener("mousedown", (e) => { if (e.target == carousel) { cancelAnimationFrame(frame); frame = 0 } })
 
+    // the random game picked on load keeps the page's own title, or search engines list /play under whichever game they got
+    let keepPageTitle = false
+
     // mark the inserted cartridge and slide it to the middle of the shelf (instantly for the first pick on load)
     document.addEventListener("click", (e) => {
       let cart = e.target.closest(".cart")
@@ -604,6 +607,7 @@ nav a:last-child { margin-left: auto; }
       // shareable link to this game. each game after the first gets its own history entry, so Back returns to the
       // previous game rather than leaving the page (going Back lands here with the hash already set, so no new entry)
       let hash = "#" + cart.getAttribute("fx-action").split("/")[1]
+      keepPageTitle = !previous && location.hash != hash
       if (!previous) history.replaceState(null, "", hash)
       else if (location.hash != hash) history.pushState(null, "", hash)
       if (touch.matches) setShelfOpen(false)
@@ -741,7 +745,7 @@ nav a:last-child { margin-left: auto; }
       let body = document.querySelector("#info-body")
       body.replaceChildren(byline, ...(details ? [details] : []))
       body.scrollTop = 0  // start the new game's info from the top
-      document.title = meta.dataset.title + " · PicoPlayer"
+      if (!keepPageTitle) document.title = meta.dataset.title + " · PicoPlayer"
       window.countGame?.(meta.dataset.cart.split("/")[1], meta.dataset.title)  // js/stats.js, unless a blocker stopped it
       let query = meta.dataset.cart.split(" ").map((cart) => "cart=../" + cart).join("&")  // main cart first, then any extra carts it loads
       if (meta.dataset.banks) query += "&banks=../" + meta.dataset.banks  // data banks some games stream in (see pico8/player.html)
