@@ -4,6 +4,9 @@ html { background: #000; }
 .p8_lit_panel { position:absolute; }
 .p8_lit { position:absolute; background:#fff; opacity:0; }
 .p8_lit.on { opacity:0.4; }
+/* pico8.js clears the canvas's inline width and height when it starts, which squishes it to 128px wide until the next
+   layout update, so the size lives in a property it leaves alone */
+#canvas { width:var(--p8-size) !important; height:var(--p8-size) !important; }
 </style>
 <title>PICO-8 Cartridge</title>
 <meta name="viewport" content="width=device-width, user-scalable=no">
@@ -581,8 +584,7 @@ html { background: #000; }
 		else
 			p8_playarea.style.marginTop = "";
 
-		canvas.style.width = csize;
-		canvas.style.height = csize;
+		canvas.style.setProperty("--p8-size", csize + "px");
 
 		// to do: this should just happen from css layout
 		canvas.style.marginLeft = margin_left;
